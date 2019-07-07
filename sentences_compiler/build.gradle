@@ -1,7 +1,8 @@
 apply plugin: 'java-library'
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'src/main', include: ['*.jar'])
+    testImplementation fileTree(dir: 'src/test', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
 }
 
