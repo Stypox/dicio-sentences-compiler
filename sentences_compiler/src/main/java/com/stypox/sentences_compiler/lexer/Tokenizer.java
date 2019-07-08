@@ -1,6 +1,6 @@
 package com.stypox.sentences_compiler.lexer;
 
-import com.stypox.sentences_compiler.CompilerError;
+import com.stypox.sentences_compiler.util.CompilerError;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +11,7 @@ public class Tokenizer {
     private InputStreamReader input;
     private int line = 1, column = 0;
 
-    Tokenizer(InputStream inputStream) {
+    public Tokenizer(InputStream inputStream) {
         this.input = new InputStreamReader(inputStream, Charset.forName("unicode"));
     }
 

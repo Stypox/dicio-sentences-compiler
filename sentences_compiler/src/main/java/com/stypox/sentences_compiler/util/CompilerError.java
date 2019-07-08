@@ -1,4 +1,4 @@
-package com.stypox.sentences_compiler;
+package com.stypox.sentences_compiler.util;
 
 import com.stypox.sentences_compiler.lexer.Token;
 
