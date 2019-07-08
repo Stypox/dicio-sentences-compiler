@@ -4,6 +4,7 @@ build/
 local.properties
 out/
 *.iml
+.attach_pid*
 
 # Ignore Gradle GUI config
 gradle-app.setting
