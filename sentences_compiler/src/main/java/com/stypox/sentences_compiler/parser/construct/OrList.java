@@ -2,20 +2,20 @@ package com.stypox.sentences_compiler.parser.construct;
 
 import java.util.ArrayList;
 
-public final class OrList implements BaseConstruct {
-    private ArrayList<BaseConstruct> constructs;
+public final class OrList implements BaseSentenceConstruct {
+    private ArrayList<BaseSentenceConstruct> constructs;
 
     OrList() {
         constructs = new ArrayList<>();
     }
-    void addConstruct(BaseConstruct construct) {
+    void addConstruct(BaseSentenceConstruct construct) {
         constructs.add(construct);
     }
 
     @Override
     public ArrayList<ArrayList<String>> unfold() {
         ArrayList<ArrayList<String>> combinations = new ArrayList<>();
-        for (BaseConstruct construct : constructs) {
+        for (BaseSentenceConstruct construct : constructs) {
             combinations.addAll(construct.unfold());
         }
         return combinations;

@@ -1,10 +1,8 @@
 package com.stypox.sentences_compiler.parser.construct;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
-public final class Word implements BaseConstruct {
+public final class Word implements BaseSentenceConstruct {
     private String word;
 
     Word(String word) {

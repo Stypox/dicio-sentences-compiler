@@ -4,13 +4,13 @@ import com.stypox.sentences_compiler.util.UnfoldingUtils;
 
 import java.util.ArrayList;
 
-public final class ConstructList implements BaseConstruct {
-    ArrayList<BaseConstruct> constructs;
+public final class SentenceConstructList implements BaseSentenceConstruct {
+    ArrayList<BaseSentenceConstruct> constructs;
 
-    ConstructList() {
+    SentenceConstructList() {
         constructs = new ArrayList<>();
     }
-    void addConstruct(BaseConstruct construct) {
+    void addConstruct(BaseSentenceConstruct construct) {
         constructs.add(construct);
     }
 
@@ -20,7 +20,7 @@ public final class ConstructList implements BaseConstruct {
         ArrayList<ArrayList<String>> combinations = new ArrayList<>();
         combinations.add(new ArrayList<String>());
 
-        for (BaseConstruct construct : constructs) {
+        for (BaseSentenceConstruct construct : constructs) {
             ArrayList<ArrayList<String>> currComb = construct.unfold();
             int initialSize = combinations.size();
             combinations = UnfoldingUtils.multiplyArray(combinations, currComb.size());

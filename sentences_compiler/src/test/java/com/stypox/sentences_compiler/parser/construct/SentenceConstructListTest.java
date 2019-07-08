@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-public class ConstructListTest {
+public class SentenceConstructListTest {
     private void assertArrayContains(ArrayList<ArrayList<String>> arr, String[] strings) {
         for (ArrayList<String> stringsInArr : arr) {
             if (Arrays.equals(stringsInArr.toArray(), strings)) {
@@ -19,17 +19,17 @@ public class ConstructListTest {
 
     @Test
     public void testUnfold() {
-        ConstructList constructList = new ConstructList();
+        SentenceConstructList sentenceConstructList = new SentenceConstructList();
 
         OrList c1 = new OrList();
         c1.addConstruct(new Word("hi"));
         c1.addConstruct(new Word("hello"));
-        constructList.addConstruct(c1);
+        sentenceConstructList.addConstruct(c1);
 
         Word c2 = new Word("there");
-        constructList.addConstruct(c2);
+        sentenceConstructList.addConstruct(c2);
 
-        ArrayList<ArrayList<String>> combinations = constructList.unfold();
+        ArrayList<ArrayList<String>> combinations = sentenceConstructList.unfold();
         assertSame(combinations.size(), 2);
         assertArrayContains(combinations, new String[]{"hi", "there"});
         assertArrayContains(combinations, new String[]{"hello", "there"});
