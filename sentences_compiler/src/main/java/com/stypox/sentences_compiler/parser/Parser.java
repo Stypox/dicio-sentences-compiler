@@ -179,7 +179,7 @@ public class Parser {
                     if (ts.get(0).equals(Token.Type.grammar, ".")) {
                         throw new CompilerError(CompilerError.Type.optionalCapturingGroup, ts.get(0), "");
                     } else {
-                        throw new CompilerError(CompilerError.Type.invalidToken, ts.get(0), "\"|\" must be followed by a sentence construct");
+                        throw new CompilerError(CompilerError.Type.invalidToken, ts.get(0), "Expected sentence construct after \"|\" token");
                     }
                 } else {
                     break;
