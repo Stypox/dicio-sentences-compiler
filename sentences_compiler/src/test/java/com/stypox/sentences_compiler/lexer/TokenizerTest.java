@@ -49,8 +49,9 @@ public class TokenizerTest {
 
     @Test
     public void testValidInput() throws IOException, CompilerError {
-        TokenStream tokens = getTokens("cat_name1:     # hello world  \n" +
-                "  <sent_name1> hello?      hi|(bye bye);       \n");
+        TokenStream tokens = getTokens("cat_name01:     # hello world  \n" +
+                "  <sent_name1> hello?      hi|(bye bye);       \n" +
+                "..;");
         assertTrue(tokens.get(-1).isEmpty());
         assertTokenEqualTo(tokens.get(0),  Token.Type.lettersPlusOther, "cat_name1",  1,  1);
         assertTokenEqualTo(tokens.get(1),  Token.Type.grammar,          ":",          1, 10);
@@ -66,7 +67,10 @@ public class TokenizerTest {
         assertTokenEqualTo(tokens.get(11), Token.Type.letters,          "bye",        2, 36);
         assertTokenEqualTo(tokens.get(12), Token.Type.grammar,          ")",          2, 39);
         assertTokenEqualTo(tokens.get(13), Token.Type.grammar,          ";",          2, 40);
-        assertTrue(tokens.get(14).isEmpty());
+        assertTokenEqualTo(tokens.get(14), Token.Type.grammar,          ".",          3,  1);
+        assertTokenEqualTo(tokens.get(15), Token.Type.grammar,          ".",          3,  2);
+        assertTokenEqualTo(tokens.get(16), Token.Type.grammar,          ";",          3,  3);
+        assertTrue(tokens.get(17).isEmpty());
     }
 
     @Test
