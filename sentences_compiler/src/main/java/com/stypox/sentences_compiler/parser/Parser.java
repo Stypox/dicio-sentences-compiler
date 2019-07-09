@@ -175,7 +175,15 @@ public class Parser {
             }
 
             if (sentenceConstruct == null) {
-                break;
+                if (foundSentenceConstruct) { // there is a | at the end of the OrList
+                    if (ts.get(0).equals(Token.Type.grammar, ".")) {
+                        throw new CompilerError(CompilerError.Type.optionalCapturingGroup, ts.get(0), "");
+                    } else {
+                        throw new CompilerError(CompilerError.Type.invalidToken, ts.get(0), "\"|\" must be followed by a sentence construct");
+                    }
+                } else {
+                    break;
+                }
             } else {
                 foundSentenceConstruct = true;
                 orList.addConstruct(sentenceConstruct);

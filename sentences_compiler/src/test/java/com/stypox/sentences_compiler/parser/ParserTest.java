@@ -46,15 +46,16 @@ public class ParserTest {
 
     @Test
     public void testValidInput() throws IOException, CompilerError {
-        ArrayList<Section> sections = getSections("A:\n" +
+        ArrayList<Section> sections = getSections(
+                "A:\n" +
                 "a|b?;\n" +
                 "[B_](c|d)|e f g?;\n" +
                 "_C:\n" +
                 "[D] (h|i) (j) (k)?    ;\n" +
-                "l ((m)|n) (o((p((q(((r))))|))s))|;" +
-                "[E] t ..u .. v;\n" +
-                ".. w x..;" +
-                "..;\n");
+                "l ((m)|n) (o((p((q(((r)))|(s))))t));" +
+                "[E] u ..v .. w;\n" +
+                ".. x y..;" +
+                "..;\n"); // TODO is this valid?
         assertEquals(2, sections.size());
     }
 
