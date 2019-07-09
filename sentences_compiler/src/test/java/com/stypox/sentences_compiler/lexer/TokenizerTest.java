@@ -32,10 +32,10 @@ public class TokenizerTest {
             fail("No error thrown with invalid input");
         } catch (CompilerError compilerError) {
             String message = compilerError.getMessage();
-            assertTrue(message.contains(errorType.toString()));
-            assertTrue(message.contains(String.valueOf(errorLine)));
-            assertTrue(message.contains(String.valueOf(errorColumn)));
-            assertTrue(message.contains(errorMustContain));
+            assertTrue("\""+message+"\" is not of type \""+errorType.toString()+"\"", message.contains(errorType.toString()));
+            assertTrue("\""+message+"\" does not contain line number "+errorLine, message.contains(String.valueOf(errorLine)));
+            assertTrue("\""+message+"\" does not contain column number "+errorColumn, message.contains(String.valueOf(errorColumn)));
+            assertTrue("\""+message+"\" does not contain \""+errorMustContain+"\"", message.contains(errorMustContain));
         }
     }
 

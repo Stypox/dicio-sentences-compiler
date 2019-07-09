@@ -27,12 +27,12 @@ public class ParserTest {
             fail("No error thrown with invalid input");
         } catch (CompilerError compilerError) {
             String message = compilerError.getMessage();
-            assertTrue(message.contains(errorType.toString()));
+            assertTrue("\""+message+"\" is not of type \""+errorType.toString()+"\"",  message.contains(errorType.toString()));
             if (errorLine != -1 && errorColumn != -1) {
-                assertTrue(message.contains(String.valueOf(errorLine)));
-                assertTrue(message.contains(String.valueOf(errorColumn)));
+                assertTrue("\""+message+"\" does not contain line number "+errorLine, message.contains(String.valueOf(errorLine)));
+                assertTrue("\""+message+"\" does not contain column number "+errorColumn, message.contains(String.valueOf(errorColumn)));
             }
-            assertTrue(message.contains(errorMustContain));
+            assertTrue("\""+message+"\" does not contain \""+errorMustContain+"\"", message.contains(errorMustContain));
         }
     }
 
