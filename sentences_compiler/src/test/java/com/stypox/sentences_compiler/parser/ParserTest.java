@@ -47,10 +47,10 @@ public class ParserTest {
     @Test
     public void testValidInput() throws IOException, CompilerError {
         ArrayList<Section> sections = getSections("A:\n" +
-                "a|b|;\n" +
-                "[B_](c|d)|e f g|;\n" +
+                "a|b?;\n" +
+                "[B_](c|d)|e f g?;\n" +
                 "_C:\n" +
-                "[D] (h|i) (j) (k)|    ;\n" +
+                "[D] (h|i) (j) (k)?    ;\n" +
                 "l ((m)|n) (o((p((q(((r))))|))s))|;\n");
         assertEquals(2, sections.size());
     }
@@ -60,6 +60,8 @@ public class ParserTest {
         assertInvalid("a: b;;", CompilerError.Type.expectedSectionOrEndOfFile, 1, 6, ";");
         assertInvalid("a:\n|b;", CompilerError.Type.expectedSentence, 2, 1, "|");
         assertInvalid("a: b| |c;", CompilerError.Type.invalidToken, 1, 7, "|");
+        assertInvalid("a: b|? (c);", CompilerError.Type.invalidToken, 1, 6, "?");
+        assertInvalid("a: b? (c?)??;", CompilerError.Type.invalidToken, 1, 12, "?");
         assertInvalid("a:\n[] b|c;", CompilerError.Type.invalidToken, 2, 2, "]");
         assertInvalid("a: [|] b|c;", CompilerError.Type.invalidToken, 1, 5, "|");
         assertInvalid("a: [*] b|c;", CompilerError.Type.invalidCharacter, 1, 5, "*");

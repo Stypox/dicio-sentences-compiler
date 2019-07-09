@@ -165,13 +165,7 @@ public class Parser {
             }
 
             if (sentenceConstruct == null) {
-                if (foundSentenceConstruct) {
-                    // found "|" alone at the end of the OrList
-                    orList.addConstruct(new ConstructOptional());
-                    break;
-                } else {
-                    return null;
-                }
+                break;
             } else {
                 foundSentenceConstruct = true;
                 orList.addConstruct(sentenceConstruct);
@@ -179,12 +173,20 @@ public class Parser {
 
             if (ts.get(0).equals(Token.Type.grammar, "|")) {
                 ts.movePositionForwardBy(1);
+            } else if (ts.get(0).equals(Token.Type.grammar, "?")) {
+                ts.movePositionForwardBy(1);
+                orList.addConstruct(new ConstructOptional());
+                break;
             } else {
                 break;
             }
         }
 
-        return orList;
+        if (foundSentenceConstruct) {
+            return orList;
+        } else {
+            return null;
+        }
     }
 
     private Word readWord() {
