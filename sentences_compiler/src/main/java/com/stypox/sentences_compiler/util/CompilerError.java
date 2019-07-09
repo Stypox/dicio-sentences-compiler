@@ -9,7 +9,10 @@ public class CompilerError extends Exception {
         invalidToken,
         expectedSentence,
         expectedSentenceContent,
-        expectedSentenceConstructList;
+        expectedSentenceConstructList,
+        capturingGroupInvalidLength,
+        capturingGroupInsideParenthesis,
+        optionalCapturingGroup;
 
         public String toString() {
             switch (this) {
@@ -25,6 +28,12 @@ public class CompilerError extends Exception {
                     return "Expected sentence content after sentence id";
                 case expectedSentenceConstructList:
                     return "Expected list of sentence constructs";
+                case capturingGroupInvalidLength:
+                    return "Capturing groups are made of exactly two points \".\"";
+                case capturingGroupInsideParenthesis:
+                    return "Capturing groups cannot be nested inside parenthesis";
+                case optionalCapturingGroup:
+                    return "Capturing groups cannot be optional";
                 default:
                     return "Unknown error";
             }

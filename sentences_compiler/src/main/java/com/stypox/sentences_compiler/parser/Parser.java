@@ -2,6 +2,7 @@ package com.stypox.sentences_compiler.parser;
 
 import com.stypox.sentences_compiler.lexer.Token;
 import com.stypox.sentences_compiler.parser.construct.BaseSentenceConstruct;
+import com.stypox.sentences_compiler.parser.construct.CapturingGroup;
 import com.stypox.sentences_compiler.parser.construct.ConstructOptional;
 import com.stypox.sentences_compiler.parser.construct.OrList;
 import com.stypox.sentences_compiler.parser.construct.Sentence;
@@ -129,21 +130,30 @@ public class Parser {
             return null;
         }
 
-        return readSentenceConstructList();
+        return readSentenceConstructList(true);
     }
 
-    private SentenceConstructList readSentenceConstructList() throws CompilerError {
+    private SentenceConstructList readSentenceConstructList(boolean capturingGroupsAllowed) throws CompilerError {
         SentenceConstructList sentenceConstructList = new SentenceConstructList();
 
         boolean foundSentenceConstruct = false;
         while (true) {
+            BaseSentenceConstruct sentenceConstruct = null;
             OrList orList = readOrList();
             if (orList == null) {
-                break;
+                if (capturingGroupsAllowed) {
+                    sentenceConstruct = readCapturingGroup();
+                }
+            } else {
+                sentenceConstruct = orList.shrink();
             }
 
-            foundSentenceConstruct = true;
-            sentenceConstructList.addConstruct(orList.shrink());
+            if (sentenceConstruct == null) {
+                break;
+            } else {
+                foundSentenceConstruct = true;
+                sentenceConstructList.addConstruct(sentenceConstruct);
+            }
         }
 
         if (foundSentenceConstruct) {
@@ -203,9 +213,13 @@ public class Parser {
         if (ts.get(0).equals(Token.Type.grammar, "(")) {
             ts.movePositionForwardBy(1);
 
-            SentenceConstructList sentenceConstructList = readSentenceConstructList();
+            SentenceConstructList sentenceConstructList = readSentenceConstructList(false);
             if (sentenceConstructList == null) {
-                throw new CompilerError(CompilerError.Type.expectedSentenceConstructList, ts.get(0), "");
+                if (ts.get(0).equals(Token.Type.grammar, ".")) {
+                    throw new CompilerError(CompilerError.Type.capturingGroupInsideParenthesis, ts.get(0), "");
+                } else {
+                    throw new CompilerError(CompilerError.Type.expectedSentenceConstructList, ts.get(0), "");
+                }
             } else {
                 if (ts.get(0).equals(Token.Type.grammar, ")")) {
                     ts.movePositionForwardBy(1);
@@ -213,6 +227,25 @@ public class Parser {
                 } else {
                     throw new CompilerError(CompilerError.Type.invalidToken, ts.get(0), "Expected \")\" after list of sentence constructs");
                 }
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private CapturingGroup readCapturingGroup() throws CompilerError {
+        if (ts.get(0).equals(Token.Type.grammar, ".")) {
+            ts.movePositionForwardBy(1);
+            if (ts.get(0).equals(Token.Type.grammar, ".")) {
+                ts.movePositionForwardBy(1);
+                if (ts.get(0).equals(Token.Type.grammar, ".")) {
+                    throw new CompilerError(CompilerError.Type.capturingGroupInvalidLength, ts.get(0), "Found more than two points \".\"");
+                } else if (ts.get(0).equals(Token.Type.grammar, "?") || ts.get(0).equals(Token.Type.grammar, "|")) {
+                    throw new CompilerError(CompilerError.Type.optionalCapturingGroup, ts.get(0), "");
+                }
+                return new CapturingGroup();
+            } else {
+                throw new CompilerError(CompilerError.Type.capturingGroupInvalidLength, ts.get(0), "Found only one point \".\"");
             }
         } else {
             return null;
