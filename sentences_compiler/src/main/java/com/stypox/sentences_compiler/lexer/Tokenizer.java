@@ -63,7 +63,7 @@ public class Tokenizer {
                 while (true) {
                     wordType = updateWordType(wordType, ch);
                     ch = getCh();
-                    if (isLetter(ch) || isOtherValid(ch)) {
+                    if (!ch.isEmpty() && (isLetter(ch) || isOtherValid(ch))) {
                         word.append(ch);
                     } else {
                         break;

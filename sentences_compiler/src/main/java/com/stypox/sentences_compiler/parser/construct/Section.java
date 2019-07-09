@@ -6,7 +6,7 @@ public class Section {
     private String sectionId;
     private ArrayList<Sentence> sentences;
 
-    Section() {
+    public Section() {
         sentences = new ArrayList<>();
     }
 

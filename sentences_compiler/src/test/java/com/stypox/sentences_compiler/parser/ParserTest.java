@@ -1,0 +1,64 @@
+package com.stypox.sentences_compiler.parser;
+
+import com.stypox.sentences_compiler.parser.construct.Section;
+import com.stypox.sentences_compiler.util.CompilerError;
+
+import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
+
+public class ParserTest {
+    private static Parser fromString(String s) throws IOException, CompilerError {
+        InputStream stream = new ByteArrayInputStream(s.getBytes(Charset.forName("unicode")));
+        return new Parser(stream);
+    }
+    private static ArrayList<Section> getSections(String s) throws IOException, CompilerError {
+        return fromString(s).parse();
+    }
+    private static void assertInvalid(String input, CompilerError.Type errorType, int errorLine, int errorColumn, String errorMustContain) throws IOException {
+        try {
+            getSections(input);
+            fail("No error thrown with invalid input");
+        } catch (CompilerError compilerError) {
+            String message = compilerError.getMessage();
+            assertTrue(message.contains(errorType.toString()));
+            if (errorLine != -1 && errorColumn != -1) {
+                assertTrue(message.contains(String.valueOf(errorLine)));
+                assertTrue(message.contains(String.valueOf(errorColumn)));
+            }
+            assertTrue(message.contains(errorMustContain));
+        }
+    }
+
+    @Test
+    public void testValidInput() throws IOException, CompilerError {
+        ArrayList<Section> sections = getSections("A:\n" +
+                "a|b|;\n" +
+                "[B_](c|d)|e f g|;\n" +
+                "_C:\n" +
+                "[D] (h|i) (j) (k)|    ;\n" +
+                "l ((m)|n) (o((p((q(((r))))|))s))|;\n");
+        assertEquals(2, sections.size());
+    }
+
+    @Test
+    public void testInvalidInput() throws IOException {
+        assertInvalid("a: b;;", CompilerError.Type.expectedSectionOrEndOfFile, 1, 6, ";");
+        assertInvalid("a:\n|b;", CompilerError.Type.expectedSentence, 2, 1, "|");
+        assertInvalid("a: b| |c;", CompilerError.Type.invalidToken, 1, 7, "|");
+        assertInvalid("a:\n[] b|c;", CompilerError.Type.invalidToken, 2, 2, "]");
+        assertInvalid("a: [|] b|c;", CompilerError.Type.invalidToken, 1, 5, "|");
+        assertInvalid("a: [*] b|c;", CompilerError.Type.invalidCharacter, 1, 5, "*");
+        assertInvalid("a: [A];", CompilerError.Type.expectedSentenceContent, 1, 7, ";");
+        assertInvalid("a: ();", CompilerError.Type.expectedSentenceConstructList, 1, 5, ")");
+        assertInvalid("a:\n(());", CompilerError.Type.expectedSentenceConstructList, 2, 3, ")");
+        assertInvalid("a: [[]] a;", CompilerError.Type.invalidToken, 1, 5, "[");
+        assertInvalid("a", CompilerError.Type.invalidToken, -1, -1, "END OF FILE");
+    }
+}

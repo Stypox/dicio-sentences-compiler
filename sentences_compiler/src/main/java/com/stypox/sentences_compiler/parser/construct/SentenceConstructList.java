@@ -5,12 +5,12 @@ import com.stypox.sentences_compiler.util.UnfoldingUtils;
 import java.util.ArrayList;
 
 public final class SentenceConstructList implements BaseSentenceConstruct {
-    ArrayList<BaseSentenceConstruct> constructs;
+    private ArrayList<BaseSentenceConstruct> constructs;
 
-    SentenceConstructList() {
+    public SentenceConstructList() {
         constructs = new ArrayList<>();
     }
-    void addConstruct(BaseSentenceConstruct construct) {
+    public void addConstruct(BaseSentenceConstruct construct) {
         constructs.add(construct);
     }
 

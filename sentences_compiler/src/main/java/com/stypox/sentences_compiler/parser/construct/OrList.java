@@ -3,12 +3,12 @@ package com.stypox.sentences_compiler.parser.construct;
 import java.util.ArrayList;
 
 public final class OrList implements BaseSentenceConstruct {
-    private ArrayList<BaseSentenceConstruct> constructs;
+    private ArrayList<BaseSentenceConstruct> constructs; // could contain one item
 
-    OrList() {
+    public OrList() {
         constructs = new ArrayList<>();
     }
-    void addConstruct(BaseSentenceConstruct construct) {
+    public void addConstruct(BaseSentenceConstruct construct) {
         constructs.add(construct);
     }
 
@@ -19,5 +19,13 @@ public final class OrList implements BaseSentenceConstruct {
             combinations.addAll(construct.unfold());
         }
         return combinations;
+    }
+
+    public BaseSentenceConstruct shrink() {
+        if (constructs.size() == 1) {
+            return constructs.get(0);
+        } else {
+            return this;
+        }
     }
 }

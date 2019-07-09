@@ -26,14 +26,17 @@ public class Token {
     }
 
 
-    public boolean isValue(String value) {
-        return this.value.equals(value);
-    }
     public boolean isType(Type type) {
         if (this.type == Type.letters && type == Type.lettersPlusOther) {
             return true; // letters are always lettersPlusOther
         }
         return this.type == type;
+    }
+    public boolean isValue(String value) {
+        return this.value.equals(value);
+    }
+    public boolean equals(Type type, String value) {
+        return isType(type) && isValue(value);
     }
     public boolean isEmpty() {
         return this.type == Type.empty;

@@ -18,12 +18,12 @@ public class TokenStream {
 
         return tokens.get(index);
     }
-    public Token get() {
-        return get(0);
-    }
 
     public void movePositionForwardBy(int delta) {
         assert(delta >= 0);
         position += delta;
+    }
+    public boolean isEmpty() {
+        return position >= tokens.size();
     }
 }

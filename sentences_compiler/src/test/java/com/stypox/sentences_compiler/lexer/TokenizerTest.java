@@ -41,10 +41,10 @@ public class TokenizerTest {
 
     @Test
     public void testEmptyInput() throws IOException, CompilerError {
-        assertTrue(getTokens("").get().isEmpty());
-        assertTrue(getTokens("\n").get().isEmpty());
-        assertTrue(getTokens("  \t  \n\t\t\n  ").get().isEmpty());
-        assertTrue(getTokens("    # hello: # ## | | ; world   \n#").get().isEmpty());
+        assertTrue(getTokens("").get(0).isEmpty());
+        assertTrue(getTokens("\n").get(0).isEmpty());
+        assertTrue(getTokens("  \t  \n\t\t\n  ").get(0).isEmpty());
+        assertTrue(getTokens("    # hello: # ## | | ; world   \n#").get(0).isEmpty());
     }
 
     @Test

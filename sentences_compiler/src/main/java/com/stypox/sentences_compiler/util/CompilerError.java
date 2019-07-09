@@ -4,14 +4,29 @@ import com.stypox.sentences_compiler.lexer.Token;
 
 public class CompilerError extends Exception {
     public enum Type {
-        invalidCharacter;
+        invalidCharacter,
+        expectedSectionOrEndOfFile,
+        invalidToken,
+        expectedSentence,
+        expectedSentenceContent,
+        expectedSentenceConstructList;
 
         public String toString() {
             switch (this) {
                 case invalidCharacter:
                     return "Invalid character error";
+                case expectedSectionOrEndOfFile:
+                    return "Expected section or end of file";
+                case invalidToken:
+                    return "Invalid token";
+                case expectedSentence:
+                    return "Expected sentence after section id";
+                case expectedSentenceContent:
+                    return "Expected sentence content after sentence id";
+                case expectedSentenceConstructList:
+                    return "Expected list of sentence constructs";
                 default:
-                    return "";
+                    return "Unknown error";
             }
         }
     }
@@ -38,17 +53,25 @@ public class CompilerError extends Exception {
 
     @Override
     public String getMessage() {
-        String str = line + ":" + column;
+        String str = "";
 
-        if (!this.tokenValue.isEmpty()) {
-            str += " ";
-            str += tokenValue;
+        if (line == -1 && column == -1) {// empty token
+            str += "END OF FILE";
+        } else {
+            str += line;
+            str += ":";
+            str += column;
+
+            if (!tokenValue.isEmpty()) {
+                str += " ";
+                str += tokenValue;
+            }
         }
 
         str += ": ";
         str += type.toString();
 
-        if (!this.message.isEmpty()) {
+        if (!message.isEmpty()) {
             str += ": ";
             str += message;
         }

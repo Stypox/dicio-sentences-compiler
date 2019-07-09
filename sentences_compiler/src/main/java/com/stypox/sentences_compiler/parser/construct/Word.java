@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public final class Word implements BaseSentenceConstruct {
     private String word;
 
-    Word(String word) {
+    public Word(String word) {
         this.word = word;
     }
 
