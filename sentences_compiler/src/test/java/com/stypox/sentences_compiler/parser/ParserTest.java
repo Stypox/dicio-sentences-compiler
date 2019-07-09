@@ -37,6 +37,14 @@ public class ParserTest {
     }
 
     @Test
+    public void testEmptyInput() throws IOException, CompilerError {
+        assertTrue(getSections("").isEmpty());
+        assertTrue(getSections("\n").isEmpty());
+        assertTrue(getSections("  \t  \n\t\t\n  ").isEmpty());
+        assertTrue(getSections("    # hello: # ## | | ; world   \n#").isEmpty());
+    }
+
+    @Test
     public void testValidInput() throws IOException, CompilerError {
         ArrayList<Section> sections = getSections("A:\n" +
                 "a|b|;\n" +
