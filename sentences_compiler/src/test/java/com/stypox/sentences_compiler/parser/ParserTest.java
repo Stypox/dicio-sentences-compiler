@@ -50,7 +50,7 @@ public class ParserTest {
                 "A:\n" +
                 "a|b?;\n" +
                 "[B_](c|d)|e f g?;\n" +
-                "_C:\n" +
+                "_C :\n" +
                 "[D] (h|i) (j) (k)?    ;\n" +
                 "l ((m)|n) (o((p((q(((r)))|(s))))t));" +
                 "[E] u ..v .. w;\n" +
@@ -61,6 +61,7 @@ public class ParserTest {
 
     @Test
     public void testInvalidInput() throws IOException {
+        assertInvalid("a b",           CompilerError.Type.invalidToken,                    1,  3,  "b");
         assertInvalid("a: b ..;;",     CompilerError.Type.expectedSectionOrEndOfFile,      1,  9,  ";");
         assertInvalid("a:\n|b;",       CompilerError.Type.expectedSentence,                2,  1,  "|");
         assertInvalid("a: .. b| |c;",  CompilerError.Type.invalidToken,                    1,  10, "|");
