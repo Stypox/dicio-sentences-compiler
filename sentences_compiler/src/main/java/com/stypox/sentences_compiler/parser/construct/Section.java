@@ -25,16 +25,15 @@ public class Section {
     public void validate() throws CompilerError {
         HashMap<String, Integer> sentenceCapturingGroups = new HashMap<>();
         for (Sentence sentence : sentences) {
+            sentence.validate();
             int capturingGroups = sentence.numberOfCapturingGroups();
             String sentenceId = sentence.getSentenceId();
+
             if (sentenceCapturingGroups.containsKey(sentenceId)) {
                 if (sentenceCapturingGroups.get(sentenceId) != capturingGroups) {
                     throw new CompilerError(CompilerError.Type.differentNrOfCapturingGroups, sentenceId, sentence.getLine(), "");
                 }
             } else {
-                if (capturingGroups > 2) {
-                    throw new CompilerError(CompilerError.Type.tooManyCapturingGroups, sentenceId, sentence.getLine(), "");
-                }
                 sentenceCapturingGroups.put(sentenceId, capturingGroups);
             }
         }

@@ -15,6 +15,7 @@ public class CompilerError extends Exception {
         optionalCapturingGroup,
         differentNrOfCapturingGroups,
         tooManyCapturingGroups,
+        sentenceCanBeEmpty,
         duplicateSectionId;
 
         public String toString() {
@@ -41,6 +42,8 @@ public class CompilerError extends Exception {
                     return "Sentences with the same sentence id (possibly empty) must have the same number of capturing groups";
                 case tooManyCapturingGroups:
                     return "Too many capturing groups";
+                case sentenceCanBeEmpty:
+                    return "Sentence can be unfolded to an empty sentence (possibly with capturing groups)";
                 case duplicateSectionId:
                     return "Duplicate section id";
                 default:

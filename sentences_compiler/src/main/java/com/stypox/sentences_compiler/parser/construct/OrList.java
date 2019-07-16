@@ -28,4 +28,14 @@ public final class OrList implements BaseSentenceConstruct {
             return this;
         }
     }
+
+    @Override
+    public boolean isOptional() {
+        for (BaseSentenceConstruct construct : constructs) {
+            if (construct.isOptional()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

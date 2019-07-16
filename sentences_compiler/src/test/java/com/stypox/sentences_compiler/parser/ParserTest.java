@@ -66,7 +66,7 @@ public class ParserTest {
     public void testValidInput() throws IOException, CompilerError {
         ArrayList<Section> sections = getSections(
                 "A:\n" +
-                "a|b?;\n" + // TODO is empty sentence valid? (NO!)
+                "a|b? G;\n" +
                 "[B_](c|d)|e FF g?;\n" +
                 "5_C :\n" +
                 "[D] (h|i) (j) (k)?    ;\n" +
@@ -74,14 +74,14 @@ public class ParserTest {
                 "[E7] u ..v .. w;\n" +
                 "Ff:\n" +
                 "x..y;\n" +
-                "..;\n"); // TODO is this valid?
+                "z..;\n");
         assertEquals(3, sections.size());
 
         assertEquals("A", sections.get(0).getSectionId());
         assertEquals(1, sections.get(0).getLine());
         assertEquals(2, sections.get(0).getSentences().size());
         assertSentenceUnfoldsTo(sections.get(0).getSentences().get(0), "", 2, 0, new String[]{
-                "a","b","",
+                "a G","b G","G",
         });
         assertSentenceUnfoldsTo(sections.get(0).getSentences().get(1), "B_", 3, 0, new String[]{
                 "c FF g","d FF g","e FF g","c FF","d FF","e FF",
@@ -107,7 +107,7 @@ public class ParserTest {
                 "x . y",
         });
         assertSentenceUnfoldsTo(sections.get(2).getSentences().get(1), "", 10, 1, new String[]{
-                ".",
+                "z .",
         });
     }
 
@@ -137,6 +137,10 @@ public class ParserTest {
         assertInvalid("a:\n[bB]c..;\n[bB]..d..;", CompilerError.Type.differentNrOfCapturingGroups,     3, -1,  "bB");
         assertInvalid("a:\n\n..b..;\n\n\nc;",     CompilerError.Type.differentNrOfCapturingGroups,     6, -1,  "");
         assertInvalid("\na:\n\n[bB]..c..d..;",    CompilerError.Type.tooManyCapturingGroups,           4, -1,  "bB");
+        assertInvalid("a:\n[bB]..;",              CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "bB");
+        assertInvalid("\n\na:\n\n..;",            CompilerError.Type.sentenceCanBeEmpty,               5, -1,  "");
+        assertInvalid("a: b?;",                   CompilerError.Type.sentenceCanBeEmpty,               1, -1,  "");
+        assertInvalid("a:\nb|c? ..((d|e)|f)?..;", CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "");
         assertInvalid("Aa: a;\nAa: b;",           CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
         assertInvalid("\nAa:a;\n\nB:b;\nAa:c;",   CompilerError.Type.duplicateSectionId,               5, -1,  "Aa");
     }

@@ -13,4 +13,9 @@ public final class Word implements BaseSentenceConstruct {
     public ArrayList<ArrayList<String>> unfold() {
         return new ArrayList<ArrayList<String>>() {{ add(new ArrayList<String>(){{ add(word); }}); }};
     }
+
+    @Override
+    public boolean isOptional() {
+        return false;
+    }
 }

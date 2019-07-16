@@ -7,4 +7,9 @@ public class ConstructOptional implements BaseSentenceConstruct {
     public ArrayList<ArrayList<String>> unfold() {
         return new ArrayList<ArrayList<String>>() {{ add(new ArrayList<String>()); }};
     }
+
+    @Override
+    public boolean isOptional() {
+        return true;
+    }
 }

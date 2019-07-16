@@ -7,4 +7,9 @@ public class CapturingGroup implements BaseSentenceConstruct {
     public ArrayList<ArrayList<String>> unfold() {
         return new ArrayList<ArrayList<String>>() {{ add(new ArrayList<String>() {{ add("."); }}); }};
     }
+
+    @Override
+    public boolean isOptional() {
+        return true;
+    }
 }

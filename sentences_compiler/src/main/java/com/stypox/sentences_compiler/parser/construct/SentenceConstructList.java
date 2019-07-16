@@ -34,6 +34,14 @@ public final class SentenceConstructList implements BaseSentenceConstruct {
         return combinations;
     }
 
+    @Override
+    public boolean isOptional() {
+        for (BaseSentenceConstruct construct : constructs) {
+            if (!construct.isOptional()) return false;
+        }
+        return true;
+    }
+
     public ArrayList<BaseSentenceConstruct> getConstructs() {
         return constructs;
     }

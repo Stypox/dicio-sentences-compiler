@@ -4,4 +4,5 @@ import java.util.ArrayList;
 
 public interface BaseSentenceConstruct {
     ArrayList<ArrayList<String>> unfold();
+    boolean isOptional();
 }
