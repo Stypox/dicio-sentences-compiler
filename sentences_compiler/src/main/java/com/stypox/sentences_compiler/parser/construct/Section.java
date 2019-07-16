@@ -46,4 +46,7 @@ public class Section {
     public int getLine() {
         return line;
     }
+    public ArrayList<Sentence> getSentences() {
+        return sentences;
+    }
 }

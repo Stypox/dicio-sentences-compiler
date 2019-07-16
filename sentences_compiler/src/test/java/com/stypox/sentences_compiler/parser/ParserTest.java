@@ -1,6 +1,7 @@
 package com.stypox.sentences_compiler.parser;
 
 import com.stypox.sentences_compiler.parser.construct.Section;
+import com.stypox.sentences_compiler.parser.construct.Sentence;
 import com.stypox.sentences_compiler.util.CompilerError;
 
 import org.junit.Test;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -38,6 +40,20 @@ public class ParserTest {
         }
     }
 
+    private static void assertSentenceUnfoldsTo(Sentence sentence, String sentenceId, int line, int capturingGroups, String[] unfoldedStrings) {
+        assertEquals(sentenceId, sentence.getSentenceId());
+        assertEquals(line, sentence.getLine());
+        assertEquals(capturingGroups, sentence.numberOfCapturingGroups());
+
+        ArrayList<ArrayList<String>> unfoldedWords = sentence.getSentenceConstructs().unfold();
+        for (String unfoldedString : unfoldedStrings) {
+            ArrayList<String> sentenceWords = new ArrayList<>(Arrays.asList(unfoldedString.split(" ")));
+            sentenceWords.removeAll(Arrays.asList(""));
+
+            assertTrue("Unfolded sentence does not contain \"" + unfoldedString + "\"", unfoldedWords.contains(sentenceWords));
+        }
+    }
+
     @Test
     public void testEmptyInput() throws IOException, CompilerError {
         assertTrue(getSections("").isEmpty());
@@ -50,16 +66,49 @@ public class ParserTest {
     public void testValidInput() throws IOException, CompilerError {
         ArrayList<Section> sections = getSections(
                 "A:\n" +
-                "a|b?;\n" +
-                "[B_](c|d)|e FFF g?;\n" +
+                "a|b?;\n" + // TODO is empty sentence valid? (NO!)
+                "[B_](c|d)|e FF g?;\n" +
                 "5_C :\n" +
                 "[D] (h|i) (j) (k)?    ;\n" +
                 "l ((M)|n) (o((p((Q(((r)))|(S))))t));\n" +
                 "[E7] u ..v .. w;\n" +
-                "FF:\n" +
+                "Ff:\n" +
                 "x..y;\n" +
                 "..;\n"); // TODO is this valid?
         assertEquals(3, sections.size());
+
+        assertEquals("A", sections.get(0).getSectionId());
+        assertEquals(1, sections.get(0).getLine());
+        assertEquals(2, sections.get(0).getSentences().size());
+        assertSentenceUnfoldsTo(sections.get(0).getSentences().get(0), "", 2, 0, new String[]{
+                "a","b","",
+        });
+        assertSentenceUnfoldsTo(sections.get(0).getSentences().get(1), "B_", 3, 0, new String[]{
+                "c FF g","d FF g","e FF g","c FF","d FF","e FF",
+        });
+
+        assertEquals("5_C", sections.get(1).getSectionId());
+        assertEquals(4, sections.get(1).getLine());
+        assertEquals(3, sections.get(1).getSentences().size());
+        assertSentenceUnfoldsTo(sections.get(1).getSentences().get(0), "D", 5, 0, new String[]{
+                "h j k","i j k","h j","i j",
+        });
+        assertSentenceUnfoldsTo(sections.get(1).getSentences().get(1), "", 6, 0, new String[]{
+                "l M o p Q r t","l n o p Q r t","l M o p Q S t","l n o p Q S t",
+        });
+        assertSentenceUnfoldsTo(sections.get(1).getSentences().get(2), "E7", 7, 2, new String[]{
+                "u . v . w",
+        });
+
+        assertEquals("Ff", sections.get(2).getSectionId());
+        assertEquals(8, sections.get(2).getLine());
+        assertEquals(2, sections.get(2).getSentences().size());
+        assertSentenceUnfoldsTo(sections.get(2).getSentences().get(0), "", 9, 1, new String[]{
+                "x . y",
+        });
+        assertSentenceUnfoldsTo(sections.get(2).getSentences().get(1), "", 10, 1, new String[]{
+                ".",
+        });
     }
 
     @Test

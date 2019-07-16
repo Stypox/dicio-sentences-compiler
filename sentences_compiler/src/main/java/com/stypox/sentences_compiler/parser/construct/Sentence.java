@@ -31,4 +31,7 @@ public class Sentence {
     public int getLine() {
         return line;
     }
+    public SentenceConstructList getSentenceConstructs() {
+        return sentenceConstructs;
+    }
 }
