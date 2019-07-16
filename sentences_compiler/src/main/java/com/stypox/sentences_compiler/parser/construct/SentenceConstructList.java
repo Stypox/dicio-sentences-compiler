@@ -33,4 +33,8 @@ public final class SentenceConstructList implements BaseSentenceConstruct {
         }
         return combinations;
     }
+
+    public ArrayList<BaseSentenceConstruct> getConstructs() {
+        return constructs;
+    }
 }

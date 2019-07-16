@@ -49,7 +49,7 @@ public class TokenizerTest {
 
     @Test
     public void testValidInput() throws IOException, CompilerError {
-        TokenStream tokens = getTokens("cat_name01:     # hello world  \n" +
+        TokenStream tokens = getTokens("cat_name1:     # hello world  \n" +
                 "  <sent_name1> hello?      hi|(bye bye);       \n" +
                 "..;");
         assertTrue(tokens.get(-1).isEmpty());

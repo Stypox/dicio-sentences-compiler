@@ -38,9 +38,12 @@ public class Parser {
             
             sections.add(section);
         }
+
+        validate(sections);
         return sections;
     }
-    
+
+
     private Section readSection() throws CompilerError {
         Section section = new Section();
 
@@ -48,7 +51,7 @@ public class Parser {
         if (sectionId == null) {
             return null;
         }
-        section.setSectionId(sectionId);
+        section.setSectionId(sectionId, ts.get(-2).getLine());
 
         boolean foundSentences = false;
         while (true) {
@@ -86,7 +89,11 @@ public class Parser {
 
         String sentenceId = readSentenceId();
         boolean foundId = (sentenceId != null);
-        sentence.setSentenceId(foundId ? sentenceId : "");
+        if (foundId) {
+            sentence.setSentenceId(sentenceId, ts.get(-2).getLine());
+        } else {
+            sentence.setSentenceId("", ts.get(0).getLine());
+        }
 
         SentenceConstructList sentenceContent = readSentenceContent();
         if (sentenceContent == null) {
@@ -247,6 +254,7 @@ public class Parser {
             if (ts.get(0).equals(Token.Type.grammar, ".")) {
                 ts.movePositionForwardBy(1);
                 if (ts.get(0).equals(Token.Type.grammar, ".")) {
+                    // this also prevents two subsequent capturing groups
                     throw new CompilerError(CompilerError.Type.capturingGroupInvalidLength, ts.get(0), "Found more than two points \".\"");
                 } else if (ts.get(0).equals(Token.Type.grammar, "?") || ts.get(0).equals(Token.Type.grammar, "|")) {
                     throw new CompilerError(CompilerError.Type.optionalCapturingGroup, ts.get(0), "");
@@ -257,6 +265,21 @@ public class Parser {
             }
         } else {
             return null;
+        }
+    }
+
+
+    private void validate(ArrayList<Section> sections) throws CompilerError {
+        ArrayList<String> sectionIds = new ArrayList<>();
+        for(Section section : sections) {
+            section.validate();
+
+            String sectionId = section.getSectionId();
+            if (sectionIds.contains(sectionId)) {
+                throw new CompilerError(CompilerError.Type.duplicateSectionId, sectionId, section.getLine(), "");
+            } else {
+                sectionIds.add(sectionId);
+            }
         }
     }
 }
