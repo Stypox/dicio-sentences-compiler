@@ -1,6 +1,6 @@
-package com.stypox.sentences_compiler.parser.construct;
+package com.dicio.sentences_compiler.parser.construct;
 
-import com.stypox.sentences_compiler.util.CompilerError;
+import com.dicio.sentences_compiler.util.CompilerError;
 
 import java.util.ArrayList;
 import java.util.HashMap;

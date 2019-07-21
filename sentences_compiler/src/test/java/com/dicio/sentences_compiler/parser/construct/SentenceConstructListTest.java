@@ -1,4 +1,4 @@
-package com.stypox.sentences_compiler.parser.construct;
+package com.dicio.sentences_compiler.parser.construct;
 
 import org.junit.Test;
 

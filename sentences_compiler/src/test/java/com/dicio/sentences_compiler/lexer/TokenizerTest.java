@@ -1,6 +1,6 @@
-package com.stypox.sentences_compiler.lexer;
+package com.dicio.sentences_compiler.lexer;
 
-import com.stypox.sentences_compiler.util.CompilerError;
+import com.dicio.sentences_compiler.util.CompilerError;
 
 import org.junit.Test;
 

@@ -1,6 +1,6 @@
-package com.stypox.sentences_compiler.util;
+package com.dicio.sentences_compiler.util;
 
-import com.stypox.sentences_compiler.lexer.Token;
+import com.dicio.sentences_compiler.lexer.Token;
 
 public class CompilerError extends Exception {
     public enum Type {

@@ -1,4 +1,4 @@
-package com.stypox.sentences_compiler.util;
+package com.dicio.sentences_compiler.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

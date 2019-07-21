@@ -1,4 +1,4 @@
-package com.stypox.sentences_compiler.util;
+package com.dicio.sentences_compiler.util;
 
 import org.junit.Test;
 

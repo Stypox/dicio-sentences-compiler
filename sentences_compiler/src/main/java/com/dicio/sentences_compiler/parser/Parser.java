@@ -1,17 +1,17 @@
-package com.stypox.sentences_compiler.parser;
+package com.dicio.sentences_compiler.parser;
 
-import com.stypox.sentences_compiler.lexer.Token;
-import com.stypox.sentences_compiler.parser.construct.BaseSentenceConstruct;
-import com.stypox.sentences_compiler.parser.construct.CapturingGroup;
-import com.stypox.sentences_compiler.parser.construct.ConstructOptional;
-import com.stypox.sentences_compiler.parser.construct.OrList;
-import com.stypox.sentences_compiler.parser.construct.Sentence;
-import com.stypox.sentences_compiler.parser.construct.SentenceConstructList;
-import com.stypox.sentences_compiler.parser.construct.Word;
-import com.stypox.sentences_compiler.util.CompilerError;
-import com.stypox.sentences_compiler.lexer.TokenStream;
-import com.stypox.sentences_compiler.lexer.Tokenizer;
-import com.stypox.sentences_compiler.parser.construct.Section;
+import com.dicio.sentences_compiler.lexer.Token;
+import com.dicio.sentences_compiler.parser.construct.BaseSentenceConstruct;
+import com.dicio.sentences_compiler.parser.construct.CapturingGroup;
+import com.dicio.sentences_compiler.parser.construct.ConstructOptional;
+import com.dicio.sentences_compiler.parser.construct.OrList;
+import com.dicio.sentences_compiler.parser.construct.Sentence;
+import com.dicio.sentences_compiler.parser.construct.SentenceConstructList;
+import com.dicio.sentences_compiler.parser.construct.Word;
+import com.dicio.sentences_compiler.util.CompilerError;
+import com.dicio.sentences_compiler.lexer.TokenStream;
+import com.dicio.sentences_compiler.lexer.Tokenizer;
+import com.dicio.sentences_compiler.parser.construct.Section;
 
 import java.io.IOException;
 import java.io.InputStream;

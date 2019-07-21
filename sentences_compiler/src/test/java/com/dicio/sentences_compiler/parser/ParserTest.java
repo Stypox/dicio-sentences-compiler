@@ -1,8 +1,8 @@
-package com.stypox.sentences_compiler.parser;
+package com.dicio.sentences_compiler.parser;
 
-import com.stypox.sentences_compiler.parser.construct.Section;
-import com.stypox.sentences_compiler.parser.construct.Sentence;
-import com.stypox.sentences_compiler.util.CompilerError;
+import com.dicio.sentences_compiler.parser.construct.Section;
+import com.dicio.sentences_compiler.parser.construct.Sentence;
+import com.dicio.sentences_compiler.util.CompilerError;
 
 import org.junit.Test;
 

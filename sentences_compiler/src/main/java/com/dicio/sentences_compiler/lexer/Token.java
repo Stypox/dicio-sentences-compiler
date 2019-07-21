@@ -1,4 +1,4 @@
-package com.stypox.sentences_compiler.lexer;
+package com.dicio.sentences_compiler.lexer;
 
 public class Token {
     public enum Type {
