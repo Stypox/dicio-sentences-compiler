@@ -51,7 +51,10 @@ public class Parser {
         if (sectionId == null) {
             return null;
         }
-        section.setSectionId(sectionId, ts.get(-2).getLine());
+        int sectionIdLine = ts.get(-2).getLine();
+
+        Section.Specificity specificity = readSpecificity();
+        section.setSectionInfo(sectionId, specificity, sectionIdLine);
 
         boolean foundSentences = false;
         while (true) {
@@ -81,6 +84,32 @@ public class Parser {
             }
         } else {
             return null;
+        }
+    }
+
+    private Section.Specificity readSpecificity() throws CompilerError {
+        if (ts.get(0).isType(Token.Type.lettersPlusOther)) {
+            String specificityStr = ts.get(0).getValue();
+            Section.Specificity specificity;
+
+            switch (specificityStr) {
+                case "1": case "low":
+                    specificity = Section.Specificity.low;
+                    break;
+                case "2": case "medium":
+                    specificity = Section.Specificity.medium;
+                    break;
+                case "3": case "high":
+                    specificity = Section.Specificity.high;
+                    break;
+                default:
+                    throw new CompilerError(CompilerError.Type.invalidSpecificity, ts.get(0), "Accepted values are 1/\"low\" 2/\"medium\" 3/\"high\"");
+            }
+
+            ts.movePositionForwardBy(1);
+            return specificity;
+        } else {
+            throw new CompilerError(CompilerError.Type.invalidToken, ts.get(0), "Expected specificity after section id");
         }
     }
 

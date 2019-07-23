@@ -7,6 +7,7 @@ public class CompilerError extends Exception {
         invalidCharacter,
         expectedSectionOrEndOfFile,
         invalidToken,
+        invalidSpecificity,
         expectedSentence,
         expectedSentenceContent,
         expectedSentenceConstructList,
@@ -26,8 +27,10 @@ public class CompilerError extends Exception {
                     return "Expected section or end of file";
                 case invalidToken:
                     return "Invalid token";
+                case invalidSpecificity:
+                    return "Invalid specificity";
                 case expectedSentence:
-                    return "Expected sentence after section id";
+                    return "Expected sentence after specificity";
                 case expectedSentenceContent:
                     return "Expected sentence content after sentence id";
                 case expectedSentenceConstructList:

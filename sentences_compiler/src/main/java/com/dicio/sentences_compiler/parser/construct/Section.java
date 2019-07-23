@@ -6,7 +6,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Section {
+    public enum Specificity {
+        high,
+        medium,
+        low,
+    }
+
     private String sectionId;
+    private Specificity specificity;
     private int line;
     private ArrayList<Sentence> sentences;
 
@@ -14,8 +21,9 @@ public class Section {
         sentences = new ArrayList<>();
     }
 
-    public void setSectionId(String sectionId, int line) {
+    public void setSectionInfo(String sectionId, Specificity specificity, int line) {
         this.sectionId = sectionId;
+        this.specificity = specificity;
         this.line = line;
     }
     public void addSentence(Sentence sentences) {
@@ -42,6 +50,7 @@ public class Section {
     public String getSectionId() {
         return sectionId;
     }
+    public Specificity getSpecificity() { return specificity; }
     public int getLine() {
         return line;
     }

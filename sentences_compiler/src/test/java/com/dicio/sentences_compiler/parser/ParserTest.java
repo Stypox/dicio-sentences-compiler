@@ -65,19 +65,21 @@ public class ParserTest {
     @Test
     public void testValidInput() throws IOException, CompilerError {
         ArrayList<Section> sections = getSections(
-                "A:\n" +
+                "A:high\n" +
                 "a|b? G;\n" +
                 "[B_](c|d)|e FF g?;\n" +
-                "5_C :\n" +
+                "5_C : 2\n" +
                 "[D] (h|i) (j) (k)?    ;\n" +
                 "l ((M)|n) (o((p((Q(((r)))|(S))))t));\n" +
                 "[E7] u ..v .. w;\n" +
                 "Ff:\n" +
+                "low\n" +
                 "x..y;\n" +
                 "z..;\n");
         assertEquals(3, sections.size());
 
         assertEquals("A", sections.get(0).getSectionId());
+        assertEquals(Section.Specificity.high, sections.get(0).getSpecificity());
         assertEquals(1, sections.get(0).getLine());
         assertEquals(2, sections.get(0).getSentences().size());
         assertSentenceUnfoldsTo(sections.get(0).getSentences().get(0), "", 2, 0, new String[]{
@@ -88,6 +90,7 @@ public class ParserTest {
         });
 
         assertEquals("5_C", sections.get(1).getSectionId());
+        assertEquals(Section.Specificity.medium, sections.get(1).getSpecificity());
         assertEquals(4, sections.get(1).getLine());
         assertEquals(3, sections.get(1).getSentences().size());
         assertSentenceUnfoldsTo(sections.get(1).getSentences().get(0), "D", 5, 0, new String[]{
@@ -101,47 +104,50 @@ public class ParserTest {
         });
 
         assertEquals("Ff", sections.get(2).getSectionId());
+        assertEquals(Section.Specificity.low, sections.get(2).getSpecificity());
         assertEquals(8, sections.get(2).getLine());
         assertEquals(2, sections.get(2).getSentences().size());
-        assertSentenceUnfoldsTo(sections.get(2).getSentences().get(0), "", 9, 1, new String[]{
+        assertSentenceUnfoldsTo(sections.get(2).getSentences().get(0), "", 10, 1, new String[]{
                 "x . y",
         });
-        assertSentenceUnfoldsTo(sections.get(2).getSentences().get(1), "", 10, 1, new String[]{
+        assertSentenceUnfoldsTo(sections.get(2).getSentences().get(1), "", 11, 1, new String[]{
                 "z .",
         });
     }
 
     @Test
     public void testInvalidInput() throws IOException {
-        assertInvalid("a bB",                     CompilerError.Type.invalidToken,                     1,  3,  "bB");
-        assertInvalid("a: b ..;;",                CompilerError.Type.expectedSectionOrEndOfFile,       1,  9,  ";");
-        assertInvalid("a:\n|b;",                  CompilerError.Type.expectedSentence,                 2,  1,  "|");
-        assertInvalid("a: .. b| |c;",             CompilerError.Type.invalidToken,                     1, 10,  "|");
-        assertInvalid("a: b|;",                   CompilerError.Type.invalidToken,                     1,  6,  ";");
-        assertInvalid("a: b|? (c);",              CompilerError.Type.invalidToken,                     1,  6,  "?");
-        assertInvalid("a: b? (c?)??;",            CompilerError.Type.invalidToken,                     1, 12,  "?");
-        assertInvalid("a:\n[] b|c;",              CompilerError.Type.invalidToken,                     2,  2,  "]");
-        assertInvalid("a: [|] b|c;",              CompilerError.Type.invalidToken,                     1,  5,  "|");
-        assertInvalid("a: [*] b|c;",              CompilerError.Type.invalidCharacter,                 1,  5,  "*");
-        assertInvalid("a: [A];",                  CompilerError.Type.expectedSentenceContent,          1,  7,  ";");
-        assertInvalid("a: ();",                   CompilerError.Type.expectedSentenceConstructList,    1,  5,  ")");
-        assertInvalid("a:\n(());",                CompilerError.Type.expectedSentenceConstructList,    2,  3,  ")");
-        assertInvalid("a: [[]] a;",               CompilerError.Type.invalidToken,                     1,  5,  "[");
-        assertInvalid("a",                        CompilerError.Type.invalidToken,                    -1, -1,  "END OF FILE");
-        assertInvalid("a: .;",                    CompilerError.Type.capturingGroupInvalidLength,      1,  5,  ";");
-        assertInvalid("a: .. ..;",                CompilerError.Type.capturingGroupInvalidLength,      1,  7,  ".");
-        assertInvalid("a: (..);",                 CompilerError.Type.capturingGroupInsideParenthesis,  1,  5,  ".");
-        assertInvalid("a: ..?;",                  CompilerError.Type.optionalCapturingGroup,           1,  6,  "?");
-        assertInvalid("a: ..|b;",                 CompilerError.Type.optionalCapturingGroup,           1,  6,  "|");
-        assertInvalid("a: b|..;",                 CompilerError.Type.optionalCapturingGroup,           1,  6,  ".");
-        assertInvalid("a:\n[bB]c..;\n[bB]..d..;", CompilerError.Type.differentNrOfCapturingGroups,     3, -1,  "bB");
-        assertInvalid("a:\n\n..b..;\n\n\nc;",     CompilerError.Type.differentNrOfCapturingGroups,     6, -1,  "");
-        assertInvalid("\na:\n\n[bB]..c..d..;",    CompilerError.Type.tooManyCapturingGroups,           4, -1,  "bB");
-        assertInvalid("a:\n[bB]..;",              CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "bB");
-        assertInvalid("\n\na:\n\n..;",            CompilerError.Type.sentenceCanBeEmpty,               5, -1,  "");
-        assertInvalid("a: b?;",                   CompilerError.Type.sentenceCanBeEmpty,               1, -1,  "");
-        assertInvalid("a:\nb|c? ..((d|e)|f)?..;", CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "");
-        assertInvalid("Aa: a;\nAa: b;",           CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
-        assertInvalid("\nAa:a;\n\nB:b;\nAa:c;",   CompilerError.Type.duplicateSectionId,               5, -1,  "Aa");
+        assertInvalid("a bB",                         CompilerError.Type.invalidToken,                     1,  3,  "bB");
+        assertInvalid("a:1 b ..;;",                   CompilerError.Type.expectedSectionOrEndOfFile,       1, 10,  ";");
+        assertInvalid("a:1\n|b;",                     CompilerError.Type.expectedSentence,                 2,  2,  "|");
+        assertInvalid("a:1 .. b| |c;",                CompilerError.Type.invalidToken,                     1, 11,  "|");
+        assertInvalid("a:low b|;",                    CompilerError.Type.invalidToken,                     1,  9,  ";");
+        assertInvalid("a:1 b|? (c);",                 CompilerError.Type.invalidToken,                     1,  7,  "?");
+        assertInvalid("a:1 b? (c?)??;",               CompilerError.Type.invalidToken,                     1, 13,  "?");
+        assertInvalid("a:1\n[] b|c;",                 CompilerError.Type.invalidToken,                     2,  2,  "]");
+        assertInvalid("a:1 [|] b|c;",                 CompilerError.Type.invalidToken,                     1,  6,  "|");
+        assertInvalid("a:1 [*] b|c;",                 CompilerError.Type.invalidCharacter,                 1,  6,  "*");
+        assertInvalid("a:1 [A];",                     CompilerError.Type.expectedSentenceContent,          1,  8,  ";");
+        assertInvalid("a:medium ();",                 CompilerError.Type.expectedSentenceConstructList,    1, 11,  ")");
+        assertInvalid("a:1\n(());",                   CompilerError.Type.expectedSentenceConstructList,    2,  3,  ")");
+        assertInvalid("a:1 [[]] a;",                  CompilerError.Type.invalidToken,                     1,  6,  "[");
+        assertInvalid("a",                            CompilerError.Type.invalidToken,                    -1, -1,  "END OF FILE");
+        assertInvalid("a:",                           CompilerError.Type.invalidToken,                    -1, -1,  "END OF FILE");
+        assertInvalid("a:hig",                        CompilerError.Type.invalidSpecificity,              -1, -1,  "hig");
+        assertInvalid("a:high .;",                    CompilerError.Type.capturingGroupInvalidLength,      1,  9,  ";");
+        assertInvalid("a:1 .. ..;",                   CompilerError.Type.capturingGroupInvalidLength,      1,  8,  ".");
+        assertInvalid("a:1 (..);",                    CompilerError.Type.capturingGroupInsideParenthesis,  1,  6,  ".");
+        assertInvalid("a:1 ..?;",                     CompilerError.Type.optionalCapturingGroup,           1,  7,  "?");
+        assertInvalid("a:1 ..|b;",                    CompilerError.Type.optionalCapturingGroup,           1,  7,  "|");
+        assertInvalid("a:1 b|..;",                    CompilerError.Type.optionalCapturingGroup,           1,  7,  ".");
+        assertInvalid("a:1\n[bB]c..;\n[bB]..d..;",    CompilerError.Type.differentNrOfCapturingGroups,     3, -1,  "bB");
+        assertInvalid("a:1\n\n..b..;\n\n\nc;",        CompilerError.Type.differentNrOfCapturingGroups,     6, -1,  "");
+        assertInvalid("\na:1\n\n[bB]..c..d..;",       CompilerError.Type.tooManyCapturingGroups,           4, -1,  "bB");
+        assertInvalid("a:1\n[bB]..;",                 CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "bB");
+        assertInvalid("\n\na:1\n\n..;",               CompilerError.Type.sentenceCanBeEmpty,               5, -1,  "");
+        assertInvalid("a:1 b?;",                      CompilerError.Type.sentenceCanBeEmpty,               1, -1,  "");
+        assertInvalid("a:1\nb|c? ..((d|e)|f)?..;",    CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "");
+        assertInvalid("Aa:1 a;\nAa:1 b;",             CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
+        assertInvalid("\nAa:1 a;\n\nB:1 b;\nAa:1 c;", CompilerError.Type.duplicateSectionId,               5, -1,  "Aa");
     }
 }
