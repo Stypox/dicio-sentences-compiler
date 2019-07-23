@@ -43,7 +43,7 @@ public class Tokenizer {
     }
     private boolean isGrammar(String ch) {
         switch (ch) {
-            case ":": case ";": case "|": case "?": case ".": case "<": case ">": case "(": case ")": case "[": case "]":
+            case ":": case ";": case "|": case "?": case ".": case "(": case ")": case "[": case "]":
                 return true;
             default:
                 return false;
