@@ -87,6 +87,6 @@ public class Section implements CompilableToJava {
         for (Sentence sentence : sentences) {
             sentence.compileToJava(output, "");
         }
-        output.write("}\n);");
+        output.write("}\n);\n");
     }
 }
