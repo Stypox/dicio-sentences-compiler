@@ -76,6 +76,11 @@ public class Parser {
         if (ts.get(0).isType(Token.Type.lettersPlusOther)) {
             if (ts.get(1).equals(Token.Type.grammar, ":")) {
                 String sectionId = ts.get(0).getValue();
+                if (Character.isDigit(sectionId.codePointAt(0))) {
+                    throw new CompilerError(CompilerError.Type.invalidSectionId, ts.get(0),
+                            "The first character cannot be a digit: " + Character.toChars(sectionId.codePointAt(0))[0]);
+                }
+
                 for (int i = 0; i < sectionId.codePointCount(0, sectionId.length()); ++i) {
                     final int val = sectionId.codePointAt(i),
                             minNum = "0".codePointAt(0), maxNum = "9".codePointAt(0),

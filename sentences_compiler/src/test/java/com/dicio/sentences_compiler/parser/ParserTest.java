@@ -68,7 +68,7 @@ public class ParserTest {
                 "A:high\n" +
                 "a|b? G;\n" +
                 "[B_](c|d)|e FF g?;\n" +
-                "5_C : 2\n" +
+                "C_5 : 2\n" +
                 "[D] (h|i) (j) (k)?    ;\n" +
                 "l ((M)|n) (o((p((Q(((r)))|(S))))t));\n" +
                 "[E7] u ..v .. w;\n" +
@@ -89,7 +89,7 @@ public class ParserTest {
                 "c FF g","d FF g","e FF g","c FF","d FF","e FF",
         });
 
-        assertEquals("5_C", sections.get(1).getSectionId());
+        assertEquals("C_5", sections.get(1).getSectionId());
         assertEquals(Section.Specificity.medium, sections.get(1).getSpecificity());
         assertEquals(4, sections.get(1).getLine());
         assertEquals(3, sections.get(1).getSentences().size());
