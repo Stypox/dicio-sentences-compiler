@@ -2,6 +2,9 @@ package com.dicio.sentences_compiler.parser.construct;
 
 import com.dicio.sentences_compiler.util.CompilerError;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -56,5 +59,29 @@ public class Section {
     }
     public ArrayList<Sentence> getSentences() {
         return sentences;
+    }
+
+    public void compileToJava(OutputStreamWriter output) throws IOException {
+        output.write("final StandardRecognitionUnit section_");
+        output.write(sectionId);
+        output.write(" = new StandardRecognitionUnit(\nInputRecognitionUnit.Specificity.");
+
+        switch (specificity) {
+            case low:
+                output.write("low");
+                break;
+            case medium:
+                output.write("medium");
+                break;
+            case high:
+                output.write("high");
+                break;
+        }
+
+        output.write(",\nnew Sentence[]{\n");
+        for (Sentence sentence : sentences) {
+            sentence.compileToJava(output);
+        }
+        output.write("}\n);");
     }
 }
