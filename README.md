@@ -21,4 +21,6 @@ GPS_navigation: 2
 [question]  how do|can i get to ..;
 [statement] i want to go to ..;
 [statement] .. is the place i want to go to;
+[vehicle]   take|bring me to .. by .. please?;
+[vehicle]   i want to go to .. by ..;
 ```
