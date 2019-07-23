@@ -7,6 +7,7 @@ public class CompilerError extends Exception {
         invalidCharacter,
         expectedSectionOrEndOfFile,
         invalidToken,
+        invalidSectionId,
         invalidSpecificity,
         expectedSentence,
         expectedSentenceContent,
@@ -27,6 +28,8 @@ public class CompilerError extends Exception {
                     return "Expected section or end of file";
                 case invalidToken:
                     return "Invalid token";
+                case invalidSectionId:
+                    return "The section id has to be a valid java variable name";
                 case invalidSpecificity:
                     return "Invalid specificity";
                 case expectedSentence:

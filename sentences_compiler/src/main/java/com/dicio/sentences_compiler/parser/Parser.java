@@ -77,6 +77,20 @@ public class Parser {
         if (ts.get(0).isType(Token.Type.lettersPlusOther)) {
             if (ts.get(1).equals(Token.Type.grammar, ":")) {
                 String sectionId = ts.get(0).getValue();
+                for (int i = 0; i < sectionId.codePointCount(0, sectionId.length()); ++i) {
+                    final int val = sectionId.codePointAt(i),
+                            minNum = "0".codePointAt(0), maxNum = "9".codePointAt(0),
+                            minLow = "a".codePointAt(0), maxLow = "z".codePointAt(0),
+                            minUp = "A".codePointAt(0), maxUp = "Z".codePointAt(0);
+                    if (!((minNum <= val && val <= maxNum) ||
+                            (minLow <= val && val <= maxLow) ||
+                            (minUp <= val && val <= maxUp) ||
+                            (val == "_".codePointAt(0)))) {
+                        throw new CompilerError(CompilerError.Type.invalidSectionId, ts.get(0),
+                                "Not in the english alphabet, not a number and not \"_\": " + Character.toChars(val)[0]);
+                    }
+                }
+
                 ts.movePositionForwardBy(2);
                 return sectionId;
             } else {
