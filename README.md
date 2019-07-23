@@ -15,7 +15,7 @@ mood: high
 how (are you doing?)|(is it going);
 [has_place] how is it going over there;
 
-GPS-navigation: 2
+GPS_navigation: 2
 [question]  take|bring me to .. please?;
 [question]  give me directions to .. please?;
 [question]  how do|can i get to ..;
