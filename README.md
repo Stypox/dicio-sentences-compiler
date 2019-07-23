@@ -24,3 +24,36 @@ GPS_navigation: 2
 [vehicle]   take|bring me to .. by .. please?;
 [vehicle]   i want to go to .. by ..;
 ```
+the above Dicio-sentences-language code compiles to the following Java code (note that indentation was added manually to improve readability):
+```java
+final StandardRecognitionUnit section_mood = new StandardRecognitionUnit(
+    InputRecognitionUnit.Specificity.high,
+    new Sentence[]{
+        new Sentence("", new String[]{"how","are","you","doing",}),
+        new Sentence("", new String[]{"how","are","you",}),
+        new Sentence("", new String[]{"how","is","it","going",}),
+        new Sentence("has_place", new String[]{"how","is","it","going","over","there",}),
+    }
+);
+
+final StandardRecognitionUnit section_GPS_navigation = new StandardRecognitionUnit(
+    InputRecognitionUnit.Specificity.medium,
+    new Sentence[]{
+        new Sentence("question", new String[]{"take","me","to",}, new String[]{"please",}),
+        new Sentence("question", new String[]{"bring","me","to",}, new String[]{"please",}),
+        new Sentence("question", new String[]{"take","me","to",}, new String[]{}),
+        new Sentence("question", new String[]{"bring","me","to",}, new String[]{}),
+        new Sentence("question", new String[]{"give","me","directions","to",}, new String[]{"please",}),
+        new Sentence("question", new String[]{"give","me","directions","to",}, new String[]{}),
+        new Sentence("question", new String[]{"how","do","i","get","to",}, new String[]{}),
+        new Sentence("question", new String[]{"how","can","i","get","to",}, new String[]{}),
+        new Sentence("statement", new String[]{"i","want","to","go","to",}, new String[]{}),
+        new Sentence("statement", new String[]{}, new String[]{"is","the","place","i","want","to","go","to",}),
+        new Sentence("vehicle", new String[]{"take","me","to",}, new String[]{"by",}, new String[]{"please",}),
+        new Sentence("vehicle", new String[]{"bring","me","to",}, new String[]{"by",}, new String[]{"please",}),
+        new Sentence("vehicle", new String[]{"take","me","to",}, new String[]{"by",}, new String[]{}),
+        new Sentence("vehicle", new String[]{"bring","me","to",}, new String[]{"by",}, new String[]{}),
+        new Sentence("vehicle", new String[]{"i","want","to","go","to",}, new String[]{"by",}, new String[]{}),
+    }
+);
+```
