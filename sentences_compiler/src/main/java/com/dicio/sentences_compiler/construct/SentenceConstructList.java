@@ -1,16 +1,17 @@
-package com.dicio.sentences_compiler.parser.construct;
+package com.dicio.sentences_compiler.construct;
 
+import com.dicio.sentences_compiler.parser.UnfoldableConstruct;
 import com.dicio.sentences_compiler.util.UnfoldingUtils;
 
 import java.util.ArrayList;
 
-public final class SentenceConstructList implements BaseSentenceConstruct {
-    private ArrayList<BaseSentenceConstruct> constructs;
+public final class SentenceConstructList implements UnfoldableConstruct {
+    private ArrayList<UnfoldableConstruct> constructs;
 
     public SentenceConstructList() {
         constructs = new ArrayList<>();
     }
-    public void addConstruct(BaseSentenceConstruct construct) {
+    public void addConstruct(UnfoldableConstruct construct) {
         constructs.add(construct);
     }
 
@@ -20,7 +21,7 @@ public final class SentenceConstructList implements BaseSentenceConstruct {
         ArrayList<ArrayList<String>> combinations = new ArrayList<>();
         combinations.add(new ArrayList<String>());
 
-        for (BaseSentenceConstruct construct : constructs) {
+        for (UnfoldableConstruct construct : constructs) {
             ArrayList<ArrayList<String>> currComb = construct.unfold();
             int initialSize = combinations.size();
             combinations = UnfoldingUtils.multiplyArray(combinations, currComb.size());
@@ -36,13 +37,13 @@ public final class SentenceConstructList implements BaseSentenceConstruct {
 
     @Override
     public boolean isOptional() {
-        for (BaseSentenceConstruct construct : constructs) {
+        for (UnfoldableConstruct construct : constructs) {
             if (!construct.isOptional()) return false;
         }
         return true;
     }
 
-    public ArrayList<BaseSentenceConstruct> getConstructs() {
+    public ArrayList<UnfoldableConstruct> getConstructs() {
         return constructs;
     }
 }

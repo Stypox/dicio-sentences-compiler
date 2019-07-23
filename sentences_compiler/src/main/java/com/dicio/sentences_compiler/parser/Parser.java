@@ -1,17 +1,16 @@
 package com.dicio.sentences_compiler.parser;
 
 import com.dicio.sentences_compiler.lexer.Token;
-import com.dicio.sentences_compiler.parser.construct.BaseSentenceConstruct;
-import com.dicio.sentences_compiler.parser.construct.CapturingGroup;
-import com.dicio.sentences_compiler.parser.construct.ConstructOptional;
-import com.dicio.sentences_compiler.parser.construct.OrList;
-import com.dicio.sentences_compiler.parser.construct.Sentence;
-import com.dicio.sentences_compiler.parser.construct.SentenceConstructList;
-import com.dicio.sentences_compiler.parser.construct.Word;
+import com.dicio.sentences_compiler.construct.CapturingGroup;
+import com.dicio.sentences_compiler.construct.ConstructOptional;
+import com.dicio.sentences_compiler.construct.OrList;
+import com.dicio.sentences_compiler.construct.Sentence;
+import com.dicio.sentences_compiler.construct.SentenceConstructList;
+import com.dicio.sentences_compiler.construct.Word;
 import com.dicio.sentences_compiler.util.CompilerError;
 import com.dicio.sentences_compiler.lexer.TokenStream;
 import com.dicio.sentences_compiler.lexer.Tokenizer;
-import com.dicio.sentences_compiler.parser.construct.Section;
+import com.dicio.sentences_compiler.construct.Section;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -188,7 +187,7 @@ public class Parser {
 
         boolean foundSentenceConstruct = false;
         while (true) {
-            BaseSentenceConstruct sentenceConstruct = null;
+            UnfoldableConstruct sentenceConstruct = null;
             OrList orList = readOrList();
             if (orList == null) {
                 if (capturingGroupsAllowed) {
@@ -218,7 +217,7 @@ public class Parser {
 
         boolean foundSentenceConstruct = false;
         while (true) {
-            BaseSentenceConstruct sentenceConstruct;
+            UnfoldableConstruct sentenceConstruct;
             sentenceConstruct = readWord();
             if (sentenceConstruct == null) {
                 sentenceConstruct = readSentenceConstructListInsideParenthesis();

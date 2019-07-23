@@ -1,7 +1,7 @@
 package com.dicio.sentences_compiler.parser;
 
-import com.dicio.sentences_compiler.parser.construct.Section;
-import com.dicio.sentences_compiler.parser.construct.Sentence;
+import com.dicio.sentences_compiler.construct.Section;
+import com.dicio.sentences_compiler.construct.Sentence;
 import com.dicio.sentences_compiler.util.CompilerError;
 
 import org.junit.Test;

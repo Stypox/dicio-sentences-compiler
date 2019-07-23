@@ -1,14 +1,14 @@
-package com.dicio.sentences_compiler.parser.construct;
+package com.dicio.sentences_compiler.construct;
 
+import com.dicio.sentences_compiler.compiler.CompilableToJava;
 import com.dicio.sentences_compiler.util.CompilerError;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Section {
+public class Section implements CompilableToJava {
     public enum Specificity {
         high,
         medium,
@@ -61,10 +61,15 @@ public class Section {
         return sentences;
     }
 
-    public void compileToJava(OutputStreamWriter output) throws IOException {
-        output.write("final StandardRecognitionUnit section_");
-        output.write(sectionId);
-        output.write(" = new StandardRecognitionUnit(\nInputRecognitionUnit.Specificity.");
+
+    @Override
+    public void compileToJava(OutputStreamWriter output, String variableName) throws IOException {
+        if (!variableName.isEmpty()) {
+            output.write("final StandardRecognitionUnit ");
+            output.write(variableName);
+            output.write(" = ");
+        }
+        output.write("new StandardRecognitionUnit(\nInputRecognitionUnit.Specificity.");
 
         switch (specificity) {
             case low:
@@ -80,7 +85,7 @@ public class Section {
 
         output.write(",\nnew Sentence[]{\n");
         for (Sentence sentence : sentences) {
-            sentence.compileToJava(output);
+            sentence.compileToJava(output, "");
         }
         output.write("}\n);");
     }

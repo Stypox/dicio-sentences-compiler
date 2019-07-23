@@ -1,12 +1,14 @@
-package com.dicio.sentences_compiler.parser.construct;
+package com.dicio.sentences_compiler.construct;
 
+import com.dicio.sentences_compiler.compiler.CompilableToJava;
+import com.dicio.sentences_compiler.parser.UnfoldableConstruct;
 import com.dicio.sentences_compiler.util.CompilerError;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-public class Sentence {
+public class Sentence implements CompilableToJava {
     private String sentenceId;
     private int line;
     private SentenceConstructList sentenceConstructs;
@@ -21,7 +23,7 @@ public class Sentence {
 
     public int numberOfCapturingGroups() {
         int count = 0;
-        for (BaseSentenceConstruct sentenceConstruct : sentenceConstructs.getConstructs()) {
+        for (UnfoldableConstruct sentenceConstruct : sentenceConstructs.getConstructs()) {
             if (sentenceConstruct instanceof CapturingGroup) {
                 ++count;
             }
@@ -50,9 +52,15 @@ public class Sentence {
     }
 
 
-
-    public void compileToJava(OutputStreamWriter output) throws IOException {
+    @Override
+    public void compileToJava(OutputStreamWriter output, String variableName) throws IOException {
         for (ArrayList<String> unfoldedSentence : sentenceConstructs.unfold()) {
+            if (!variableName.isEmpty()) {
+                output.write("final Sentence ");
+                output.write(variableName);
+                output.write(" = ");
+            }
+
             output.write("new Sentence(\"");
             output.write(sentenceId);
             output.write("\", new String[]{");
