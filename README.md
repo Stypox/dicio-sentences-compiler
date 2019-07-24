@@ -9,7 +9,17 @@ Every file contains many sections, starting with section information and followe
 - parenthesized construct (e.g. `(hello)`). This lets you pack constructs toghether and, for example, "or" them all. Just as math parenthesis do. E.g. `how (are you doing?)|(is it going)` generates `how are you`, `how are you doing` and `how is it going`.
 - capturing group (`..`). This tells the interpreter to match a variable-length list of any word to that part of the sentence. They cannot be or-red or made optional since it would hurt readability. The maximum number of capturing groups supported by the interpreter is 2. E.g. `how are you ..` matches `how are you Tom`.
 
+## Build and run
+To build the project open it in Android Studio (IntelliJ Idea probably works, too) and click on the build button. The jar file will be generated at `ROOT_DIR/sentences_compiler/build/libs/sentences_compiler.jar`, where ROOT_DIR is the root directory of the repository.  
+Once the jar file has been built you can use the following commands to run it and get help (at least on Linux):
+```sh
+cd ROOT_DIR/sentences_compiler/build/libs/             # change the working directory to the build directory
+java -jar sentences_compiler.jar --help                # get an help screen that explains the usage
+```
+
+
 ## Example
+The file below is [`example.dslf`](example.dslf). "dslf" means "Dicio-Sentences-Language File".
 ```
 mood: high
 how (are you doing?)|(is it going);
@@ -24,7 +34,11 @@ GPS_navigation: 2
 [vehicle]   take|bring me to .. by .. please?;
 [vehicle]   i want to go to .. by ..;
 ```
-the above Dicio-sentences-language code compiles to the following Java code (note that indentation was added manually to improve readability):
+The above Dicio-sentences-language file is compiled to Java code by running the following command from the root directory of the repository. Note how i/o redirection is used to set input and output files.
+```sh
+java -jar ./sentences_compiler/build/libs/sentences_compiler.jar "UTF-8" java "section_" < ./example.dslf > ./compiled_example.java
+```
+After that command is run, the Java code shown below should be inside a file called `compiled_example.java` in the root directory of the repository. Note that indentation was manually added to improve readability.
 ```java
 final StandardRecognitionUnit section_mood = new StandardRecognitionUnit(
     InputRecognitionUnit.Specificity.high,
