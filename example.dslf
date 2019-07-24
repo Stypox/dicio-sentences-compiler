@@ -1,4 +1,4 @@
-mood: high
+mood: high       # comments are supported :-D
 how (are you doing?)|(is it going);
 [has_place] how is it going over there;
 

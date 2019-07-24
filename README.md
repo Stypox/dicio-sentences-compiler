@@ -21,7 +21,7 @@ java -jar sentences_compiler.jar --help                # get an help screen that
 ## Example
 The file below is [`example.dslf`](example.dslf). "dslf" means "Dicio-Sentences-Language File".
 ```
-mood: high
+mood: high       # comments are supported :-D
 how (are you doing?)|(is it going);
 [has_place] how is it going over there;
 
