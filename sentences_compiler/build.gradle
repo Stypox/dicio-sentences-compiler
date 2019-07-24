@@ -4,6 +4,7 @@ dependencies {
     implementation fileTree(dir: 'src/main', include: ['*.jar'])
     testImplementation fileTree(dir: 'src/test', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
+    implementation 'junit:junit:4.12'
 }
 
 sourceCompatibility = "7"
