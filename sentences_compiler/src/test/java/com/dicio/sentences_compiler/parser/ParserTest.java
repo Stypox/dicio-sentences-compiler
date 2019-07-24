@@ -17,8 +17,9 @@ import static org.junit.Assert.*;
 
 public class ParserTest {
     private static Parser fromString(String s) throws IOException, CompilerError {
-        InputStream stream = new ByteArrayInputStream(s.getBytes(Charset.forName("unicode")));
-        return new Parser(stream);
+        Charset charset = Charset.forName("unicode");
+        InputStream stream = new ByteArrayInputStream(s.getBytes(charset));
+        return new Parser(stream, charset);
     }
     private static ArrayList<Section> getSections(String s) throws IOException, CompilerError {
         return fromString(s).parse();

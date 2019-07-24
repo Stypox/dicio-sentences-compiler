@@ -8,19 +8,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.List;
 
 public class CompilerToJava {
     private InputStream inputStream;
+    private Charset charset;
     private OutputStreamWriter output;
 
-    public CompilerToJava(InputStream inputStream, OutputStream outputStream) {
+    public CompilerToJava(InputStream inputStream, OutputStream outputStream, Charset charset) {
         this.inputStream = inputStream;
-        this.output = new OutputStreamWriter(outputStream);
+        this.charset = charset;
+        this.output = new OutputStreamWriter(outputStream, charset);
     }
 
     private List<Section> getSections() throws IOException, CompilerError {
-        Parser parser = new Parser(inputStream);
+        Parser parser = new Parser(inputStream, charset);
         return parser.parse();
     }
 
@@ -32,7 +35,7 @@ public class CompilerToJava {
         output.flush();
     }
 
-    public void compileToFile(String packageName, String className, String variablePrefix) throws CompilerError, IOException {
+    public void compileToFile(String variablePrefix, String packageName, String className) throws CompilerError, IOException {
         output.write("package ");
         output.write(packageName);
         output.write(";\n" +

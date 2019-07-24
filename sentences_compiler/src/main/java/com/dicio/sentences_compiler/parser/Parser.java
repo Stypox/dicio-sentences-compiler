@@ -14,13 +14,14 @@ import com.dicio.sentences_compiler.construct.Section;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 public class Parser {
     private TokenStream ts;
 
-    public Parser(InputStream inputStream) throws IOException, CompilerError {
-        Tokenizer tokenizer = new Tokenizer(inputStream);
+    public Parser(InputStream inputStream, Charset charset) throws IOException, CompilerError {
+        Tokenizer tokenizer = new Tokenizer(inputStream, charset);
         this.ts = tokenizer.tokenize();
     }
 

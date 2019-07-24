@@ -14,8 +14,9 @@ import static org.junit.Assert.*;
 public class TokenizerTest {
 
     private static Tokenizer fromString(String s) {
-        InputStream stream = new ByteArrayInputStream(s.getBytes(Charset.forName("unicode")));
-        return new Tokenizer(stream);
+        Charset charset = Charset.forName("unicode");
+        InputStream stream = new ByteArrayInputStream(s.getBytes(charset));
+        return new Tokenizer(stream, charset);
     }
     private static TokenStream getTokens(String s) throws IOException, CompilerError {
         return fromString(s).tokenize();

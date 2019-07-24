@@ -11,8 +11,8 @@ public class Tokenizer {
     private InputStreamReader input;
     private int line = 1, column = 0;
 
-    public Tokenizer(InputStream inputStream) {
-        this.input = new InputStreamReader(inputStream, Charset.forName("unicode"));
+    public Tokenizer(InputStream inputStream, Charset charset) {
+        this.input = new InputStreamReader(inputStream, charset);
     }
 
     private String getCh() throws IOException {

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import jdk.nashorn.internal.runtime.regexp.RegExpMatcher;
 
@@ -39,7 +40,7 @@ public class CompilerToJavaTest {
                 "[vehicle]   i want to go to .. by ..;").getBytes("unicode"));
         OutputStream outputStream = new ByteArrayOutputStream();
 
-        CompilerToJava compilerToJava = new CompilerToJava(inputStream, outputStream);
+        CompilerToJava compilerToJava = new CompilerToJava(inputStream, outputStream, Charset.forName("unicode"));
         compilerToJava.compileToVariables("section_");
         outputStream.close();
 
