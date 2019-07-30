@@ -4,57 +4,30 @@ import com.dicio.sentences_compiler.lexer.Token;
 
 public class CompilerError extends Exception {
     public enum Type {
-        invalidCharacter,
-        expectedSectionOrEndOfFile,
-        invalidToken,
-        invalidSectionId,
-        invalidSpecificity,
-        expectedSentence,
-        expectedSentenceContent,
-        expectedSentenceConstructList,
-        capturingGroupInvalidLength,
-        capturingGroupInsideParenthesis,
-        optionalCapturingGroup,
-        differentNrOfCapturingGroups,
-        tooManyCapturingGroups,
-        sentenceCanBeEmpty,
-        duplicateSectionId;
+        invalidCharacter("Invalid character error"),
+        expectedSectionOrEndOfFile("Expected section or end of file"),
+        invalidToken("Invalid token"),
+        invalidSectionId("The section id has to be a valid java variable name"),
+        invalidSpecificity("Invalid specificity"),
+        expectedSentence("Expected sentence after specificity"),
+        expectedSentenceContent("Expected sentence content after sentence id"),
+        expectedSentenceConstructList("Expected list of sentence constructs"),
+        capturingGroupInvalidLength("Capturing groups are made of exactly two points \".\""),
+        capturingGroupInsideParenthesis("Capturing groups cannot be nested inside parenthesis"),
+        optionalCapturingGroup("Capturing groups cannot be optional"),
+        differentNrOfCapturingGroups("Sentences with the same sentence id (possibly empty) must have the same number of capturing groups"),
+        tooManyCapturingGroups("Too many capturing groups"),
+        sentenceCanBeEmpty("Sentence can be unfolded to an empty sentence (possibly with capturing groups)"),
+        duplicateSectionId("Duplicate section id");
 
+        String errorString;
+        Type(String errorString) {
+            this.errorString = errorString;
+        }
+
+        @Override
         public String toString() {
-            switch (this) {
-                case invalidCharacter:
-                    return "Invalid character error";
-                case expectedSectionOrEndOfFile:
-                    return "Expected section or end of file";
-                case invalidToken:
-                    return "Invalid token";
-                case invalidSectionId:
-                    return "The section id has to be a valid java variable name";
-                case invalidSpecificity:
-                    return "Invalid specificity";
-                case expectedSentence:
-                    return "Expected sentence after specificity";
-                case expectedSentenceContent:
-                    return "Expected sentence content after sentence id";
-                case expectedSentenceConstructList:
-                    return "Expected list of sentence constructs";
-                case capturingGroupInvalidLength:
-                    return "Capturing groups are made of exactly two points \".\"";
-                case capturingGroupInsideParenthesis:
-                    return "Capturing groups cannot be nested inside parenthesis";
-                case optionalCapturingGroup:
-                    return "Capturing groups cannot be optional";
-                case differentNrOfCapturingGroups:
-                    return "Sentences with the same sentence id (possibly empty) must have the same number of capturing groups";
-                case tooManyCapturingGroups:
-                    return "Too many capturing groups";
-                case sentenceCanBeEmpty:
-                    return "Sentence can be unfolded to an empty sentence (possibly with capturing groups)";
-                case duplicateSectionId:
-                    return "Duplicate section id";
-                default:
-                    return "Unknown error";
-            }
+            return errorString;
         }
     }
 
