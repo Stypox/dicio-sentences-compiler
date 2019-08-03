@@ -39,8 +39,9 @@ public class CompilerToJava {
         output.write("package ");
         output.write(packageName);
         output.write(";\n" +
-                "import com.dicio.input_recognition.standard.Sentence;\n" +
-                "import com.dicio.input_recognition.standard.StandardRecognitionUnit;\n" +
+                "import com.dicio.component.input.standard.Sentence;\n" +
+                "import com.dicio.component.input.standard.StandardRecognizer;\n" +
+                "import com.dicio.component.input.InputRecognizer;\n" +
                 "public class ");
         output.write(className);
 

@@ -96,7 +96,7 @@ public class SentencesCompiler {
                 "\n" +
                 "CHARSET encoding for stdin and stdout. Must be a valid java charset name (e.g. default, UTF-8, UTF-16)\n" +
                 "LANGUAGE can be:\n" +
-                "    java    -> Java language, StandardRecognitionUnit\n" +
+                "    java    -> Java language, StandardRecognizer\n" +
                 "\n" +
                 "If --help is provided as the first argument, prints this help screen and exits\n" +
                 "For language specific help use: SentencesCompiler CHARSET LANGUAGE --help\n" +
@@ -107,11 +107,11 @@ public class SentencesCompiler {
     }
 
     private static void printJavaHelp(PrintStream output) {
-        output.print("Compiler to Java: compiles every section to a com.dicio.input_recognition.standard.StandardRecognitionUnit" +
-                " (from library dicio-input-recognition)\n" +
+        output.print("Compiler to Java: compiles every section to a com.dicio.component.input.standard.StandardRecognizer" +
+                " (from library dicio-assistance-component)\n" +
                 "Usage: sentences_compiler.jar CHARSET java VARIABLE_PREFIX [PACKAGE_NAME CLASS_NAME]\n" +
                 "\n" +
-                "VARIABLE_PREFIX is the prefix for the name of every StandardRecognitionUnit," +
+                "VARIABLE_PREFIX is the prefix for the name of every StandardRecognizer," +
                 " that will be followed by the name of the corresponding section\n" +
                 "PACKAGE_NAME is the name of the Java package\n" +
                 "CLASS_NAME is the name of the Java class\n" +

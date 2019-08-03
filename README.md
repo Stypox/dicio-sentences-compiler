@@ -36,38 +36,43 @@ GPS_navigation: 2
 ```
 The above Dicio-sentences-language file is compiled to Java code by running the following command from the root directory of the repository. Note how i/o redirection is used to set input and output files.
 ```sh
-java -jar ./sentences_compiler/build/libs/sentences_compiler.jar "UTF-8" java "section_" < ./example.dslf > ./compiled_example.java
+java -jar ./sentences_compiler/build/libs/sentences_compiler.jar "UTF-8" java "section_" "com.pkg.name" "ClassName" < ./example.dslf > ./ClassName.java
 ```
-After that command is run, the Java code shown below should be inside a file called `compiled_example.java` in the root directory of the repository. Note that indentation was manually added to improve readability.
+After that command is run, the Java code shown below should be inside a file called `ClassName.java` in the root directory of the repository. Indentation was manually added to improve readability.
 ```java
-final StandardRecognitionUnit section_mood = new StandardRecognitionUnit(
-    InputRecognitionUnit.Specificity.high,
-    new Sentence[]{
-        new Sentence("", new String[]{"how","are","you","doing",}),
-        new Sentence("", new String[]{"how","are","you",}),
-        new Sentence("", new String[]{"how","is","it","going",}),
-        new Sentence("has_place", new String[]{"how","is","it","going","over","there",}),
-    }
-);
-
-final StandardRecognitionUnit section_GPS_navigation = new StandardRecognitionUnit(
-    InputRecognitionUnit.Specificity.medium,
-    new Sentence[]{
-        new Sentence("question", new String[]{"take","me","to",}, new String[]{"please",}),
-        new Sentence("question", new String[]{"bring","me","to",}, new String[]{"please",}),
-        new Sentence("question", new String[]{"take","me","to",}, new String[]{}),
-        new Sentence("question", new String[]{"bring","me","to",}, new String[]{}),
-        new Sentence("question", new String[]{"give","me","directions","to",}, new String[]{"please",}),
-        new Sentence("question", new String[]{"give","me","directions","to",}, new String[]{}),
-        new Sentence("question", new String[]{"how","do","i","get","to",}, new String[]{}),
-        new Sentence("question", new String[]{"how","can","i","get","to",}, new String[]{}),
-        new Sentence("statement", new String[]{"i","want","to","go","to",}, new String[]{}),
-        new Sentence("statement", new String[]{}, new String[]{"is","the","place","i","want","to","go","to",}),
-        new Sentence("vehicle", new String[]{"take","me","to",}, new String[]{"by",}, new String[]{"please",}),
-        new Sentence("vehicle", new String[]{"bring","me","to",}, new String[]{"by",}, new String[]{"please",}),
-        new Sentence("vehicle", new String[]{"take","me","to",}, new String[]{"by",}, new String[]{}),
-        new Sentence("vehicle", new String[]{"bring","me","to",}, new String[]{"by",}, new String[]{}),
-        new Sentence("vehicle", new String[]{"i","want","to","go","to",}, new String[]{"by",}, new String[]{}),
-    }
-);
+package com.pkg.name;
+import com.dicio.component.input.standard.Sentence;
+import com.dicio.component.input.standard.StandardRecognizer;
+import com.dicio.component.input.InputRecognizer;
+public class ClassName {
+    final StandardRecognizer section_mood = new StandardRecognizer(
+        InputRecognizer.Specificity.high,
+        new Sentence[]{
+            new Sentence("", new String[]{"how","are","you","doing",}),
+            new Sentence("", new String[]{"how","are","you",}),
+            new Sentence("", new String[]{"how","is","it","going",}),
+            new Sentence("has_place", new String[]{"how","is","it","going","over","there",}),
+        }
+    );
+    final StandardRecognizer section_GPS_navigation = new StandardRecognizer(
+        InputRecognizer.Specificity.medium,
+        new Sentence[]{
+            new Sentence("question", new String[]{"take","me","to",}, new String[]{"please",}),
+            new Sentence("question", new String[]{"bring","me","to",}, new String[]{"please",}),
+            new Sentence("question", new String[]{"take","me","to",}, new String[]{}),
+            new Sentence("question", new String[]{"bring","me","to",}, new String[]{}),
+            new Sentence("question", new String[]{"give","me","directions","to",}, new String[]{"please",}),
+            new Sentence("question", new String[]{"give","me","directions","to",}, new String[]{}),
+            new Sentence("question", new String[]{"how","do","i","get","to",}, new String[]{}),
+            new Sentence("question", new String[]{"how","can","i","get","to",}, new String[]{}),
+            new Sentence("statement", new String[]{"i","want","to","go","to",}, new String[]{}),
+            new Sentence("statement", new String[]{}, new String[]{"is","the","place","i","want","to","go","to",}),
+            new Sentence("vehicle", new String[]{"take","me","to",}, new String[]{"by",}, new String[]{"please",}),
+            new Sentence("vehicle", new String[]{"bring","me","to",}, new String[]{"by",}, new String[]{"please",}),
+            new Sentence("vehicle", new String[]{"take","me","to",}, new String[]{"by",}, new String[]{}),
+            new Sentence("vehicle", new String[]{"bring","me","to",}, new String[]{"by",}, new String[]{}),
+            new Sentence("vehicle", new String[]{"i","want","to","go","to",}, new String[]{"by",}, new String[]{}),
+        }
+    );
+}
 ```
