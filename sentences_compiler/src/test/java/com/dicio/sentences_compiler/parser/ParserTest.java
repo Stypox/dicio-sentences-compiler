@@ -84,10 +84,10 @@ public class ParserTest {
         assertEquals(1, sections.get(0).getLine());
         assertEquals(2, sections.get(0).getSentences().size());
         assertSentenceUnfoldsTo(sections.get(0).getSentences().get(0), "", 2, 0, new String[]{
-                "a G","b G","G",
+                "a g","b g","g",
         });
         assertSentenceUnfoldsTo(sections.get(0).getSentences().get(1), "B_", 3, 0, new String[]{
-                "c FF g","d FF g","e FF g","c FF","d FF","e FF",
+                "c ff g","d ff g","e ff g","c ff","d ff","e ff",
         });
 
         assertEquals("C_5", sections.get(1).getSectionId());
@@ -98,7 +98,7 @@ public class ParserTest {
                 "h j k","i j k","h j","i j",
         });
         assertSentenceUnfoldsTo(sections.get(1).getSentences().get(1), "", 6, 0, new String[]{
-                "l M o p Q r t","l n o p Q r t","l M o p Q S t","l n o p Q S t",
+                "l m o p q r t","l n o p q r t","l m o p q s t","l n o p q s t",
         });
         assertSentenceUnfoldsTo(sections.get(1).getSentences().get(2), "E7", 7, 2, new String[]{
                 "u . v . w",
@@ -150,5 +150,15 @@ public class ParserTest {
         assertInvalid("a:1\nb|c? ..((d|e)|f)?..;",    CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "");
         assertInvalid("Aa:1 a;\nAa:1 b;",             CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
         assertInvalid("\nAa:1 a;\n\nB:1 b;\nAa:1 c;", CompilerError.Type.duplicateSectionId,               5, -1,  "Aa");
+    }
+
+
+    @Test
+    public void testNoCaseSensitivity() throws IOException, CompilerError {
+        ArrayList<Section> sections = getSections("A:3\nHello HOW are yOu;\n");
+
+        assertSentenceUnfoldsTo(sections.get(0).getSentences().get(0), "", 2, 0, new String[]{
+                "hello how are you",
+        });
     }
 }

@@ -264,7 +264,7 @@ public class Parser {
 
     private Word readWord() {
         if (ts.get(0).isType(Token.Type.letters)) {
-            Word word = new Word(ts.get(0).getValue());
+            Word word = new Word(ts.get(0).getValue().toLowerCase());
             ts.movePositionForwardBy(1);
             return word;
         } else {
