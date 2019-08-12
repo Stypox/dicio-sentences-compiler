@@ -38,14 +38,14 @@ public class CompilerToJavaTest {
                 "[statement] .. is the place i want to go to;\n" +
                 "[vehicle]   take|bring me to .. by .. please?;\n" +
                 "[vehicle]   i want to go to .. by ..;").getBytes("unicode"));
-        OutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         CompilerToJava compilerToJava = new CompilerToJava(inputStream, outputStream, Charset.forName("unicode"));
         compilerToJava.compileToVariables("section_");
         outputStream.close();
 
-        String code = outputStream.toString();
-        assertThat(code, CoreMatchers.containsString("StandardRecognitionUnit section_mood"));
-        assertThat(code, CoreMatchers.containsString("StandardRecognitionUnit section_GPS_navigation"));
+        String code = outputStream.toString("unicode");
+        assertThat(code, CoreMatchers.containsString("StandardRecognizer section_mood"));
+        assertThat(code, CoreMatchers.containsString("StandardRecognizer section_GPS_navigation"));
     }
 }
