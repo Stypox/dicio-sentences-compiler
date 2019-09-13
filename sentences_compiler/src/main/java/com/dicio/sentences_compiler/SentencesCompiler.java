@@ -3,12 +3,7 @@ package com.dicio.sentences_compiler;
 import com.dicio.sentences_compiler.compiler.CompilerToJava;
 import com.dicio.sentences_compiler.util.CompilerError;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
@@ -17,9 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SentencesCompiler {
-    public static final boolean DEBUG = false;
+    private static final boolean DEBUG = false;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         parseGlobalArgs(Arrays.asList(args));
     }
 
@@ -80,10 +75,7 @@ public class SentencesCompiler {
             } else {
                 compilerToJava.compileToFile(args.get(0), args.get(1), args.get(2));
             }
-        } catch (CompilerError e) {
-            System.err.println(e.getMessage());
-            if (DEBUG) e.printStackTrace(System.err);
-        } catch (IOException e) {
+        } catch (CompilerError | IOException e) {
             System.err.println(e.getMessage());
             if (DEBUG) e.printStackTrace(System.err);
         }
