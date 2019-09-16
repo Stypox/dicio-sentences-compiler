@@ -4,16 +4,14 @@ dependencies {
     implementation fileTree(dir: 'src/main', include: ['*.jar'])
     testImplementation fileTree(dir: 'src/test', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
-    implementation 'junit:junit:4.12'
+
+    implementation 'com.github.cbeust:jcommander:1.71'
 }
 
 jar {
     manifest {
         attributes(
-                'Main-Class': 'com.dicio.sentences_compiler.SentencesCompiler'
+                'Main-Class': 'com.dicio.sentences_compiler.main.SentencesCompiler'
         )
     }
 }
-
-sourceCompatibility = "7"
-targetCompatibility = "7"
