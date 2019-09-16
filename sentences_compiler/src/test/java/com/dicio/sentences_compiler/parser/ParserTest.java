@@ -140,9 +140,9 @@ public class ParserTest {
         assertInvalid("a:medium ();",                 CompilerError.Type.expectedSentenceConstructList,    1, 11,  ")");
         assertInvalid("a:1\n(());",                   CompilerError.Type.expectedSentenceConstructList,    2,  3,  ")");
         assertInvalid("a:1 [[]] a;",                  CompilerError.Type.invalidToken,                     1,  6,  "[");
-        assertInvalid("a",                            CompilerError.Type.invalidToken,                    -1, -1,  "END OF FILE");
-        assertInvalid("a:",                           CompilerError.Type.invalidToken,                    -1, -1,  "END OF FILE");
-        assertInvalid("a:hig",                        CompilerError.Type.invalidSpecificity,              -1, -1,  "hig");
+        assertInvalid("a",                            CompilerError.Type.invalidToken,                     1,  2,  "");
+        assertInvalid("a:\n",                         CompilerError.Type.invalidToken,                     2,  1,  "");
+        assertInvalid("a:\nhig",                      CompilerError.Type.invalidSpecificity,               2,  1,  "hig");
         assertInvalid("a:high .;",                    CompilerError.Type.capturingGroupInvalidLength,      1,  9,  ";");
         assertInvalid("a:1 .. ..;",                   CompilerError.Type.capturingGroupInvalidLength,      1,  8,  ".");
         assertInvalid("a:1 (..);",                    CompilerError.Type.capturingGroupInsideParenthesis,  1,  6,  ".");
