@@ -10,12 +10,7 @@ Every file contains many sections, starting with section information and followe
 - capturing group (`..`). This tells the interpreter to match a variable-length list of any word to that part of the sentence. They cannot be or-red or made optional since it would hurt readability. The maximum number of capturing groups supported by the interpreter is 2. E.g. `how are you ..` matches `how are you Tom`.
 
 ## Build and run
-To build the project open it in Android Studio (IntelliJ Idea probably works, too) and click on the build button. The jar file will be generated at `ROOT_DIR/sentences_compiler/build/libs/sentences_compiler.jar`, where ROOT_DIR is the root directory of the repository.  
-Once the jar file has been built you can use the following commands to run it and get help (at least on Linux):
-```sh
-cd ROOT_DIR/sentences_compiler/build/libs/             # change the working directory to the build directory
-java -jar sentences_compiler.jar --help                # get an help screen that explains the usage
-```
+To build the project open it in Android Studio (IntelliJ Idea probably works, too) and create an Application configuration in the "Run/Debug Configurations" menu, set "Main class" to `com.dicio.sentences_compiler.main.SentencesCompiler` and "Program arguments" to the arguments for the compiler. Then run the newly created configuration with the "Run" button. Set `--help` as "Program arguments" to get an help screen explaining the options.
 
 
 ## Example
@@ -34,11 +29,11 @@ GPS_navigation: 2
 [vehicle]   take|bring me to .. by .. please?;
 [vehicle]   i want to go to .. by ..;
 ```
-The above Dicio-sentences-language file is compiled to Java code by running the following command from the root directory of the repository. Note how i/o redirection is used to set input and output files.
+The above Dicio-sentences-language file is compiled to Java code by running the sentences-compiler as explained [above](#build-and-run), and setting the line below as "Program arguments".
 ```sh
-java -jar ./sentences_compiler/build/libs/sentences_compiler.jar "UTF-8" java "section_" "com.pkg.name" "ClassName" < ./example.dslf > ./ClassName.java
+--input example.dslf --output ClassName.java java --variable-prefix "section_" --package "com.pkg.name" --class "ClassName" 
 ```
-After that command is run, the Java code shown below should be inside a file called `ClassName.java` in the root directory of the repository. Indentation was manually added to improve readability.
+After clicking on the "Run" button, the Java code shown below should be inside a file called ClassName.java in the root directory of the repository. Indentation was manually added to improve readability.
 ```java
 package com.pkg.name;
 import com.dicio.component.input.standard.Sentence;
