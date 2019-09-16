@@ -17,16 +17,19 @@ public class Section implements CompilableToJava {
 
     private String sectionId;
     private Specificity specificity;
-    private int line;
     private ArrayList<Sentence> sentences;
+
+    private String inputStreamName;
+    private int line;
 
     public Section() {
         sentences = new ArrayList<>();
     }
 
-    public void setSectionInfo(String sectionId, Specificity specificity, int line) {
+    public void setSectionInfo(String sectionId, Specificity specificity, String inputStreamName, int line) {
         this.sectionId = sectionId;
         this.specificity = specificity;
+        this.inputStreamName = inputStreamName;
         this.line = line;
     }
     public void addSentence(Sentence sentences) {
@@ -42,7 +45,7 @@ public class Section implements CompilableToJava {
 
             if (sentenceCapturingGroups.containsKey(sentenceId)) {
                 if (sentenceCapturingGroups.get(sentenceId) != capturingGroups) {
-                    throw new CompilerError(CompilerError.Type.differentNrOfCapturingGroups, sentenceId, sentence.getLine(), "");
+                    throw new CompilerError(CompilerError.Type.differentNrOfCapturingGroups, sentenceId, inputStreamName, sentence.getLine(), "");
                 }
             } else {
                 sentenceCapturingGroups.put(sentenceId, capturingGroups);
@@ -53,14 +56,19 @@ public class Section implements CompilableToJava {
     public String getSectionId() {
         return sectionId;
     }
-    public Specificity getSpecificity() { return specificity; }
-    public int getLine() {
-        return line;
+    public Specificity getSpecificity() {
+        return specificity;
     }
     public ArrayList<Sentence> getSentences() {
         return sentences;
     }
 
+    public String getInputStreamName() {
+        return inputStreamName;
+    }
+    public int getLine() {
+        return line;
+    }
 
     @Override
     public void compileToJava(OutputStreamWriter output, String variableName) throws IOException {

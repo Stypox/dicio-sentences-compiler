@@ -7,20 +7,24 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 import static org.junit.Assert.*;
 
 public class TokenizerTest {
 
-    private static Tokenizer fromString(String s) {
+    private static TokenStream getTokens(String s, String inputStreamName) throws IOException, CompilerError {
         Charset charset = Charset.forName("unicode");
         InputStream stream = new ByteArrayInputStream(s.getBytes(charset));
-        return new Tokenizer(stream, charset);
+        Tokenizer tokenizer = new Tokenizer();
+        tokenizer.tokenize(new InputStreamReader(stream, charset), inputStreamName);
+        return tokenizer.getTokenStream();
     }
     private static TokenStream getTokens(String s) throws IOException, CompilerError {
-        return fromString(s).tokenize();
+        return getTokens(s, "");
     }
+
     private static void assertTokenEqualTo(Token token, Token.Type type, String value, int line, int column) {
         assertTrue(token.isType(type));
         assertTrue(token.isValue(value));
@@ -28,12 +32,14 @@ public class TokenizerTest {
         assertEquals(token.getColumn(), column);
     }
     private static void assertInvalid(String input, CompilerError.Type errorType, int errorLine, int errorColumn, String errorMustContain) throws IOException {
+        final String inputStreamName = "MyGoodFILE!";
         try {
-            getTokens(input);
+            getTokens(input, inputStreamName);
             fail("No error thrown with invalid input");
         } catch (CompilerError compilerError) {
             String message = compilerError.getMessage();
             assertTrue("\""+message+"\" is not of type \""+errorType.toString()+"\"", message.contains(errorType.toString()));
+            assertTrue("\""+message+"\" does not contain input stream name \""+inputStreamName+"\"", message.contains(inputStreamName));
             assertTrue("\""+message+"\" does not contain line number "+errorLine, message.contains(String.valueOf(errorLine)));
             assertTrue("\""+message+"\" does not contain column number "+errorColumn, message.contains(String.valueOf(errorColumn)));
             assertTrue("\""+message+"\" does not contain \""+errorMustContain+"\"", message.contains(errorMustContain));

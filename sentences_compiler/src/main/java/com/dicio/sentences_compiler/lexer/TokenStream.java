@@ -23,7 +23,4 @@ public class TokenStream {
         assert(delta >= 0);
         position += delta;
     }
-    public boolean isEmpty() {
-        return position >= tokens.size();
-    }
 }

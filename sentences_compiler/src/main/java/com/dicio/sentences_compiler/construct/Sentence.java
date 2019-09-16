@@ -10,11 +10,14 @@ import java.util.ArrayList;
 
 public class Sentence implements CompilableToJava {
     private String sentenceId;
-    private int line;
     private SentenceConstructList sentenceConstructs;
 
-    public void setSentenceId(String sentenceId, int line) {
+    private String inputStreamName;
+    private int line;
+
+    public void setSentenceId(String sentenceId, String inputStreamName, int line) {
         this.sentenceId = sentenceId;
+        this.inputStreamName = inputStreamName;
         this.line = line;
     }
     public void setSentenceConstructs(SentenceConstructList sentenceConstructs) {
@@ -33,24 +36,27 @@ public class Sentence implements CompilableToJava {
     public void validate() throws CompilerError {
         int capturingGroups = numberOfCapturingGroups();
         if (capturingGroups > 2) {
-            throw new CompilerError(CompilerError.Type.tooManyCapturingGroups, sentenceId, line, "");
+            throw new CompilerError(CompilerError.Type.tooManyCapturingGroups, sentenceId, inputStreamName, line, "");
         }
 
         if (sentenceConstructs.isOptional()) {
-            throw new CompilerError(CompilerError.Type.sentenceCanBeEmpty, sentenceId, line, "");
+            throw new CompilerError(CompilerError.Type.sentenceCanBeEmpty, sentenceId, inputStreamName, line, "");
         }
     }
 
     public String getSentenceId() {
         return sentenceId;
     }
-    public int getLine() {
-        return line;
-    }
     public SentenceConstructList getSentenceConstructs() {
         return sentenceConstructs;
     }
 
+    public String getInputStreamName() {
+        return inputStreamName;
+    }
+    public int getLine() {
+        return line;
+    }
 
     @Override
     public void compileToJava(OutputStreamWriter output, String variableName) throws IOException {

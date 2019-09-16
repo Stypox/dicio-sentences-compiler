@@ -20,9 +20,8 @@ import java.util.ArrayList;
 public class Parser {
     private TokenStream ts;
 
-    public Parser(InputStream inputStream, Charset charset) throws IOException, CompilerError {
-        Tokenizer tokenizer = new Tokenizer(inputStream, charset);
-        this.ts = tokenizer.tokenize();
+    public Parser(TokenStream tokenStream) {
+        this.ts = tokenStream;
     }
 
     public ArrayList<Section> parse() throws CompilerError {
@@ -30,10 +29,15 @@ public class Parser {
         while (true) {
             Section section = readSection();
             if (section == null) {
-                if (!ts.isEmpty()) {
+                if (ts.get(0).isType(Token.Type.endOfFile)) {
+                    ts.movePositionForwardBy(1);
+                } else {
                     throw new CompilerError(CompilerError.Type.expectedSectionOrEndOfFile, ts.get(0), "");
                 }
-                break;
+
+                if (ts.get(0).isEmpty()) {
+                    break;
+                }
             }
             
             sections.add(section);
@@ -51,10 +55,11 @@ public class Parser {
         if (sectionId == null) {
             return null;
         }
+        String inputStreamName = ts.get(-2).getInputStreamName();
         int sectionIdLine = ts.get(-2).getLine();
 
         Section.Specificity specificity = readSpecificity();
-        section.setSectionInfo(sectionId, specificity, sectionIdLine);
+        section.setSectionInfo(sectionId, specificity, inputStreamName, sectionIdLine);
 
         boolean foundSentences = false;
         while (true) {
@@ -138,9 +143,9 @@ public class Parser {
         String sentenceId = readSentenceId();
         boolean foundId = (sentenceId != null);
         if (foundId) {
-            sentence.setSentenceId(sentenceId, ts.get(-2).getLine());
+            sentence.setSentenceId(sentenceId, ts.get(-2).getInputStreamName(), ts.get(-2).getLine());
         } else {
-            sentence.setSentenceId("", ts.get(0).getLine());
+            sentence.setSentenceId("", ts.get(0).getInputStreamName(), ts.get(0).getLine());
         }
 
         SentenceConstructList sentenceContent = readSentenceContent();
@@ -324,7 +329,7 @@ public class Parser {
 
             String sectionId = section.getSectionId();
             if (sectionIds.contains(sectionId)) {
-                throw new CompilerError(CompilerError.Type.duplicateSectionId, sectionId, section.getLine(), "");
+                throw new CompilerError(CompilerError.Type.duplicateSectionId, sectionId, section.getInputStreamName(), section.getLine(), "");
             } else {
                 sectionIds.add(sectionId);
             }

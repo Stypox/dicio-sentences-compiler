@@ -6,18 +6,22 @@ public class Token {
         grammar,
         letters, // letters are always lettersPlusOther
         lettersPlusOther,
+        endOfFile,
     }
 
     private Type type;
     private String value;
+
+    private String inputStreamName;
     private int line, column;
 
     private Token() {
-        this(Type.empty, "", -1, -1);
+        this(Type.empty, "", "", -1, -1);
     }
-    public Token(Type type, String value, int line, int column) {
+    public Token(Type type, String value, String inputStreamName, int line, int column) {
         this.type = type;
         this.value = value;
+        this.inputStreamName = inputStreamName;
         this.line = line;
         this.column = column;
     }
@@ -41,9 +45,12 @@ public class Token {
     public boolean isEmpty() {
         return this.type == Type.empty;
     }
-
     public String getValue() {
         return value;
+    }
+
+    public String getInputStreamName() {
+        return inputStreamName;
     }
     public int getLine() {
         return line;

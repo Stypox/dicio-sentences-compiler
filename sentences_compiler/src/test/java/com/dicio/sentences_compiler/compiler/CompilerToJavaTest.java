@@ -13,7 +13,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
@@ -40,12 +42,15 @@ public class CompilerToJavaTest {
                 "[vehicle]   i want to go to .. by ..;").getBytes("unicode"));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        CompilerToJava compilerToJava = new CompilerToJava(inputStream, outputStream, Charset.forName("unicode"));
-        compilerToJava.compileToVariables("section_");
+        CompilerToJava compilerToJava = new CompilerToJava("section_", "com.hello.world", "MyClass");
+        compilerToJava.addInputStream(new InputStreamReader(inputStream, Charset.forName("unicode")), "myInput");
+        compilerToJava.compile(new OutputStreamWriter(outputStream, Charset.forName("unicode")));
         outputStream.close();
 
         String code = outputStream.toString("unicode");
         assertThat(code, CoreMatchers.containsString("StandardRecognizer section_mood"));
         assertThat(code, CoreMatchers.containsString("StandardRecognizer section_GPS_navigation"));
+        assertThat(code, CoreMatchers.containsString("package com.hello.world"));
+        assertThat(code, CoreMatchers.containsString("class MyClass"));
     }
 }

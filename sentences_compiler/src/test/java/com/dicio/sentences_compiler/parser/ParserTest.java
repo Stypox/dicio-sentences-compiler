@@ -2,6 +2,7 @@ package com.dicio.sentences_compiler.parser;
 
 import com.dicio.sentences_compiler.construct.Section;
 import com.dicio.sentences_compiler.construct.Sentence;
+import com.dicio.sentences_compiler.lexer.Tokenizer;
 import com.dicio.sentences_compiler.util.CompilerError;
 
 import org.junit.Test;
@@ -9,6 +10,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,21 +18,27 @@ import java.util.Arrays;
 import static org.junit.Assert.*;
 
 public class ParserTest {
-    private static Parser fromString(String s) throws IOException, CompilerError {
+    private static ArrayList<Section> getSections(String s, String inputStreamName) throws IOException, CompilerError {
         Charset charset = Charset.forName("unicode");
         InputStream stream = new ByteArrayInputStream(s.getBytes(charset));
-        return new Parser(stream, charset);
+        Tokenizer tokenizer = new Tokenizer();
+        tokenizer.tokenize(new InputStreamReader(stream, charset), inputStreamName);
+        Parser parser = new Parser(tokenizer.getTokenStream());
+        return parser.parse();
     }
     private static ArrayList<Section> getSections(String s) throws IOException, CompilerError {
-        return fromString(s).parse();
+        return getSections(s, "");
     }
+
     private static void assertInvalid(String input, CompilerError.Type errorType, int errorLine, int errorColumn, String errorMustContain) throws IOException {
+        String inputStreamName = "MyBeautifulFile :-D";
         try {
-            getSections(input);
+            getSections(input, inputStreamName);
             fail("No error thrown with invalid input");
         } catch (CompilerError compilerError) {
             String message = compilerError.getMessage();
             assertTrue("\""+message+"\" is not of type \""+errorType.toString()+"\"",  message.contains(errorType.toString()));
+            assertTrue("\""+message+"\" does not contain input stream name \""+inputStreamName+"\"", message.contains(inputStreamName));
             if (errorLine != -1) {
                 assertTrue("\""+message+"\" does not contain line number "+errorLine, message.contains(String.valueOf(errorLine)));
             }

@@ -17,7 +17,7 @@ public class SentenceTest {
         String sentenceId = "ID", word = "hello";
 
         Sentence s = new Sentence();
-        s.setSentenceId(sentenceId, 0);
+        s.setSentenceId(sentenceId, "", 0);
         SentenceConstructList sentenceConstructList = new SentenceConstructList();
         sentenceConstructList.addConstruct(new Word("hello"));
         s.setSentenceConstructs(sentenceConstructList);
