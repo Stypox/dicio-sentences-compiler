@@ -48,10 +48,10 @@ public class TokenizerTest {
 
     @Test
     public void testEmptyInput() throws IOException, CompilerError {
-        assertTrue(getTokens("").get(0).isEmpty());
-        assertTrue(getTokens("\n").get(0).isEmpty());
-        assertTrue(getTokens("  \t  \n\t\t\n  ").get(0).isEmpty());
-        assertTrue(getTokens("    # hello: # ## | | ; world   \n#").get(0).isEmpty());
+        assertTrue(getTokens("").get(0).isType(Token.Type.endOfFile));
+        assertTrue(getTokens("\n").get(0).isType(Token.Type.endOfFile));
+        assertTrue(getTokens("  \t  \n\t\t\n  ").get(0).isType(Token.Type.endOfFile));
+        assertTrue(getTokens("    # hello: # ## | | ; world   \n#").get(0).isType(Token.Type.endOfFile));
     }
 
     @Test
@@ -77,7 +77,8 @@ public class TokenizerTest {
         assertTokenEqualTo(tokens.get(14), Token.Type.grammar,          ".",          3,  1);
         assertTokenEqualTo(tokens.get(15), Token.Type.grammar,          ".",          3,  2);
         assertTokenEqualTo(tokens.get(16), Token.Type.grammar,          ";",          3,  3);
-        assertTrue(tokens.get(17).isEmpty());
+        assertTrue(tokens.get(17).isType(Token.Type.endOfFile));
+        assertTrue(tokens.get(18).isEmpty());
     }
 
     @Test
