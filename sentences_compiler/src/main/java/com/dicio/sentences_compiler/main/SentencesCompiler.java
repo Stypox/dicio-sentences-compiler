@@ -36,6 +36,9 @@ public class SentencesCompiler {
 
         try {
             argParser.parse(args);
+            if (argParser.getParsedCommand() == null) {
+                throw new ParameterException("A command must be supplied (e.g. `java`)");
+            }
         } catch (Throwable e) {
             StringBuilder stringBuilder = new StringBuilder();
             argParser.usage(stringBuilder);
