@@ -95,7 +95,7 @@ public class Tokenizer {
             }
         }
 
-        ts.push(new Token(Token.Type.endOfFile, "", inputStreamName, line, column));
+        ts.push(new Token(Token.Type.endOfFile, "", inputStreamName, line, column+1));
     }
 
     public TokenStream getTokenStream() {
