@@ -87,12 +87,8 @@ public class SentencesCompiler {
         if (fileInfo.fileName.equals("stdin")) {
             compiler.addInputStream(new InputStreamReader(System.in, fileInfo.charset), fileInfo.fileName);
         } else {
-            try {
-                File file = new File(fileInfo.fileName);
-                compiler.addInputStream(new InputStreamReader(new FileInputStream(file), fileInfo.charset), file.getName());
-            } catch (Exception e) {
-                throw new ParameterException("File \"" + fileInfo.fileName + "\" does not exist: " + value, e);
-            }
+            File file = new File(fileInfo.fileName);
+            compiler.addInputStream(new InputStreamReader(new FileInputStream(file), fileInfo.charset), file.getName());
         }
     }
 
@@ -102,14 +98,10 @@ public class SentencesCompiler {
         if (fileInfo.fileName.equals("stdout")) {
             compiler.compile(new OutputStreamWriter(System.out, fileInfo.charset));
         } else {
-            try {
-                File file = new File(fileInfo.fileName);
-                OutputStream outputStream = new FileOutputStream(file);
-                compiler.compile(new OutputStreamWriter(outputStream, fileInfo.charset));
-                outputStream.close();
-            } catch (Exception e) {
-                throw new ParameterException("File \"" + fileInfo.fileName + "\" does not exist: " + value, e);
-            }
+            File file = new File(fileInfo.fileName);
+            OutputStream outputStream = new FileOutputStream(file);
+            compiler.compile(new OutputStreamWriter(outputStream, fileInfo.charset));
+            outputStream.close();
         }
     }
 }
