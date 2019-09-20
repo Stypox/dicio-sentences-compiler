@@ -73,11 +73,11 @@ public class Section implements CompilableToJava {
     @Override
     public void compileToJava(OutputStreamWriter output, String variableName) throws IOException {
         if (!variableName.isEmpty()) {
-            output.write("final StandardRecognizer ");
+            output.write("final StandardRecognizerData ");
             output.write(variableName);
             output.write(" = ");
         }
-        output.write("new StandardRecognizer(\nInputRecognizer.Specificity.");
+        output.write("new StandardRecognizerData(\nInputRecognizer.Specificity.");
 
         switch (specificity) {
             case low:

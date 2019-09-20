@@ -50,7 +50,7 @@ public class CompilerToJava implements CompilerBase {
         output.write(packageName);
         output.write(";\n" +
                 "import com.dicio.component.input.standard.Sentence;\n" +
-                "import com.dicio.component.input.standard.StandardRecognizer;\n" +
+                "import com.dicio.component.input.standard.StandardRecognizerData;\n" +
                 "import com.dicio.component.input.InputRecognizer;\n" +
                 "public class ");
         output.write(className);
