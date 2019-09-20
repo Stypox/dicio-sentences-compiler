@@ -74,7 +74,7 @@ public class SentencesCompiler {
                 try {
                     charset = Charset.forName(values[0]);
                 } catch (Exception e) {
-                    throw new ParameterException("Unknown charset \"" + values[0] + "\": " + value);
+                    throw new ParameterException("Unknown charset \"" + values[0] + "\": " + value, e);
                 }
                 fileName = values[1];
             }
@@ -91,7 +91,7 @@ public class SentencesCompiler {
                 File file = new File(fileInfo.fileName);
                 compiler.addInputStream(new InputStreamReader(new FileInputStream(file), fileInfo.charset), file.getName());
             } catch (Exception e) {
-                throw new ParameterException("File \"" + fileInfo.fileName + "\" does not exist: " + value);
+                throw new ParameterException("File \"" + fileInfo.fileName + "\" does not exist: " + value, e);
             }
         }
     }
@@ -108,7 +108,7 @@ public class SentencesCompiler {
                 compiler.compile(new OutputStreamWriter(outputStream, fileInfo.charset));
                 outputStream.close();
             } catch (Exception e) {
-                throw new ParameterException("File \"" + fileInfo.fileName + "\" does not exist: " + value);
+                throw new ParameterException("File \"" + fileInfo.fileName + "\" does not exist: " + value, e);
             }
         }
     }
