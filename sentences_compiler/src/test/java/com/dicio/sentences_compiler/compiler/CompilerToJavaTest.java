@@ -48,8 +48,8 @@ public class CompilerToJavaTest {
         outputStream.close();
 
         String code = outputStream.toString("unicode");
-        assertThat(code, CoreMatchers.containsString("StandardRecognizer section_mood"));
-        assertThat(code, CoreMatchers.containsString("StandardRecognizer section_GPS_navigation"));
+        assertThat(code, CoreMatchers.containsString("StandardRecognizerData section_mood"));
+        assertThat(code, CoreMatchers.containsString("StandardRecognizerData section_GPS_navigation"));
         assertThat(code, CoreMatchers.containsString("package com.hello.world"));
         assertThat(code, CoreMatchers.containsString("class MyClass"));
     }
