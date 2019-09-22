@@ -169,4 +169,32 @@ public class ParserTest {
                 "hello how are you",
         });
     }
+
+    @Test
+    public void testMultipleFiles() throws IOException, CompilerError {
+        String s1 = "a:3 [s1] b;";
+        String s2 = "c:1 [s2] d;";
+        Charset charset = Charset.forName("unicode");
+        Tokenizer tokenizer = new Tokenizer();
+
+        InputStream stream1 = new ByteArrayInputStream(s1.getBytes(charset));
+        tokenizer.tokenize(new InputStreamReader(stream1, charset), "1");
+        InputStream stream2 = new ByteArrayInputStream(s2.getBytes(charset));
+        tokenizer.tokenize(new InputStreamReader(stream2, charset), "2");
+
+        Parser parser = new Parser(tokenizer.getTokenStream());
+        ArrayList<Section> sections = parser.parse();
+
+        assertEquals("1", sections.get(0).getInputStreamName());
+        assertEquals(Section.Specificity.high, sections.get(0).getSpecificity());
+        assertEquals("a", sections.get(0).getSectionId());
+        assertEquals("1", sections.get(0).getSentences().get(0).getInputStreamName());
+        assertEquals("s1", sections.get(0).getSentences().get(0).getSentenceId());
+
+        assertEquals("2", sections.get(1).getInputStreamName());
+        assertEquals(Section.Specificity.low, sections.get(1).getSpecificity());
+        assertEquals("c", sections.get(1).getSectionId());
+        assertEquals("2", sections.get(1).getSentences().get(0).getInputStreamName());
+        assertEquals("s2", sections.get(1).getSentences().get(0).getSentenceId());
+    }
 }

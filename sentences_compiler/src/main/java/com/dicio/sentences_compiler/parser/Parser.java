@@ -38,9 +38,9 @@ public class Parser {
                 if (ts.get(0).isEmpty()) {
                     break;
                 }
+            } else {
+                sections.add(section);
             }
-            
-            sections.add(section);
         }
 
         validate(sections);
