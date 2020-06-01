@@ -3,10 +3,8 @@ how (are you doing?)|(is it going);
 [has_place] how is it going over there;
 
 GPS_navigation: 2
-[question]  take|bring me to .. please?;
-[question]  give me directions to .. please?;
-[question]  how do|can i get to ..;
-[statement] i want to go to ..;
-[statement] .. is the place i want to go to;
-[vehicle]   take|bring me to .. by .. please?;
-[vehicle]   i want to go to .. by ..;
+[question]  take|bring me to .place. (by .vehicle.)? please?;
+[question]  give me directions to .place. please?;
+[question]  how do|can i get to .place.;
+[statement] i want to go to .place. (by .vehicle.)?;
+[statement] .place. is the place i want to go to;

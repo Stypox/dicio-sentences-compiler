@@ -20,18 +20,16 @@ public class CompilerToJavaTest {
     @Test
     public void testReadmeExample() throws IOException, CompilerError {
         InputStream inputStream = new ByteArrayInputStream((
-                "mood: high\n" +
+                "mood: high       # comments are supported :-D\n" +
                 "how (are you doing?)|(is it going);\n" +
                 "[has_place] how is it going over there;\n" +
                 "\n" +
                 "GPS_navigation: 2\n" +
-                "[question]  take|bring me to .. please?;\n" +
-                "[question]  give me directions to .. please?;\n" +
-                "[question]  how do|can i get to ..;\n" +
-                "[statement] i want to go to ..;\n" +
-                "[statement] .. is the place i want to go to;\n" +
-                "[vehicle]   take|bring me to .. by .. please?;\n" +
-                "[vehicle]   i want to go to .. by ..;").getBytes("unicode"));
+                "[question]  take|bring me to .place. (by .vehicle.)? please?;\n" +
+                "[question]  give me directions to .place. please?;\n" +
+                "[question]  how do|can i get to .place.;\n" +
+                "[statement] i want to go to .place. (by .vehicle.)?;\n" +
+                "[statement] .place. is the place i want to go to;\n").getBytes("unicode"));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         CompilerToJava compilerToJava = new CompilerToJava("section_", "com.hello.world", "MyClass");
