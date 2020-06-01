@@ -9,6 +9,7 @@ public final class Word implements Construct {
     private final boolean isCapturingGroup;
     private int index;
     private Set<Integer> nextIndices;
+    private int minimumSkippedWordsToEnd = -1; // see dicio-assistance-component library
 
     public Word(final String value, final boolean isCapturingGroup) {
         this.value = value;
@@ -29,6 +30,14 @@ public final class Word implements Construct {
 
     public Set<Integer> getNextIndices() {
         return nextIndices;
+    }
+
+    public int getMinimumSkippedWordsToEnd() {
+        return minimumSkippedWordsToEnd;
+    }
+
+    public void setMinimumSkippedWordsToEnd(int minimumSkippedWordsToEnd) {
+        this.minimumSkippedWordsToEnd = minimumSkippedWordsToEnd;
     }
 
 

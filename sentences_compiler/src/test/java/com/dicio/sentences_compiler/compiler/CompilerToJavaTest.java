@@ -2,26 +2,18 @@ package com.dicio.sentences_compiler.compiler;
 
 import com.dicio.sentences_compiler.util.CompilerError;
 
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.CustomTypeSafeMatcher;
-import org.hamcrest.Description;
 import org.junit.Test;
-import org.junit.matchers.JUnitMatchers;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
-import jdk.nashorn.internal.runtime.regexp.RegExpMatcher;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class CompilerToJavaTest {
 

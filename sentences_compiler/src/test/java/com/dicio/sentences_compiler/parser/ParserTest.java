@@ -43,18 +43,24 @@ public class ParserTest {
 
     private static Word getWord(final String value,
                                 final boolean isCapturingGroup,
+                                final int minimumSkippedWordsToEnd,
                                 final Integer... nextIndices) {
         final Word word = new Word(value, isCapturingGroup);
+        word.setMinimumSkippedWordsToEnd(minimumSkippedWordsToEnd);
         word.findNextIndices(new HashSet<>(Arrays.asList(nextIndices)));
         return word;
     }
 
-    private static Word w(final String value, final Integer... nextIndices) {
-        return getWord(value, false, nextIndices);
+    private static Word w(final String value,
+                          final int minimumSkippedWordsToEnd,
+                          final Integer... nextIndices) {
+        return getWord(value, false, minimumSkippedWordsToEnd, nextIndices);
     }
 
-    private static Word capt(final String value, final Integer... nextIndices) {
-        return getWord(value, true, nextIndices);
+    private static Word capt(final String value,
+                             final int minimumSkippedWordsToEnd,
+                             final Integer... nextIndices) {
+        return getWord(value, true, minimumSkippedWordsToEnd, nextIndices);
     }
 
 
@@ -136,29 +142,29 @@ public class ParserTest {
         assertEquals(1, sections.get(0).getLine());
         assertEquals(2, sections.get(0).getSentences().size());
         assertSentence(sections.get(0).getSentences().get(0), "", 2, entry(0, 1, 2),
-                w("a", 2), w("b", 2), w("g", 3));
+                w("a", 2, 2), w("b", 2, 2), w("g", 1, 3));
         assertSentence(sections.get(0).getSentences().get(1), "B_", 3, entry(0, 1, 2),
-                w("c", 3), w("d", 3), w("e", 3), w("ff", 4, 5), w("g", 5));
+                w("c", 2, 3), w("d", 2, 3), w("e", 2, 3), w("ff", 1, 4, 5), w("g", 1, 5));
 
         assertEquals("C_5", sections.get(1).getSectionId());
         assertEquals(Section.Specificity.medium, sections.get(1).getSpecificity());
         assertEquals(4, sections.get(1).getLine());
         assertEquals(3, sections.get(1).getSentences().size());
         assertSentence(sections.get(1).getSentences().get(0), "D", 5, entry(0, 1),
-                w("h", 2), w("i", 2), w("j", 3, 4), w("k", 4));
+                w("h", 2, 2), w("i", 2, 2), w("j", 1, 3, 4), w("k", 1, 4));
         assertSentence(sections.get(1).getSentences().get(1), "", 6, entry(0),
-                w("l", 1, 2), w("m", 3), w("n", 3), w("o", 4), w("p", 5), w("q", 6, 7), w("r", 8), w("s", 8), w("t", 9));
+                w("l", 7, 1, 2), w("m", 6, 3), w("n", 6, 3), w("o", 5, 4), w("p", 4, 5), w("q", 3, 6, 7), w("r", 2, 8), w("s", 2, 8), w("t", 1, 9));
         assertSentence(sections.get(1).getSentences().get(2), "E7", 7, entry(0),
-                w("u", 1), capt("a_b", 2), w("v", 3, 4), capt("c", 4), w("w", 5));
+                w("u", 4, 1), capt("a_b", 3, 2), w("v", 2, 3, 4), capt("c", 2, 4), w("w", 1, 5));
 
         assertEquals("Ff", sections.get(2).getSectionId());
         assertEquals(Section.Specificity.low, sections.get(2).getSpecificity());
         assertEquals(8, sections.get(2).getLine());
         assertEquals(2, sections.get(2).getSentences().size());
         assertSentence(sections.get(2).getSentences().get(0), "", 10, entry(0, 1),
-                w("x", 1), capt("d_", 2), w("y", 3));
+                w("x", 3, 1), capt("d_", 2, 2), w("y", 1, 3));
         assertSentence(sections.get(2).getSentences().get(1), "", 11, entry(0),
-                w("z", 1, 2), capt("7", 2));
+                w("z", 1, 1, 2), capt("7", 1, 2));
     }
 
     @Test
@@ -203,7 +209,7 @@ public class ParserTest {
         ArrayList<Section> sections = getSections("A:3\nHello HOW are yOu .Name_Of_Person.;\n");
 
         assertSentence(sections.get(0).getSentences().get(0), "", 2, entry(0),
-                w("hello", 1), w("how", 2), w("are", 3), w("you", 4), capt("Name_Of_Person", 5));
+                w("hello", 5, 1), w("how", 4, 2), w("are", 3, 3), w("you", 2, 4), capt("Name_Of_Person", 1, 5));
     }
 
     @Test

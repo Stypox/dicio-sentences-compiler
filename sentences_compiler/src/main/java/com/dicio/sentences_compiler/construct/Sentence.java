@@ -44,6 +44,29 @@ public class Sentence implements CompilableToJava {
     }
 
 
+    public Word compileMinimumSkippedWordsToEnd(final int wordIndex) {
+        if (wordIndex >= compiledWords.size()) {
+            final Word word = new Word("", false);
+            word.setMinimumSkippedWordsToEnd(0);
+            return word;
+        }
+
+        final Word word = compiledWords.get(wordIndex);
+        for (final int nextIndex : word.getNextIndices()) {
+            final Word next = compileMinimumSkippedWordsToEnd(nextIndex);
+            if (next.getMinimumSkippedWordsToEnd() > word.getMinimumSkippedWordsToEnd()) {
+                word.setMinimumSkippedWordsToEnd(next.getMinimumSkippedWordsToEnd());
+            }
+        }
+
+        if (word.isCapturingGroup()) {
+            word.setMinimumSkippedWordsToEnd(word.getMinimumSkippedWordsToEnd() + 2);
+        } else {
+            word.setMinimumSkippedWordsToEnd(word.getMinimumSkippedWordsToEnd() + 1);
+        }
+        return word;
+    }
+
     public void compileWordList() throws CompilerError {
         compiledWords = new ArrayList<>();
         sentenceConstructs.buildWordList(compiledWords);
@@ -52,6 +75,9 @@ public class Sentence implements CompilableToJava {
 
         if (entryPointWordIndices.contains(compiledWords.size())) {
             throw new CompilerError(CompilerError.Type.sentenceCanBeEmpty, sentenceId, inputStreamName, line, "");
+        }
+        for (final int entryPointWordIndex : entryPointWordIndices) {
+            compileMinimumSkippedWordsToEnd(entryPointWordIndex);
         }
     }
 
