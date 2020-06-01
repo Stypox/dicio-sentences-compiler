@@ -36,10 +36,11 @@ public class CompilerToJava implements CompilerBase {
         return parser.parse();
     }
 
-    public void compileToVariables(OutputStreamWriter output) throws IOException, CompilerError {
+    public void compileToVariables(final OutputStreamWriter output) throws IOException, CompilerError {
         List<Section> sections = getSections();
         for (Section section : sections) {
             section.compileToJava(output, variablePrefix + section.getSectionId());
+            output.write(";\n");
         }
         output.flush();
     }
@@ -53,9 +54,10 @@ public class CompilerToJava implements CompilerBase {
         output.write("package ");
         output.write(packageName);
         output.write(";\n" +
+                "import com.dicio.component.InputRecognizer;\n" +
                 "import com.dicio.component.standard.Sentence;\n" +
                 "import com.dicio.component.standard.StandardRecognizerData;\n" +
-                "import com.dicio.component.InputRecognizer;\n" +
+                "import com.dicio.component.standard.Word;\n" +
                 "public class ");
         output.write(className);
 

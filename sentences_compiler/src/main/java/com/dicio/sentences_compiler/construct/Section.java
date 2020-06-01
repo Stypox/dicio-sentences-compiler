@@ -59,13 +59,14 @@ public class Section implements CompilableToJava {
     }
 
     @Override
-    public void compileToJava(OutputStreamWriter output, String variableName) throws IOException {
+    public void compileToJava(final OutputStreamWriter output, final String variableName)
+            throws IOException {
         if (!variableName.isEmpty()) {
             output.write("public static final StandardRecognizerData ");
             output.write(variableName);
             output.write(" = ");
         }
-        output.write("new StandardRecognizerData(\nInputRecognizer.Specificity.");
+        output.write("new StandardRecognizerData(InputRecognizer.Specificity.");
 
         switch (specificity) {
             case low:
@@ -79,10 +80,10 @@ public class Section implements CompilableToJava {
                 break;
         }
 
-        output.write(",\nnew Sentence[]{\n");
         for (Sentence sentence : sentences) {
+            output.write(",");
             sentence.compileToJava(output, "");
         }
-        output.write("}\n);\n");
+        output.write(")");
     }
 }

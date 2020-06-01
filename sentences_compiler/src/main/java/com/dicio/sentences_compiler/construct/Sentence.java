@@ -92,30 +92,19 @@ public class Sentence implements CompilableToJava {
     @Override
     public void compileToJava(final OutputStreamWriter output, final String variableName)
             throws IOException {
-        /*
-        for (ArrayList<String> unfoldedSentence : sentenceConstructs.unfold()) {
-            if (!variableName.isEmpty()) {
-                output.write("final Sentence ");
-                output.write(variableName);
-                output.write(" = ");
-            }
-
-            output.write("new Sentence(\"");
-            output.write(sentenceId);
-            output.write("\", new String[]{");
-
-            for (String word : unfoldedSentence) {
-                if (word.equals(".")) {
-                    output.write("}, new String[]{");
-                } else {
-                    output.write("\"");
-                    output.write(word);
-                    output.write("\",");
-                }
-            }
-
-            output.write("}),\n");
+        output.write("new Sentence(\"");
+        output.write(sentenceId);
+        output.write("\",new int[]{");
+        for (final int entryPointWordIndex : entryPointWordIndices) {
+            output.write(String.valueOf(entryPointWordIndex));
+            output.write(",");
         }
-        */
+        output.write("}");
+
+        for (final Word word : compiledWords) {
+            output.write(",");
+            word.compileToJava(output, variableName);
+        }
+        output.write(")");
     }
 }
