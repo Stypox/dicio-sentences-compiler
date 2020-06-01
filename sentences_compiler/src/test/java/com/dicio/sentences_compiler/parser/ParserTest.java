@@ -2,6 +2,7 @@ package com.dicio.sentences_compiler.parser;
 
 import com.dicio.sentences_compiler.construct.Section;
 import com.dicio.sentences_compiler.construct.Sentence;
+import com.dicio.sentences_compiler.construct.Word;
 import com.dicio.sentences_compiler.lexer.Tokenizer;
 import com.dicio.sentences_compiler.util.CompilerError;
 
@@ -14,8 +15,13 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ParserTest {
     private static ArrayList<Section> getSections(String s, String inputStreamName) throws IOException, CompilerError {
@@ -26,8 +32,40 @@ public class ParserTest {
         Parser parser = new Parser(tokenizer.getTokenStream());
         return parser.parse();
     }
+
     private static ArrayList<Section> getSections(String s) throws IOException, CompilerError {
         return getSections(s, "");
+    }
+
+    private static Integer[] entry(final Integer... entryPointWordIndices) {
+        return entryPointWordIndices;
+    }
+
+    private static Word getWord(final String value,
+                                final boolean isCapturingGroup,
+                                final Integer... nextIndices) {
+        final Word word = new Word(value, isCapturingGroup);
+        word.findNextIndices(new HashSet<>(Arrays.asList(nextIndices)));
+        return word;
+    }
+
+    private static Word w(final String value, final Integer... nextIndices) {
+        return getWord(value, false, nextIndices);
+    }
+
+    private static Word capt(final String value, final Integer... nextIndices) {
+        return getWord(value, true, nextIndices);
+    }
+
+
+    private static <T> void assertUniqueCollectionEquals(final Collection<T> expected, final Collection<T> actual) {
+        assertEquals(expected.size(), actual.size());
+        assertTrue("Expected: " + expected + "\nActual: " + actual,
+                actual.containsAll(expected));
+    }
+
+    private static <T> void assertUniqueCollectionEquals(final T[] expected, final Collection<T> actual) {
+        assertUniqueCollectionEquals(Arrays.asList(expected), actual);
     }
 
     private static void assertInvalid(String input, CompilerError.Type errorType, int errorLine, int errorColumn, String errorMustContain) throws IOException {
@@ -49,17 +87,23 @@ public class ParserTest {
         }
     }
 
-    private static void assertSentenceUnfoldsTo(Sentence sentence, String sentenceId, int line, int capturingGroups, String[] unfoldedStrings) {
+    private static void assertSentence(final Sentence sentence,
+                                       final String sentenceId,
+                                       final int line,
+                                       final Integer[] entryPointWordIndices,
+                                       final Word... words) {
+
         assertEquals(sentenceId, sentence.getSentenceId());
         assertEquals(line, sentence.getLine());
-        assertEquals(capturingGroups, sentence.numberOfCapturingGroups());
+        assertUniqueCollectionEquals(entryPointWordIndices, sentence.getEntryPointWordIndices());
 
-        ArrayList<ArrayList<String>> unfoldedWords = sentence.getSentenceConstructs().unfold();
-        for (String unfoldedString : unfoldedStrings) {
-            ArrayList<String> sentenceWords = new ArrayList<>(Arrays.asList(unfoldedString.split(" ")));
-            sentenceWords.removeAll(Arrays.asList(""));
-
-            assertTrue("Unfolded sentence does not contain \"" + unfoldedString + "\"", unfoldedWords.contains(sentenceWords));
+        List<Word> actualWords = sentence.getCompiledWords();
+        assertEquals(words.length, actualWords.size());
+        for (int i = 0; i < words.length; ++i) {
+            assertEquals(words[i].getValue(), actualWords.get(i).getValue());
+            assertEquals(words[i].isCapturingGroup(), actualWords.get(i).isCapturingGroup());
+            assertEquals(i, actualWords.get(i).getIndex());
+            assertUniqueCollectionEquals(words[i].getNextIndices(), actualWords.get(i).getNextIndices());
         }
     }
 
@@ -80,56 +124,49 @@ public class ParserTest {
                 "C_5 : 2\n" +
                 "[D] (h|i) (j) (k)?    ;\n" +
                 "l ((M)|n) (o((p((Q(((r)))|(S))))t));\n" +
-                "[E7] u ..v .. w;\n" +
+                "[E7] u .a_b.v.c.? w;\n" +
                 "Ff:\n" +
                 "low\n" +
-                "x..y;\n" +
-                "z..;\n");
+                "x?.d_.y;\n" +
+                "z.7.?;\n");
         assertEquals(3, sections.size());
 
         assertEquals("A", sections.get(0).getSectionId());
         assertEquals(Section.Specificity.high, sections.get(0).getSpecificity());
         assertEquals(1, sections.get(0).getLine());
         assertEquals(2, sections.get(0).getSentences().size());
-        assertSentenceUnfoldsTo(sections.get(0).getSentences().get(0), "", 2, 0, new String[]{
-                "a g","b g","g",
-        });
-        assertSentenceUnfoldsTo(sections.get(0).getSentences().get(1), "B_", 3, 0, new String[]{
-                "c ff g","d ff g","e ff g","c ff","d ff","e ff",
-        });
+        assertSentence(sections.get(0).getSentences().get(0), "", 2, entry(0, 1, 2),
+                w("a", 2), w("b", 2), w("g", 3));
+        assertSentence(sections.get(0).getSentences().get(1), "B_", 3, entry(0, 1, 2),
+                w("c", 3), w("d", 3), w("e", 3), w("ff", 4, 5), w("g", 5));
 
         assertEquals("C_5", sections.get(1).getSectionId());
         assertEquals(Section.Specificity.medium, sections.get(1).getSpecificity());
         assertEquals(4, sections.get(1).getLine());
         assertEquals(3, sections.get(1).getSentences().size());
-        assertSentenceUnfoldsTo(sections.get(1).getSentences().get(0), "D", 5, 0, new String[]{
-                "h j k","i j k","h j","i j",
-        });
-        assertSentenceUnfoldsTo(sections.get(1).getSentences().get(1), "", 6, 0, new String[]{
-                "l m o p q r t","l n o p q r t","l m o p q s t","l n o p q s t",
-        });
-        assertSentenceUnfoldsTo(sections.get(1).getSentences().get(2), "E7", 7, 2, new String[]{
-                "u . v . w",
-        });
+        assertSentence(sections.get(1).getSentences().get(0), "D", 5, entry(0, 1),
+                w("h", 2), w("i", 2), w("j", 3, 4), w("k", 4));
+        assertSentence(sections.get(1).getSentences().get(1), "", 6, entry(0),
+                w("l", 1, 2), w("m", 3), w("n", 3), w("o", 4), w("p", 5), w("q", 6, 7), w("r", 8), w("s", 8), w("t", 9));
+        assertSentence(sections.get(1).getSentences().get(2), "E7", 7, entry(0),
+                w("u", 1), capt("a_b", 2), w("v", 3, 4), capt("c", 4), w("w", 5));
 
         assertEquals("Ff", sections.get(2).getSectionId());
         assertEquals(Section.Specificity.low, sections.get(2).getSpecificity());
         assertEquals(8, sections.get(2).getLine());
         assertEquals(2, sections.get(2).getSentences().size());
-        assertSentenceUnfoldsTo(sections.get(2).getSentences().get(0), "", 10, 1, new String[]{
-                "x . y",
-        });
-        assertSentenceUnfoldsTo(sections.get(2).getSentences().get(1), "", 11, 1, new String[]{
-                "z .",
-        });
+        assertSentence(sections.get(2).getSentences().get(0), "", 10, entry(0, 1),
+                w("x", 1), capt("d_", 2), w("y", 3));
+        assertSentence(sections.get(2).getSentences().get(1), "", 11, entry(0),
+                w("z", 1, 2), capt("7", 2));
     }
 
     @Test
     public void testInvalidInput() throws IOException {
         assertInvalid("a bB",                         CompilerError.Type.invalidToken,                     1,  3,  "bB");
-        assertInvalid("a:1 b ..;;",                   CompilerError.Type.expectedSectionOrEndOfFile,       1, 10,  ";");
+        assertInvalid("a:1 b .c.;;",                  CompilerError.Type.expectedSectionOrEndOfFile,       1, 11,  ";");
         assertInvalid("a:1\n|b;",                     CompilerError.Type.expectedSentence,                 2,  2,  "|");
-        assertInvalid("a:1 .. b| |c;",                CompilerError.Type.invalidToken,                     1, 11,  "|");
+        assertInvalid("a:1 .b_C. d| |e;",             CompilerError.Type.invalidToken,                     1, 14,  "|");
         assertInvalid("a:low b|;",                    CompilerError.Type.invalidToken,                     1,  9,  ";");
         assertInvalid("a:1 b|? (c);",                 CompilerError.Type.invalidToken,                     1,  7,  "?");
         assertInvalid("a:1 b? (c?)??;",               CompilerError.Type.invalidToken,                     1, 13,  "?");
@@ -143,7 +180,7 @@ public class ParserTest {
         assertInvalid("a",                            CompilerError.Type.invalidToken,                     1,  2,  "");
         assertInvalid("a:\n",                         CompilerError.Type.invalidToken,                     2,  1,  "");
         assertInvalid("a:\nhig",                      CompilerError.Type.invalidSpecificity,               2,  1,  "hig");
-        assertInvalid("a:high .;",                    CompilerError.Type.capturingGroupInvalidLength,      1,  9,  ";");
+        /*assertInvalid("a:high .;",                    CompilerError.Type.capturingGroupInvalidLength,      1,  9,  ";");
         assertInvalid("a:1 .. ..;",                   CompilerError.Type.capturingGroupInvalidLength,      1,  8,  ".");
         assertInvalid("a:1 (..);",                    CompilerError.Type.capturingGroupInsideParenthesis,  1,  6,  ".");
         assertInvalid("a:1 ..?;",                     CompilerError.Type.optionalCapturingGroup,           1,  7,  "?");
@@ -151,11 +188,11 @@ public class ParserTest {
         assertInvalid("a:1 b|..;",                    CompilerError.Type.optionalCapturingGroup,           1,  7,  ".");
         assertInvalid("a:1\n[bB]c..;\n[bB]..d..;",    CompilerError.Type.differentNrOfCapturingGroups,     3, -1,  "bB");
         assertInvalid("a:1\n\n..b..;\n\n\nc;",        CompilerError.Type.differentNrOfCapturingGroups,     6, -1,  "");
-        assertInvalid("\na:1\n\n[bB]..c..d..;",       CompilerError.Type.tooManyCapturingGroups,           4, -1,  "bB");
-        assertInvalid("a:1\n[bB]..;",                 CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "bB");
-        assertInvalid("\n\na:1\n\n..;",               CompilerError.Type.sentenceCanBeEmpty,               5, -1,  "");
+        assertInvalid("\na:1\n\n[bB]..c..d..;",       CompilerError.Type.tooManyCapturingGroups,           4, -1,  "bB");*/
+        //assertInvalid("a:1\n[bB].c.;",                CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "bB");
+        //assertInvalid("\n\na:1\n\n..;",               CompilerError.Type.sentenceCanBeEmpty,               5, -1,  "");
         assertInvalid("a:1 b?;",                      CompilerError.Type.sentenceCanBeEmpty,               1, -1,  "");
-        assertInvalid("a:1\nb|c? ..((d|e)|f)?..;",    CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "");
+        //assertInvalid("a:1\nb|c? ..((d|e)|f)?..;",    CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "");
         assertInvalid("Aa:1 a;\nAa:1 b;",             CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
         assertInvalid("\nAa:1 a;\n\nB:1 b;\nAa:1 c;", CompilerError.Type.duplicateSectionId,               5, -1,  "Aa");
     }
@@ -163,11 +200,10 @@ public class ParserTest {
 
     @Test
     public void testNoCaseSensitivity() throws IOException, CompilerError {
-        ArrayList<Section> sections = getSections("A:3\nHello HOW are yOu;\n");
+        ArrayList<Section> sections = getSections("A:3\nHello HOW are yOu .Name_Of_Person.;\n");
 
-        assertSentenceUnfoldsTo(sections.get(0).getSentences().get(0), "", 2, 0, new String[]{
-                "hello how are you",
-        });
+        assertSentence(sections.get(0).getSentences().get(0), "", 2, entry(0),
+                w("hello", 1), w("how", 2), w("are", 3), w("you", 4), capt("Name_Of_Person", 5));
     }
 
     @Test

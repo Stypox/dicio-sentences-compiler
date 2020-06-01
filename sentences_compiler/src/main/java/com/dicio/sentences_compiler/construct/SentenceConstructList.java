@@ -1,49 +1,37 @@
 package com.dicio.sentences_compiler.construct;
 
-import com.dicio.sentences_compiler.parser.UnfoldableConstruct;
-import com.dicio.sentences_compiler.util.UnfoldingUtils;
-
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-public final class SentenceConstructList implements UnfoldableConstruct {
-    private ArrayList<UnfoldableConstruct> constructs;
+public final class SentenceConstructList implements Construct {
+    private ArrayList<Construct> constructs;
 
     public SentenceConstructList() {
         constructs = new ArrayList<>();
     }
-    public void addConstruct(UnfoldableConstruct construct) {
+
+    public void addConstruct(final Construct construct) {
         constructs.add(construct);
     }
 
-
-    @Override
-    public ArrayList<ArrayList<String>> unfold() {
-        ArrayList<ArrayList<String>> combinations = new ArrayList<>();
-        combinations.add(new ArrayList<String>());
-
-        for (UnfoldableConstruct construct : constructs) {
-            ArrayList<ArrayList<String>> currComb = construct.unfold();
-            int initialSize = combinations.size();
-            combinations = UnfoldingUtils.multiplyArray(combinations, currComb.size());
-
-            for (int i = 0; i < currComb.size(); ++i) {
-                for (int j = 0; j < initialSize; ++j) {
-                    combinations.get(j + i*initialSize).addAll(currComb.get(i));
-                }
-            }
-        }
-        return combinations;
-    }
-
-    @Override
-    public boolean isOptional() {
-        for (UnfoldableConstruct construct : constructs) {
-            if (!construct.isOptional()) return false;
-        }
-        return true;
-    }
-
-    public ArrayList<UnfoldableConstruct> getConstructs() {
+    public ArrayList<Construct> getConstructs() {
         return constructs;
+    }
+
+
+    @Override
+    public void buildWordList(final List<Word> words) {
+        for (final Construct construct : constructs) {
+            construct.buildWordList(words);
+        }
+    }
+
+    @Override
+    public Set<Integer> findNextIndices(Set<Integer> nextIndices) {
+        for (int i = constructs.size() - 1; i >= 0; --i) {
+            nextIndices = constructs.get(i).findNextIndices(nextIndices);
+        }
+        return nextIndices;
     }
 }

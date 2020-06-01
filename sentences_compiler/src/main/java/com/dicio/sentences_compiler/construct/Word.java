@@ -1,23 +1,46 @@
 package com.dicio.sentences_compiler.construct;
 
-import com.dicio.sentences_compiler.parser.UnfoldableConstruct;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
-import java.util.ArrayList;
+public final class Word implements Construct {
+    private final String value;
+    private final boolean isCapturingGroup;
+    private int index;
+    private Set<Integer> nextIndices;
 
-public final class Word implements UnfoldableConstruct {
-    private String word;
+    public Word(final String value, final boolean isCapturingGroup) {
+        this.value = value;
+        this.isCapturingGroup = isCapturingGroup;
+    }
 
-    public Word(String word) {
-        this.word = word;
+    public String getValue() {
+        return value;
+    }
+
+    public boolean isCapturingGroup() {
+        return isCapturingGroup;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public Set<Integer> getNextIndices() {
+        return nextIndices;
+    }
+
+
+    @Override
+    public void buildWordList(final List<Word> words) {
+        index = words.size();
+        words.add(this);
     }
 
     @Override
-    public ArrayList<ArrayList<String>> unfold() {
-        return new ArrayList<ArrayList<String>>() {{ add(new ArrayList<String>(){{ add(word); }}); }};
-    }
-
-    @Override
-    public boolean isOptional() {
-        return false;
+    public Set<Integer> findNextIndices(final Set<Integer> nextIndices) {
+        this.nextIndices = nextIndices;
+        return Collections.singleton(index);
     }
 }

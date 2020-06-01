@@ -6,7 +6,6 @@ import com.dicio.sentences_compiler.util.CompilerError;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Section implements CompilableToJava {
     public enum Specificity {
@@ -36,20 +35,9 @@ public class Section implements CompilableToJava {
         this.sentences.add(sentences);
     }
 
-    public void validate() throws CompilerError {
-        HashMap<String, Integer> sentenceCapturingGroups = new HashMap<>();
+    public void compileSentenceWordLists() throws CompilerError {
         for (Sentence sentence : sentences) {
-            sentence.validate();
-            int capturingGroups = sentence.numberOfCapturingGroups();
-            String sentenceId = sentence.getSentenceId();
-
-            if (sentenceCapturingGroups.containsKey(sentenceId)) {
-                if (sentenceCapturingGroups.get(sentenceId) != capturingGroups) {
-                    throw new CompilerError(CompilerError.Type.differentNrOfCapturingGroups, sentenceId, inputStreamName, sentence.getLine(), "");
-                }
-            } else {
-                sentenceCapturingGroups.put(sentenceId, capturingGroups);
-            }
+            sentence.compileWordList();
         }
     }
 

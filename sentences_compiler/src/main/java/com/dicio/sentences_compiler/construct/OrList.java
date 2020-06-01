@@ -1,29 +1,23 @@
 package com.dicio.sentences_compiler.construct;
 
-import com.dicio.sentences_compiler.parser.UnfoldableConstruct;
-
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public final class OrList implements UnfoldableConstruct {
-    private ArrayList<UnfoldableConstruct> constructs; // could contain one item
+public final class OrList implements Construct {
+    private List<Construct> constructs; // could contain one item
 
     public OrList() {
         constructs = new ArrayList<>();
     }
-    public void addConstruct(UnfoldableConstruct construct) {
+
+    public void addConstruct(Construct construct) {
         constructs.add(construct);
     }
 
-    @Override
-    public ArrayList<ArrayList<String>> unfold() {
-        ArrayList<ArrayList<String>> combinations = new ArrayList<>();
-        for (UnfoldableConstruct construct : constructs) {
-            combinations.addAll(construct.unfold());
-        }
-        return combinations;
-    }
-
-    public UnfoldableConstruct shrink() {
+    public Construct shrink() {
         if (constructs.size() == 1) {
             return constructs.get(0);
         } else {
@@ -32,12 +26,18 @@ public final class OrList implements UnfoldableConstruct {
     }
 
     @Override
-    public boolean isOptional() {
-        for (UnfoldableConstruct construct : constructs) {
-            if (construct.isOptional()) {
-                return true;
-            }
+    public void buildWordList(final List<Word> words) {
+        for (final Construct construct : constructs) {
+            construct.buildWordList(words);
         }
-        return false;
+    }
+
+    @Override
+    public Set<Integer> findNextIndices(final Set<Integer> nextIndices) {
+        final Set<Integer> merged = new HashSet<>();
+        for (final Construct construct : constructs) {
+            merged.addAll(construct.findNextIndices(nextIndices));
+        }
+        return merged;
     }
 }

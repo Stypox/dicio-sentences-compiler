@@ -1,17 +1,16 @@
 package com.dicio.sentences_compiler.construct;
 
-import com.dicio.sentences_compiler.parser.UnfoldableConstruct;
+import java.util.List;
+import java.util.Set;
 
-import java.util.ArrayList;
-
-public class ConstructOptional implements UnfoldableConstruct {
+public class ConstructOptional implements Construct {
     @Override
-    public ArrayList<ArrayList<String>> unfold() {
-        return new ArrayList<ArrayList<String>>() {{ add(new ArrayList<String>()); }};
+    public void buildWordList(final List<Word> words) {
+        // do nothing, this is not a word
     }
 
     @Override
-    public boolean isOptional() {
-        return true;
+    public Set<Integer> findNextIndices(final Set<Integer> nextIndices) {
+        return nextIndices;
     }
 }

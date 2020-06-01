@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class SentenceTest {
 
@@ -19,7 +19,7 @@ public class SentenceTest {
         Sentence s = new Sentence();
         s.setSentenceId(sentenceId, "", 0);
         SentenceConstructList sentenceConstructList = new SentenceConstructList();
-        sentenceConstructList.addConstruct(new Word("hello"));
+        sentenceConstructList.addConstruct(new Word("hello", false));
         s.setSentenceConstructs(sentenceConstructList);
 
         OutputStream outputStream = new ByteArrayOutputStream();

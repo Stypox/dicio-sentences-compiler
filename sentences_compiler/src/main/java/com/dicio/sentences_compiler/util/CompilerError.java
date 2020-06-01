@@ -12,11 +12,8 @@ public class CompilerError extends Exception {
         expectedSentence("Expected sentence after specificity"),
         expectedSentenceContent("Expected sentence content after sentence id"),
         expectedSentenceConstructList("Expected list of sentence constructs"),
-        capturingGroupInvalidLength("Capturing groups are made of exactly two points \".\""),
-        capturingGroupInsideParenthesis("Capturing groups cannot be nested inside parenthesis"),
-        optionalCapturingGroup("Capturing groups cannot be optional"),
-        differentNrOfCapturingGroups("Sentences with the same sentence id (possibly empty) must have the same number of capturing groups"),
-        tooManyCapturingGroups("Too many capturing groups"),
+        expectedCapturingGroupName("Expected capturing group name after point \".\""),
+        expectedPoint("Expected point \".\" after capturing group name"),
         sentenceCanBeEmpty("Sentence can be unfolded to an empty sentence (possibly with capturing groups)"),
         duplicateSectionId("Duplicate section id");
 

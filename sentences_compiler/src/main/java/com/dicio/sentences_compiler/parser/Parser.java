@@ -1,20 +1,16 @@
 package com.dicio.sentences_compiler.parser;
 
-import com.dicio.sentences_compiler.lexer.Token;
-import com.dicio.sentences_compiler.construct.CapturingGroup;
+import com.dicio.sentences_compiler.construct.Construct;
 import com.dicio.sentences_compiler.construct.ConstructOptional;
 import com.dicio.sentences_compiler.construct.OrList;
+import com.dicio.sentences_compiler.construct.Section;
 import com.dicio.sentences_compiler.construct.Sentence;
 import com.dicio.sentences_compiler.construct.SentenceConstructList;
 import com.dicio.sentences_compiler.construct.Word;
-import com.dicio.sentences_compiler.util.CompilerError;
+import com.dicio.sentences_compiler.lexer.Token;
 import com.dicio.sentences_compiler.lexer.TokenStream;
-import com.dicio.sentences_compiler.lexer.Tokenizer;
-import com.dicio.sentences_compiler.construct.Section;
+import com.dicio.sentences_compiler.util.CompilerError;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 public class Parser {
@@ -190,29 +186,21 @@ public class Parser {
             return null;
         }
 
-        return readSentenceConstructList(true);
+        return readSentenceConstructList();
     }
 
-    private SentenceConstructList readSentenceConstructList(boolean capturingGroupsAllowed) throws CompilerError {
+    private SentenceConstructList readSentenceConstructList() throws CompilerError {
         SentenceConstructList sentenceConstructList = new SentenceConstructList();
 
         boolean foundSentenceConstruct = false;
         while (true) {
-            UnfoldableConstruct sentenceConstruct = null;
-            OrList orList = readOrList();
-            if (orList == null) {
-                if (capturingGroupsAllowed) {
-                    sentenceConstruct = readCapturingGroup();
-                }
-            } else {
-                sentenceConstruct = orList.shrink();
-            }
+            final OrList orList = readOrList();
 
-            if (sentenceConstruct == null) {
+            if (orList == null) {
                 break;
             } else {
                 foundSentenceConstruct = true;
-                sentenceConstructList.addConstruct(sentenceConstruct);
+                sentenceConstructList.addConstruct(orList.shrink());
             }
         }
 
@@ -228,19 +216,18 @@ public class Parser {
 
         boolean foundSentenceConstruct = false;
         while (true) {
-            UnfoldableConstruct sentenceConstruct;
+            Construct sentenceConstruct;
             sentenceConstruct = readWord();
+            if (sentenceConstruct == null) {
+                sentenceConstruct = readCapturingGroup();
+            }
             if (sentenceConstruct == null) {
                 sentenceConstruct = readSentenceConstructListInsideParenthesis();
             }
 
             if (sentenceConstruct == null) {
                 if (foundSentenceConstruct) { // there is a | at the end of the OrList
-                    if (ts.get(0).equals(Token.Type.grammar, ".")) {
-                        throw new CompilerError(CompilerError.Type.optionalCapturingGroup, ts.get(0), "");
-                    } else {
-                        throw new CompilerError(CompilerError.Type.invalidToken, ts.get(0), "Expected sentence construct after \"|\" token");
-                    }
+                    throw new CompilerError(CompilerError.Type.invalidToken, ts.get(0), "Expected sentence construct after \"|\" token");
                 } else {
                     break;
                 }
@@ -269,7 +256,7 @@ public class Parser {
 
     private Word readWord() {
         if (ts.get(0).isType(Token.Type.letters)) {
-            Word word = new Word(ts.get(0).getValue().toLowerCase());
+            Word word = new Word(ts.get(0).getValue().toLowerCase(), false);
             ts.movePositionForwardBy(1);
             return word;
         } else {
@@ -281,13 +268,9 @@ public class Parser {
         if (ts.get(0).equals(Token.Type.grammar, "(")) {
             ts.movePositionForwardBy(1);
 
-            SentenceConstructList sentenceConstructList = readSentenceConstructList(false);
+            SentenceConstructList sentenceConstructList = readSentenceConstructList();
             if (sentenceConstructList == null) {
-                if (ts.get(0).equals(Token.Type.grammar, ".")) {
-                    throw new CompilerError(CompilerError.Type.capturingGroupInsideParenthesis, ts.get(0), "");
-                } else {
-                    throw new CompilerError(CompilerError.Type.expectedSentenceConstructList, ts.get(0), "");
-                }
+                throw new CompilerError(CompilerError.Type.expectedSentenceConstructList, ts.get(0), "");
             } else {
                 if (ts.get(0).equals(Token.Type.grammar, ")")) {
                     ts.movePositionForwardBy(1);
@@ -301,20 +284,20 @@ public class Parser {
         }
     }
 
-    private CapturingGroup readCapturingGroup() throws CompilerError {
+    private Word readCapturingGroup() throws CompilerError {
         if (ts.get(0).equals(Token.Type.grammar, ".")) {
             ts.movePositionForwardBy(1);
-            if (ts.get(0).equals(Token.Type.grammar, ".")) {
-                ts.movePositionForwardBy(1);
-                if (ts.get(0).equals(Token.Type.grammar, ".")) {
-                    // this also prevents two subsequent capturing groups
-                    throw new CompilerError(CompilerError.Type.capturingGroupInvalidLength, ts.get(0), "Found more than two points \".\"");
-                } else if (ts.get(0).equals(Token.Type.grammar, "?") || ts.get(0).equals(Token.Type.grammar, "|")) {
-                    throw new CompilerError(CompilerError.Type.optionalCapturingGroup, ts.get(0), "");
+            if (ts.get(0).isType(Token.Type.lettersPlusOther)) {
+                final String capturingGroupName = ts.get(0).getValue();
+                if (!ts.get(1).equals(Token.Type.grammar, ".")) {
+                    throw new CompilerError(CompilerError.Type.expectedPoint, ts.get(1), "");
                 }
-                return new CapturingGroup();
+
+                ts.movePositionForwardBy(2);
+                return new Word(capturingGroupName, true);
+
             } else {
-                throw new CompilerError(CompilerError.Type.capturingGroupInvalidLength, ts.get(0), "Found only one point \".\"");
+                throw new CompilerError(CompilerError.Type.expectedCapturingGroupName, ts.get(0), "");
             }
         } else {
             return null;
@@ -325,7 +308,7 @@ public class Parser {
     private void validate(ArrayList<Section> sections) throws CompilerError {
         ArrayList<String> sectionIds = new ArrayList<>();
         for(Section section : sections) {
-            section.validate();
+            section.compileSentenceWordLists();
 
             String sectionId = section.getSectionId();
             if (sectionIds.contains(sectionId)) {
