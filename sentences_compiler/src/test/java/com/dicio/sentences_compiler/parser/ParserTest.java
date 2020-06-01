@@ -169,36 +169,32 @@ public class ParserTest {
 
     @Test
     public void testInvalidInput() throws IOException {
-        assertInvalid("a bB",                         CompilerError.Type.invalidToken,                     1,  3,  "bB");
+        assertInvalid("a:1 [*] b|c;",                 CompilerError.Type.invalidCharacter,                 1,  6,  "*");
         assertInvalid("a:1 b .c.;;",                  CompilerError.Type.expectedSectionOrEndOfFile,       1, 11,  ";");
-        assertInvalid("a:1\n|b;",                     CompilerError.Type.expectedSentence,                 2,  2,  "|");
+        assertInvalid("a bB",                         CompilerError.Type.invalidToken,                     1,  3,  "bB");
         assertInvalid("a:1 .b_C. d| |e;",             CompilerError.Type.invalidToken,                     1, 14,  "|");
         assertInvalid("a:low b|;",                    CompilerError.Type.invalidToken,                     1,  9,  ";");
         assertInvalid("a:1 b|? (c);",                 CompilerError.Type.invalidToken,                     1,  7,  "?");
         assertInvalid("a:1 b? (c?)??;",               CompilerError.Type.invalidToken,                     1, 13,  "?");
         assertInvalid("a:1\n[] b|c;",                 CompilerError.Type.invalidToken,                     2,  2,  "]");
         assertInvalid("a:1 [|] b|c;",                 CompilerError.Type.invalidToken,                     1,  6,  "|");
-        assertInvalid("a:1 [*] b|c;",                 CompilerError.Type.invalidCharacter,                 1,  6,  "*");
-        assertInvalid("a:1 [A];",                     CompilerError.Type.expectedSentenceContent,          1,  8,  ";");
-        assertInvalid("a:medium ();",                 CompilerError.Type.expectedSentenceConstructList,    1, 11,  ")");
-        assertInvalid("a:1\n(());",                   CompilerError.Type.expectedSentenceConstructList,    2,  3,  ")");
         assertInvalid("a:1 [[]] a;",                  CompilerError.Type.invalidToken,                     1,  6,  "[");
         assertInvalid("a",                            CompilerError.Type.invalidToken,                     1,  2,  "");
         assertInvalid("a:\n",                         CompilerError.Type.invalidToken,                     2,  1,  "");
-        assertInvalid("a:\nhig",                      CompilerError.Type.invalidSpecificity,               2,  1,  "hig");
-        /*assertInvalid("a:high .;",                    CompilerError.Type.capturingGroupInvalidLength,      1,  9,  ";");
-        assertInvalid("a:1 .. ..;",                   CompilerError.Type.capturingGroupInvalidLength,      1,  8,  ".");
-        assertInvalid("a:1 (..);",                    CompilerError.Type.capturingGroupInsideParenthesis,  1,  6,  ".");
-        assertInvalid("a:1 ..?;",                     CompilerError.Type.optionalCapturingGroup,           1,  7,  "?");
-        assertInvalid("a:1 ..|b;",                    CompilerError.Type.optionalCapturingGroup,           1,  7,  "|");
-        assertInvalid("a:1 b|..;",                    CompilerError.Type.optionalCapturingGroup,           1,  7,  ".");
-        assertInvalid("a:1\n[bB]c..;\n[bB]..d..;",    CompilerError.Type.differentNrOfCapturingGroups,     3, -1,  "bB");
-        assertInvalid("a:1\n\n..b..;\n\n\nc;",        CompilerError.Type.differentNrOfCapturingGroups,     6, -1,  "");
-        assertInvalid("\na:1\n\n[bB]..c..d..;",       CompilerError.Type.tooManyCapturingGroups,           4, -1,  "bB");*/
-        //assertInvalid("a:1\n[bB].c.;",                CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "bB");
-        //assertInvalid("\n\na:1\n\n..;",               CompilerError.Type.sentenceCanBeEmpty,               5, -1,  "");
+        assertInvalid("false:1 a;",                   CompilerError.Type.invalidSectionId,                 1,  1,  "false");
+        assertInvalid("9hi:low a;",                   CompilerError.Type.invalidSectionId,                 1,  1,  "9hi");
+        assertInvalid("9:medium a;",                  CompilerError.Type.invalidSectionId,                 1,  1,  "9");
+        assertInvalid("a:media a;",                   CompilerError.Type.invalidSpecificity,               1,  1,  "media");
+        assertInvalid("a:\nhig;",                     CompilerError.Type.invalidSpecificity,               2,  1,  "hig");
+        assertInvalid("a:1\n|b;",                     CompilerError.Type.expectedSentence,                 2,  2,  "|");
+        assertInvalid("a_a:low;",                     CompilerError.Type.expectedSentence,                 1,  8,  ";");
+        assertInvalid("a:1 [A];",                     CompilerError.Type.expectedSentenceContent,          1,  8,  ";");
+        assertInvalid("\na:medium ();",               CompilerError.Type.expectedSentenceConstructList,    2, 11,  ")");
+        assertInvalid("a:1\n(());",                   CompilerError.Type.expectedSentenceConstructList,    2,  3,  ")");
+        assertInvalid("b:low\n[a] ..;",               CompilerError.Type.expectedCapturingGroupName,       2,  6,  ".");
+        assertInvalid("b:low [G] a .|;",              CompilerError.Type.expectedCapturingGroupName,       1, 14,  "|");
+        assertInvalid("\na:high b.\nc;",              CompilerError.Type.expectedPoint,                    3,  2,  ";");
         assertInvalid("a:1 b?;",                      CompilerError.Type.sentenceCanBeEmpty,               1, -1,  "");
-        //assertInvalid("a:1\nb|c? ..((d|e)|f)?..;",    CompilerError.Type.sentenceCanBeEmpty,               2, -1,  "");
         assertInvalid("Aa:1 a;\nAa:1 b;",             CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
         assertInvalid("\nAa:1 a;\n\nB:1 b;\nAa:1 c;", CompilerError.Type.duplicateSectionId,               5, -1,  "Aa");
     }
