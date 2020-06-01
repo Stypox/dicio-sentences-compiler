@@ -31,7 +31,7 @@ public class JavaSyntaxCheck {
                     (minUp <= val && val <= maxUp) ||
                     (val == underscore))) {
                 throw new CompilerError(CompilerError.Type.invalidSectionId, errorToken,
-                        "Not in the english alphabet, not a number and not \"_\": " + Character.toChars(val)[0]);
+                        "Not in the english alphabet, not a digit and not \"_\": " + Character.toChars(val)[0]);
             }
         }
 
