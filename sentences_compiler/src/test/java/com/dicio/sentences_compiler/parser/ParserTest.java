@@ -127,7 +127,7 @@ public class ParserTest {
                 "A:high\n" +
                 "a|b? G;\n" +
                 "[B_](c|d)|e FF g?;\n" +
-                "C_5 : 2\n" +
+                "C_5 : medium\n" +
                 "[D] (h|i) (j) (k)?    ;\n" +
                 "l ((M)|n) (o((p((Q(((r)))|(S))))t));\n" +
                 "[E7] u .a_b.v.c.? w;\n" +
@@ -169,40 +169,40 @@ public class ParserTest {
 
     @Test
     public void testInvalidInput() throws IOException {
-        assertInvalid("a:1 [*] b|c;",                 CompilerError.Type.invalidCharacter,                 1,  6,  "*");
-        assertInvalid("a:1 b .c.;;",                  CompilerError.Type.expectedSectionOrEndOfFile,       1, 11,  ";");
-        assertInvalid("a bB",                         CompilerError.Type.invalidToken,                     1,  3,  "bB");
-        assertInvalid("a:1 .b_C. d| |e;",             CompilerError.Type.invalidToken,                     1, 14,  "|");
-        assertInvalid("a:low b|;",                    CompilerError.Type.invalidToken,                     1,  9,  ";");
-        assertInvalid("a:1 b|? (c);",                 CompilerError.Type.invalidToken,                     1,  7,  "?");
-        assertInvalid("a:1 b? (c?)??;",               CompilerError.Type.invalidToken,                     1, 13,  "?");
-        assertInvalid("a:1\n[] b|c;",                 CompilerError.Type.invalidToken,                     2,  2,  "]");
-        assertInvalid("a:1 [|] b|c;",                 CompilerError.Type.invalidToken,                     1,  6,  "|");
-        assertInvalid("a:1 [[]] a;",                  CompilerError.Type.invalidToken,                     1,  6,  "[");
-        assertInvalid("a",                            CompilerError.Type.invalidToken,                     1,  2,  "");
-        assertInvalid("a:\n",                         CompilerError.Type.invalidToken,                     2,  1,  "");
-        assertInvalid("false:1 a;",                   CompilerError.Type.invalidSectionId,                 1,  1,  "false");
-        assertInvalid("9hi:low a;",                   CompilerError.Type.invalidSectionId,                 1,  1,  "9hi");
-        assertInvalid("9:medium a;",                  CompilerError.Type.invalidSectionId,                 1,  1,  "9");
-        assertInvalid("a:media a;",                   CompilerError.Type.invalidSpecificity,               1,  1,  "media");
-        assertInvalid("a:\nhig;",                     CompilerError.Type.invalidSpecificity,               2,  1,  "hig");
-        assertInvalid("a:1\n|b;",                     CompilerError.Type.expectedSentence,                 2,  2,  "|");
-        assertInvalid("a_a:low;",                     CompilerError.Type.expectedSentence,                 1,  8,  ";");
-        assertInvalid("a:1 [A];",                     CompilerError.Type.expectedSentenceContent,          1,  8,  ";");
-        assertInvalid("\na:medium ();",               CompilerError.Type.expectedSentenceConstructList,    2, 11,  ")");
-        assertInvalid("a:1\n(());",                   CompilerError.Type.expectedSentenceConstructList,    2,  3,  ")");
-        assertInvalid("b:low\n[a] ..;",               CompilerError.Type.expectedCapturingGroupName,       2,  6,  ".");
-        assertInvalid("b:low [G] a .|;",              CompilerError.Type.expectedCapturingGroupName,       1, 14,  "|");
-        assertInvalid("\na:high b.\nc;",              CompilerError.Type.expectedPoint,                    3,  2,  ";");
-        assertInvalid("a:1 b?;",                      CompilerError.Type.sentenceCanBeEmpty,               1, -1,  "");
-        assertInvalid("Aa:1 a;\nAa:1 b;",             CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
-        assertInvalid("\nAa:1 a;\n\nB:1 b;\nAa:1 c;", CompilerError.Type.duplicateSectionId,               5, -1,  "Aa");
+        assertInvalid("a:low [*] b|c;",       CompilerError.Type.invalidCharacter,                 1,  8,  "*");
+        assertInvalid("a:low b .c.;;",        CompilerError.Type.expectedSectionOrEndOfFile,       1, 13,  ";");
+        assertInvalid("a bB",                 CompilerError.Type.invalidToken,                     1,  3,  "bB");
+        assertInvalid("a:low .b_C. d| |e;",   CompilerError.Type.invalidToken,                     1, 16,  "|");
+        assertInvalid("a:low b|;",            CompilerError.Type.invalidToken,                     1,  9,  ";");
+        assertInvalid("a:low b|? (c);",       CompilerError.Type.invalidToken,                     1,  9,  "?");
+        assertInvalid("a:low b? (c?)??;",     CompilerError.Type.invalidToken,                     1, 15,  "?");
+        assertInvalid("a:low\n[] b|c;",       CompilerError.Type.invalidToken,                     2,  2,  "]");
+        assertInvalid("a:low [|] b|c;",       CompilerError.Type.invalidToken,                     1,  8,  "|");
+        assertInvalid("a:low [[]] a;",        CompilerError.Type.invalidToken,                     1,  8,  "[");
+        assertInvalid("a",                    CompilerError.Type.invalidToken,                     1,  2,  "");
+        assertInvalid("a:\n",                 CompilerError.Type.invalidToken,                     2,  1,  "");
+        assertInvalid("false:low a;",         CompilerError.Type.invalidSectionId,                 1,  1,  "false");
+        assertInvalid("9hi:low a;",           CompilerError.Type.invalidSectionId,                 1,  1,  "9hi");
+        assertInvalid("9:medium a;",          CompilerError.Type.invalidSectionId,                 1,  1,  "9");
+        assertInvalid("a:media a;",           CompilerError.Type.invalidSpecificity,               1,  1,  "media");
+        assertInvalid("a:\nhig;",             CompilerError.Type.invalidSpecificity,               2,  1,  "hig");
+        assertInvalid("a:low\n|b;",           CompilerError.Type.expectedSentence,                 2,  1,  "|");
+        assertInvalid("a_a:low;",             CompilerError.Type.expectedSentence,                 1,  8,  ";");
+        assertInvalid("a:low [A];",           CompilerError.Type.expectedSentenceContent,          1, 10,  ";");
+        assertInvalid("\na:medium ();",       CompilerError.Type.expectedSentenceConstructList,    2, 11,  ")");
+        assertInvalid("a:low\n(());",         CompilerError.Type.expectedSentenceConstructList,    2,  3,  ")");
+        assertInvalid("b:low\n[a] ..;",       CompilerError.Type.expectedCapturingGroupName,       2,  6,  ".");
+        assertInvalid("b:low [G] a .|;",      CompilerError.Type.expectedCapturingGroupName,       1, 14,  "|");
+        assertInvalid("\na:high b.\nc;",      CompilerError.Type.expectedPoint,                    3,  2,  ";");
+        assertInvalid("a:low b?;",            CompilerError.Type.sentenceCanBeEmpty,               1, -1,  "");
+        assertInvalid("Aa:low a;\nAa:low b;", CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
+        assertInvalid("\nAa:low a;\n\nB:low b;\nAa:low c;", CompilerError.Type.duplicateSectionId, 5, -1,  "Aa");
     }
 
 
     @Test
     public void testNoCaseSensitivity() throws IOException, CompilerError {
-        ArrayList<Section> sections = getSections("A:3\nHello HOW are yOu .Name_Of_Person.;\n");
+        ArrayList<Section> sections = getSections("A:high\nHello HOW are yOu .Name_Of_Person.;\n");
 
         assertSentence(sections.get(0).getSentences().get(0), "", 2, entry(0),
                 w("hello", 5, 1), w("how", 4, 2), w("are", 3, 3), w("you", 2, 4), capt("Name_Of_Person", 1, 5));
@@ -210,8 +210,8 @@ public class ParserTest {
 
     @Test
     public void testMultipleFiles() throws IOException, CompilerError {
-        String s1 = "a:3 [s1] b;";
-        String s2 = "c:1 [s2] d;";
+        String s1 = "a:medium [s1] b;";
+        String s2 = "c:low [s2] d;";
         Charset charset = Charset.forName("unicode");
         Tokenizer tokenizer = new Tokenizer();
 
@@ -224,7 +224,7 @@ public class ParserTest {
         ArrayList<Section> sections = parser.parse();
 
         assertEquals("1", sections.get(0).getInputStreamName());
-        assertEquals(Section.Specificity.high, sections.get(0).getSpecificity());
+        assertEquals(Section.Specificity.medium, sections.get(0).getSpecificity());
         assertEquals("a", sections.get(0).getSectionId());
         assertEquals("1", sections.get(0).getSentences().get(0).getInputStreamName());
         assertEquals("s1", sections.get(0).getSentences().get(0).getSentenceId());

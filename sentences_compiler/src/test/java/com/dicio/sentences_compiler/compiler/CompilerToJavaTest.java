@@ -24,7 +24,7 @@ public class CompilerToJavaTest {
                 "how (are you doing?)|(is it going);\n" +
                 "[has_place] how is it going over there;\n" +
                 "\n" +
-                "GPS_navigation: 2\n" +
+                "GPS_navigation: medium\n" +
                 "[question]  take|bring me to .place. (by .vehicle.)? please?;\n" +
                 "[question]  give me directions to .place. please?;\n" +
                 "[question]  how do|can i get to .place.;\n" +
@@ -42,5 +42,8 @@ public class CompilerToJavaTest {
         assertThat(code, CoreMatchers.containsString("StandardRecognizerData section_GPS_navigation"));
         assertThat(code, CoreMatchers.containsString("package com.hello.world"));
         assertThat(code, CoreMatchers.containsString("class MyClass"));
+        assertThat(code, CoreMatchers.containsString("high"));
+        assertThat(code, CoreMatchers.containsString("medium"));
+        assertThat(code, CoreMatchers.not(CoreMatchers.containsString("low")));
     }
 }

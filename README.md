@@ -2,7 +2,7 @@
 This tool provides a simple way to generate sentences to be matched for the Dicio assistant. It compiles files formatted with the Dicio-sentences-language to Java code that can be easily imported in projects using the interpreter of the Dicio assistant. It allows to pack toghether similar sentences while preserving readability.
 
 ## Dicio sentences language
-Every file contains many sections, starting with section information and followed by a list of sentences. The section information is formatted like `SECTION_ID:SPECIFICITY`, where SPECIFICITY can be `low`, `1`, `medium`, `2`, `high`, `3`. Every sentence is made of an optional sentence id (formatted like `[SENTENCE_ID]`) and a list of constructs followed by a `;`. Constructs can be:
+Every file contains many sections, starting with section information and followed by a list of sentences. The section information is formatted like `SECTION_ID:SPECIFICITY`, where SPECIFICITY can be `low`, `medium` and `high`. Every sentence is made of an optional sentence id (formatted like `[SENTENCE_ID]`) and a list of constructs followed by a `;`. Constructs can be:
 - word (e.g. `hello`). A simple word: it can contain uppercase and lowercase unicode letters.
 - or-red constructs (e.g. `hello|hi`). Any of the or-red construct could match. E.g. `hello|hi|hey assistant` matches `hello assistant`, `hi assistant` and `hey assistant`.
 - optional construct (e.g. `hello?`). This construct can be skipped during parsing. E.g. `bye bye?` matches both `bye` and `bye bye`
@@ -20,7 +20,7 @@ mood: high       # comments are supported :-D
 how (are you doing?)|(is it going);
 [has_place] how is it going over there;
 
-GPS_navigation: 2
+GPS_navigation: medium
 [question]  take|bring me to .place. (by .vehicle.)? please?;
 [question]  give me directions to .place. please?;
 [question]  how do|can i get to .place.;
