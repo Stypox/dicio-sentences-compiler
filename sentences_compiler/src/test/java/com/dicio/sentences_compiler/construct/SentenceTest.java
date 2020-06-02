@@ -1,5 +1,7 @@
 package com.dicio.sentences_compiler.construct;
 
+import com.dicio.sentences_compiler.util.CompilerError;
+
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -13,7 +15,7 @@ import static org.junit.Assert.assertThat;
 public class SentenceTest {
 
     @Test
-    public void testCompileToJava() throws IOException {
+    public void testCompileToJava() throws IOException, CompilerError {
         String sentenceId = "ID", word = "hello";
 
         Sentence s = new Sentence();
@@ -24,6 +26,7 @@ public class SentenceTest {
 
         OutputStream outputStream = new ByteArrayOutputStream();
         OutputStreamWriter output = new OutputStreamWriter(outputStream);
+        s.compileWordList();
         s.compileToJava(output, "");
         output.close();
 
