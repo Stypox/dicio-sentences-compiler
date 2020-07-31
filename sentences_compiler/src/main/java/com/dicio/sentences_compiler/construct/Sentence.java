@@ -43,6 +43,10 @@ public class Sentence implements CompilableToJava {
         return line;
     }
 
+    public Set<String> getCapturingGroupNames() {
+        return sentenceConstructs.getCapturingGroupNames();
+    }
+
 
     public Word compileMinimumSkippedWordsToEnd(final int wordIndex) {
         if (wordIndex >= compiledWords.size()) {

@@ -57,6 +57,15 @@ public final class Word implements Construct, CompilableToJava {
         return Collections.singleton(index);
     }
 
+    @Override
+    public Set<String> getCapturingGroupNames() {
+        if (isCapturingGroup()) {
+            return Collections.singleton(value);
+        } else {
+            return Collections.emptySet();
+        }
+    }
+
 
     @Override
     public void compileToJava(final OutputStreamWriter output, final String variableName)

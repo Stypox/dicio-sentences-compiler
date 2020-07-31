@@ -1,9 +1,10 @@
 package com.dicio.sentences_compiler.construct;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class ConstructOptional implements Construct {
+public final class OptionalConstruct implements Construct {
     @Override
     public void buildWordList(final List<Word> words) {
         // do nothing, this is not a word
@@ -12,5 +13,11 @@ public class ConstructOptional implements Construct {
     @Override
     public Set<Integer> findNextIndices(final Set<Integer> nextIndices) {
         return nextIndices;
+    }
+
+    @Override
+    public Set<String> getCapturingGroupNames() {
+        // do nothing, this is not a word
+        return Collections.emptySet();
     }
 }

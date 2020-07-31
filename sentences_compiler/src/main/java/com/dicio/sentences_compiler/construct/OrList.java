@@ -1,21 +1,10 @@
 package com.dicio.sentences_compiler.construct;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class OrList implements Construct {
-    private List<Construct> constructs; // could contain one item
-
-    public OrList() {
-        constructs = new ArrayList<>();
-    }
-
-    public void addConstruct(Construct construct) {
-        constructs.add(construct);
-    }
+public final class OrList extends AggregateConstruct {
 
     public Construct shrink() {
         if (constructs.size() == 1) {
@@ -24,6 +13,7 @@ public final class OrList implements Construct {
             return this;
         }
     }
+
 
     @Override
     public void buildWordList(final List<Word> words) {

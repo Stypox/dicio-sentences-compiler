@@ -1,7 +1,7 @@
 package com.dicio.sentences_compiler.parser;
 
 import com.dicio.sentences_compiler.construct.Construct;
-import com.dicio.sentences_compiler.construct.ConstructOptional;
+import com.dicio.sentences_compiler.construct.OptionalConstruct;
 import com.dicio.sentences_compiler.construct.OrList;
 import com.dicio.sentences_compiler.construct.Section;
 import com.dicio.sentences_compiler.construct.Sentence;
@@ -13,8 +13,6 @@ import com.dicio.sentences_compiler.util.CompilerError;
 import com.dicio.sentences_compiler.util.JavaSyntaxCheck;
 
 import java.util.ArrayList;
-
-import javax.lang.model.SourceVersion;
 
 public class Parser {
     private TokenStream ts;
@@ -225,7 +223,7 @@ public class Parser {
                 ts.movePositionForwardBy(1);
             } else if (ts.get(0).equals(Token.Type.grammar, "?")) {
                 ts.movePositionForwardBy(1);
-                orList.addConstruct(new ConstructOptional());
+                orList.addConstruct(new OptionalConstruct());
                 break;
             } else {
                 break;

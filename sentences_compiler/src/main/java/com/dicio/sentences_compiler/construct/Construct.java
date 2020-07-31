@@ -1,5 +1,6 @@
 package com.dicio.sentences_compiler.construct;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -28,4 +29,13 @@ public interface Construct {
      *              input, `[0]` for A (i.e. only itself)
      */
     Set<Integer> findNextIndices(Set<Integer> nextIndices);
+
+    /**
+     * @return a set with unique strings containing all capturing group names used inside this
+     *         construct. They will be added to compiled files as constant variables for easy use
+     *         and access and to prevent typos, similarly to what is done inside the {@code R}
+     *         class in Android. If this construct contains no capturing group, return
+     *         {@link Collections#emptySet()}.
+     */
+    Set<String> getCapturingGroupNames();
 }
