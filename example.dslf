@@ -2,7 +2,7 @@ mood: high       # comments are supported :-D
 how (are you doing?)|(is it going);
 [has_place] how is it going over there;
 
-GPS_navigation: 2
+GPS_navigation: medium
 [question]  take|bring me to .place. (by .vehicle.)? please?;
 [question]  give me directions to .place. please?;
 [question]  how do|can i get to .place.;
