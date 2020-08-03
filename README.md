@@ -32,7 +32,7 @@ SectionClass_SECTION_NAME SECTION_NAME = new SectionClass_SECTION_NAME();
 ```
 
 ## Build and run
-To build the project open it in Android Studio (IntelliJ Idea probably works, too) and create an Application configuration in the "Run/Debug Configurations" menu, set "Main class" to `org.dicio.sentences_compiler.main.SentencesCompiler` and "Program arguments" to the arguments for the compiler. Then run the newly created configuration with the "Run" button. Set `--help` as "Program arguments" to get an help screen explaining the options.
+To build the project open it in Android Studio (IntelliJ Idea probably works, too) and create an Application configuration in the "Run/Debug Configurations" menu, set "Main class" to `org.dicio.sentences_compiler.main.SentencesCompiler`, "Use classpath of module" to `sentences_compiler` and "Program arguments" to the arguments for the compiler. Then run the newly created configuration with the "Run" button. Set `--help` as "Program arguments" to get an help screen explaining the options.
 
 ## Example
 The file below is [`example.dslf`](example.dslf). "dslf" means "Dicio-Sentences-Language File".
