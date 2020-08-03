@@ -35,6 +35,8 @@ If a section map name is provided via the `--create-section-map` parameter, a `M
 ## Build and run
 To build the project open it in Android Studio (IntelliJ Idea probably works, too) and create an Application configuration in the "Run/Debug Configurations" menu, set "Main class" to `org.dicio.sentences_compiler.main.SentencesCompiler`, "Use classpath of module" to `sentences_compiler` and "Program arguments" to the arguments for the compiler. Then run the newly created configuration with the "Run" button. Set `--help` as "Program arguments" to get an help screen explaining the options.
 
+This project can be also used as a library. In that case, add `'com.github.Stypox:dicio-sentences-compiler:VERSION'` to your Gradle dependencies, replacing `VERSION` with the latest release or commit. Then use the `org.dicio.sentences_compiler.main.SentencesCompiler#compile()` function to compile using input files and output streams (take a look at the `javadoc` documentation provided there).
+
 ## Example
 The file below is [`example.dslf`](example.dslf). "dslf" means "Dicio-Sentences-Language File".
 ```
