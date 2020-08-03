@@ -23,6 +23,9 @@ import java.util.List;
 
 public class SentencesCompiler {
 
+    private SentencesCompiler() {
+    }
+
     /**
      * The main function, to be used in command line environments. In Java code use
      * {@link #compile(List, OutputStreamWriter, OutputStreamWriter, CompilerBase)} instead.
