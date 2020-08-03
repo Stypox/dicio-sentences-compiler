@@ -6,7 +6,7 @@ dependencies {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'com.dicio.sentences_compiler.main.SentencesCompiler'
+                'Main-Class': 'org.dicio.sentences_compiler.main.SentencesCompiler'
         )
     }
 }
