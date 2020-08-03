@@ -30,6 +30,7 @@ class SectionClass_SECTION_NAME extends StandardRecognizerData {
 }
 SectionClass_SECTION_NAME SECTION_NAME = new SectionClass_SECTION_NAME();
 ```
+If a section map name is provided via the `--create-section-map` parameter, a `Map<String, StandardRecognizerData>` will be created containing a mapping between section ids and their corresponding `StandardRecognizerData` instance. This can be useful for autogeneration code (like that found in [`dicio-android`'s `build.gradle`](https://github.com/Stypox/dicio-android/blob/master/app/build.gradle)) in combination with the `--sections-file` parameter.
 
 ## Build and run
 To build the project open it in Android Studio (IntelliJ Idea probably works, too) and create an Application configuration in the "Run/Debug Configurations" menu, set "Main class" to `org.dicio.sentences_compiler.main.SentencesCompiler`, "Use classpath of module" to `sentences_compiler` and "Program arguments" to the arguments for the compiler. Then run the newly created configuration with the "Run" button. Set `--help` as "Program arguments" to get an help screen explaining the options.
