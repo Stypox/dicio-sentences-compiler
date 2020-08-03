@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,7 +26,7 @@ import static org.junit.Assert.fail;
 
 public class ParserTest {
     private static ArrayList<Section> getSections(String s, String inputStreamName) throws IOException, CompilerError {
-        Charset charset = Charset.forName("unicode");
+        Charset charset = StandardCharsets.UTF_8;
         InputStream stream = new ByteArrayInputStream(s.getBytes(charset));
         Tokenizer tokenizer = new Tokenizer();
         tokenizer.tokenize(new InputStreamReader(stream, charset), inputStreamName);
@@ -215,7 +216,7 @@ public class ParserTest {
     public void testMultipleFiles() throws IOException, CompilerError {
         String s1 = "a:medium [s1] b;";
         String s2 = "c:low [s2] d;";
-        Charset charset = Charset.forName("unicode");
+        Charset charset = StandardCharsets.UTF_8;
         Tokenizer tokenizer = new Tokenizer();
 
         InputStream stream1 = new ByteArrayInputStream(s1.getBytes(charset));
