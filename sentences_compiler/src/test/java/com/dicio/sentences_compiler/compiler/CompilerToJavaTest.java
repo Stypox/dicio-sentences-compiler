@@ -38,10 +38,11 @@ public class CompilerToJavaTest {
         outputStream.close();
 
         String code = outputStream.toString("unicode");
-        assertThat(code, CoreMatchers.containsString("StandardRecognizerData section_mood"));
-        assertThat(code, CoreMatchers.containsString("StandardRecognizerData section_GPS_navigation"));
         assertThat(code, CoreMatchers.containsString("package com.hello.world"));
         assertThat(code, CoreMatchers.containsString("class MyClass"));
+        assertThat(code, CoreMatchers.containsString("StandardRecognizerData section_mood"));
+        assertThat(code, CoreMatchers.containsString("public static final class SectionClass_section_GPS_navigation extends StandardRecognizerData"));
+        assertThat(code, CoreMatchers.containsString("SectionClass_section_GPS_navigation section_GPS_navigation"));
         assertThat(code, CoreMatchers.containsString("high"));
         assertThat(code, CoreMatchers.containsString("medium"));
         assertThat(code, CoreMatchers.not(CoreMatchers.containsString("low")));
