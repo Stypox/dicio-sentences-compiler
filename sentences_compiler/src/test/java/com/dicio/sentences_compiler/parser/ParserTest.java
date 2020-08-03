@@ -134,7 +134,7 @@ public class ParserTest {
                 "Ff:\n" +
                 "low\n" +
                 "x?.d_.y;\n" +
-                "z.7.?;\n");
+                "z.C7.?;\n");
         assertEquals(3, sections.size());
 
         assertEquals("A", sections.get(0).getSectionId());
@@ -164,7 +164,7 @@ public class ParserTest {
         assertSentence(sections.get(2).getSentences().get(0), "", 10, entry(0, 1),
                 w("x", 3, 1), capt("d_", 2, 2), w("y", 1, 3));
         assertSentence(sections.get(2).getSentences().get(1), "", 11, entry(0),
-                w("z", 1, 1, 2), capt("7", 1, 2));
+                w("z", 1, 1, 2), capt("C7", 1, 2));
     }
 
     @Test
@@ -183,7 +183,7 @@ public class ParserTest {
         assertInvalid("a:\n",                 CompilerError.Type.invalidToken,                     2,  1,  "");
         assertInvalid("false:low a;",         CompilerError.Type.invalidSectionId,                 1,  1,  "false");
         assertInvalid("9hi:low a;",           CompilerError.Type.invalidSectionId,                 1,  1,  "9hi");
-        assertInvalid("9:medium a;",          CompilerError.Type.invalidSectionId,                 1,  1,  "9");
+        assertInvalid("è9:medium a;",         CompilerError.Type.invalidSectionId,                 1,  1,  "è9");
         assertInvalid("a:media a;",           CompilerError.Type.invalidSpecificity,               1,  1,  "media");
         assertInvalid("a:\nhig;",             CompilerError.Type.invalidSpecificity,               2,  1,  "hig");
         assertInvalid("a:low\n|b;",           CompilerError.Type.expectedSentence,                 2,  1,  "|");
@@ -193,7 +193,10 @@ public class ParserTest {
         assertInvalid("a:low\n(());",         CompilerError.Type.expectedSentenceConstructList,    2,  3,  ")");
         assertInvalid("b:low\n[a] ..;",       CompilerError.Type.expectedCapturingGroupName,       2,  6,  ".");
         assertInvalid("b:low [G] a .|;",      CompilerError.Type.expectedCapturingGroupName,       1, 14,  "|");
+        assertInvalid("c:high hi\n.caè.;",    CompilerError.Type.invalidCapturingGroupName,        2,  2,  "caè");
+        assertInvalid("c:high hi\n.9AC.;",    CompilerError.Type.invalidCapturingGroupName,        2,  2,  "9AC");
         assertInvalid("\na:high b.\nc;",      CompilerError.Type.expectedPoint,                    3,  2,  ";");
+        assertInvalid("z1:medium\n.g..\nè;",  CompilerError.Type.expectedPoint,                    3,  2,  ";");
         assertInvalid("a:low b?;",            CompilerError.Type.sentenceCanBeEmpty,               1, -1,  "");
         assertInvalid("Aa:low a;\nAa:low b;", CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
         assertInvalid("\nAa:low a;\n\nB:low b;\nAa:low c;", CompilerError.Type.duplicateSectionId, 5, -1,  "Aa");

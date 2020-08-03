@@ -79,7 +79,8 @@ public class Parser {
         if (ts.get(0).isType(Token.Type.lettersPlusOther)) {
             if (ts.get(1).equals(Token.Type.grammar, ":")) {
                 final String sectionId = ts.get(0).getValue();
-                JavaSyntaxCheck.checkValidJavaVariableName(sectionId, ts.get(0));
+                JavaSyntaxCheck.checkValidJavaVariableName(sectionId, ts.get(0),
+                        CompilerError.Type.invalidSectionId);
                 ts.movePositionForwardBy(2);
                 return sectionId;
             } else {
@@ -271,14 +272,15 @@ public class Parser {
         if (ts.get(0).equals(Token.Type.grammar, ".")) {
             ts.movePositionForwardBy(1);
             if (ts.get(0).isType(Token.Type.lettersPlusOther)) {
-                final String capturingGroupName = ts.get(0).getValue();
-                if (!ts.get(1).equals(Token.Type.grammar, ".")) {
+                if (ts.get(1).equals(Token.Type.grammar, ".")) {
+                    final String capturingGroupName = ts.get(0).getValue();
+                    JavaSyntaxCheck.checkValidJavaVariableName(capturingGroupName, ts.get(0),
+                            CompilerError.Type.invalidCapturingGroupName);
+                    ts.movePositionForwardBy(2);
+                    return new Word(capturingGroupName, true);
+                } else {
                     throw new CompilerError(CompilerError.Type.expectedPoint, ts.get(1), "");
                 }
-
-                ts.movePositionForwardBy(2);
-                return new Word(capturingGroupName, true);
-
             } else {
                 throw new CompilerError(CompilerError.Type.expectedCapturingGroupName, ts.get(0), "");
             }

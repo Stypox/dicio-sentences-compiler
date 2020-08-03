@@ -16,21 +16,21 @@ public class SentenceTest {
 
     @Test
     public void testCompileToJava() throws IOException, CompilerError {
-        String sentenceId = "ID", word = "hello";
+        final String sentenceId = "ID", word = "hello";
 
-        Sentence s = new Sentence();
+        final Sentence s = new Sentence();
         s.setSentenceId(sentenceId, "", 0);
         SentenceConstructList sentenceConstructList = new SentenceConstructList();
-        sentenceConstructList.addConstruct(new Word("hello", false));
+        sentenceConstructList.addConstruct(new Word(word, false));
         s.setSentenceConstructs(sentenceConstructList);
 
-        OutputStream outputStream = new ByteArrayOutputStream();
-        OutputStreamWriter output = new OutputStreamWriter(outputStream);
+        final OutputStream outputStream = new ByteArrayOutputStream();
+        final OutputStreamWriter output = new OutputStreamWriter(outputStream);
         s.compileWordList();
         s.compileToJava(output, "");
         output.close();
 
-        String code = outputStream.toString();
+        final String code = outputStream.toString();
         assertThat(code, CoreMatchers.containsString("\"" + sentenceId + "\""));
         assertThat(code, CoreMatchers.containsString("\"" + word + "\""));
     }

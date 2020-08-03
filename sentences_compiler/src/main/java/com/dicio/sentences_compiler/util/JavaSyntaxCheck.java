@@ -17,10 +17,13 @@ public class JavaSyntaxCheck {
     private JavaSyntaxCheck() {
     }
 
-    public static void checkValidJavaVariableName(final String name, final Token errorToken)
+    public static void checkValidJavaVariableName(final String name,
+                                                  final Token errorToken,
+                                                  final CompilerError.Type type)
             throws CompilerError {
+
         if (Character.isDigit(name.codePointAt(0))) {
-            throw new CompilerError(CompilerError.Type.invalidSectionId, errorToken,
+            throw new CompilerError(type, errorToken,
                     "The first character cannot be a digit: " + Character.toChars(name.codePointAt(0))[0]);
         }
 
@@ -30,14 +33,13 @@ public class JavaSyntaxCheck {
                     (minLow <= val && val <= maxLow) ||
                     (minUp <= val && val <= maxUp) ||
                     (val == underscore))) {
-                throw new CompilerError(CompilerError.Type.invalidSectionId, errorToken,
+                throw new CompilerError(type, errorToken,
                         "Not in the english alphabet, not a digit and not \"_\": " + Character.toChars(val)[0]);
             }
         }
 
         if (SourceVersion.isKeyword(name)) {
-            throw new CompilerError(CompilerError.Type.invalidSectionId, errorToken,
-                    "Java keyword");
+            throw new CompilerError(type, errorToken, "Java keyword");
         }
     }
 }

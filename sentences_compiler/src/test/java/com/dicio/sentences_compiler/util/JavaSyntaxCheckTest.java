@@ -12,7 +12,8 @@ public class JavaSyntaxCheckTest {
 
     private void checkValidVariableName(final String name) throws CompilerError {
         JavaSyntaxCheck.checkValidJavaVariableName(name,
-                new Token(Token.Type.lettersPlusOther, name, "nAmE", 51, 13));
+                new Token(Token.Type.lettersPlusOther, name, "nAmE", 51, 13),
+                invalidSectionId);
     }
 
     private void assertInvalid(final String name, final String errorMustContain) {
