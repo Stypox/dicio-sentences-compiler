@@ -19,9 +19,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class SentencesCompiler {
 
+    /**
+     * The main function, to be used in command line environments. In Java code use
+     * {@link #compile(List, OutputStreamWriter, OutputStreamWriter, CompilerBase)} instead.
+     */
     public static void main(final String[] args) throws IOException, CompilerError {
         final Arguments arguments = new Arguments();
         final JavaCommand javaCommand = new JavaCommand();
@@ -50,6 +55,7 @@ public class SentencesCompiler {
             throw e;
         }
 
+
         final CompilerBase compiler;
         switch (argParser.getParsedCommand()) {
             case "java":
@@ -60,20 +66,43 @@ public class SentencesCompiler {
                 throw new ParameterException("Unexpected value: " + argParser.getParsedCommand());
         }
 
+        final FileInfo outputFileInfo = new FileInfo(arguments.outputFile);
+        final FileInfo sectionIdsFileInfo = new FileInfo(arguments.sectionIdsFile);
+        compile(arguments.inputFiles,
+                outputFileInfo.openOutputStream(false),
+                sectionIdsFileInfo.openOutputStream(true),
+                compiler);
+        outputFileInfo.closeStream();
+        sectionIdsFileInfo.closeStream();
+    }
 
-        for (final String fileName : arguments.inputFiles) {
+
+    /**
+     * Compiles the dicio-sentences-language code contained in input files to code in the output
+     * stream using the provided compiler. Also outputs a space-separated list of section ids to
+     * the provided section ids stream.
+     * @param inputFiles the input files to read data from (stdin is accepted). Note that this
+     *                   should be an array of input streams, too, but in dicio-android it is only
+     *                   used with files. So it is kept this way for now.
+     * @param outputStream where to output compiled code into
+     * @param sectionIdsStream where to output a space-separated list of section ids (null is
+     *                         accepted)
+     * @param compiler the compiler to use to compile from dicio-sentences-language input to output
+     */
+    public static void compile(final List<String> inputFiles,
+                               final OutputStreamWriter outputStream,
+                               final OutputStreamWriter sectionIdsStream,
+                               final CompilerBase compiler) throws IOException, CompilerError {
+
+        for (final String fileName : inputFiles) {
             final FileInfo inputFileInfo = new FileInfo(fileName);
             compiler.addInputStream(inputFileInfo.openInputStream(), inputFileInfo.fileName);
             inputFileInfo.closeStream();
         }
 
-        final FileInfo outputFileInfo = new FileInfo(arguments.outputFile);
-        final FileInfo sectionIdsFileInfo = new FileInfo(arguments.sectionIdsFile);
-        compiler.compile(outputFileInfo.openOutputStream(false),
-                sectionIdsFileInfo.openOutputStream(true));
-        outputFileInfo.closeStream();
-        sectionIdsFileInfo.closeStream();
+        compiler.compile(outputStream, sectionIdsStream);
     }
+
 
     private static class FileInfo {
         private final String fileName;
