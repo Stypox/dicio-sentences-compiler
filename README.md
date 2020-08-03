@@ -51,9 +51,9 @@ GPS_navigation: medium
 ```
 The above Dicio-sentences-language file is compiled to Java code by running the sentences-compiler as explained [above](#build-and-run), and setting the line below as "Program arguments".
 ```sh
---input example.dslf --output ClassName.java java --variable-prefix "section_" --package "com.pkg.name" --class "ClassName"
+--input "example.dslf" --output "ClassName.java" --sections-file "stdout" java --variable-prefix "section_" --package "com.pkg.name" --class "ClassName" --create-section-map "sections"
 ```
-After clicking on the "Run" button, the Java code shown below should be inside a file called ClassName.java in the root directory of the repository. Indentation and spacing were added manually in order to improve readability.
+After clicking on the "Run" button, `mood GPS_navigation` should be outputted and the Java code shown below should be inside a file called ClassName.java in the root directory of the repository. Indentation and spacing were added manually in order to improve readability.
 ```java
 package com.pkg.name;
 
@@ -75,29 +75,35 @@ public class ClassName {
 
     public static final class SectionClass_section_GPS_navigation extends StandardRecognizerData {
         SectionClass_section_GPS_navigation() {
-            super(InputRecognizer.Specificity.medium,
-                    new Sentence("question", new int[]{0, 1,},
-                            new Word("take", false, 9, 2), new Word("bring", false, 11, 2), new Word("me", false, 10, 3),
-                            new Word("to", false, 9, 4), new Word("place", true, 8, 5, 7, 8), new Word("by", false, 6, 6),
-                            new Word("vehicle", true, 5, 7, 8), new Word("please", false, 4, 8)),
-                    new Sentence("question", new int[]{0,},
-                            new Word("give", false, 7, 1), new Word("me", false, 6, 2), new Word("directions", false, 5, 3),
-                            new Word("to", false, 4, 4), new Word("place", true, 3, 5, 6), new Word("please", false, 1, 6)),
-                    new Sentence("question", new int[]{0,},
-                            new Word("how", false, 9, 1, 2), new Word("do", false, 6, 3), new Word("can", false, 8, 3),
-                            new Word("i", false, 7, 4), new Word("get", false, 6, 5), new Word("to", false, 5, 6),
-                            new Word("place", true, 4, 7)),
-                    new Sentence("statement", new int[]{0,},
-                            new Word("i", false, 10, 1), new Word("want", false, 9, 2), new Word("to", false, 8, 3),
-                            new Word("go", false, 7, 4), new Word("to", false, 6, 5), new Word("place", true, 5, 6, 8),
-                            new Word("by", false, 3, 7), new Word("vehicle", true, 2, 8)),
-                    new Sentence("statement", new int[]{0,},
-                            new Word("place", true, 10, 1), new Word("is", false, 8, 2), new Word("the", false, 7, 3),
-                            new Word("place", false, 6, 4), new Word("i", false, 5, 5), new Word("want", false, 4, 6),
-                            new Word("to", false, 3, 7), new Word("go", false, 2, 8), new Word("to", false, 1, 9)));
+            super(
+                InputRecognizer.Specificity.medium,
+                new Sentence("question", new int[]{0, 1,},
+                    new Word("take", false, 9, 2), new Word("bring", false, 11, 2), new Word("me", false, 10, 3),
+                    new Word("to", false, 9, 4), new Word("place", true, 8, 5, 7, 8), new Word("by", false, 6, 6),
+                    new Word("vehicle", true, 5, 7, 8), new Word("please", false, 4, 8)),
+                new Sentence("question", new int[]{0,},
+                    new Word("give", false, 7, 1), new Word("me", false, 6, 2), new Word("directions", false, 5, 3),
+                    new Word("to", false, 4, 4), new Word("place", true, 3, 5, 6), new Word("please", false, 1, 6)),
+                new Sentence("question", new int[]{0,},
+                    new Word("how", false, 9, 1, 2), new Word("do", false, 6, 3), new Word("can", false, 8, 3),
+                    new Word("i", false, 7, 4), new Word("get", false, 6, 5), new Word("to", false, 5, 6),
+                    new Word("place", true, 4, 7)),
+                new Sentence("statement", new int[]{0,},
+                    new Word("i", false, 10, 1), new Word("want", false, 9, 2), new Word("to", false, 8, 3),
+                    new Word("go", false, 7, 4), new Word("to", false, 6, 5), new Word("place", true, 5, 6, 8),
+                    new Word("by", false, 3, 7), new Word("vehicle", true, 2, 8)),
+                new Sentence("statement", new int[]{0,},
+                    new Word("place", true, 10, 1), new Word("is", false, 8, 2), new Word("the", false, 7, 3),
+                    new Word("place", false, 6, 4), new Word("i", false, 5, 5), new Word("want", false, 4, 6),
+                    new Word("to", false, 3, 7), new Word("go", false, 2, 8), new Word("to", false, 1, 9)));
         }
         public final String place = "place", vehicle = "vehicle";
     }
     public static final SectionClass_section_GPS_navigation section_GPS_navigation = new SectionClass_section_GPS_navigation();
+
+    public static final Map<String,StandardRecognizerData> sections = new HashMap<String,StandardRecognizerData>() {{
+        put("mood", section_mood);
+        put("GPS_navigation", section_GPS_navigation);
+    }};
 }
 ```
