@@ -2,14 +2,18 @@ package org.dicio.sentences_compiler.main;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+
 import org.dicio.sentences_compiler.compiler.CompilerBase;
 import org.dicio.sentences_compiler.compiler.CompilerToJava;
 import org.dicio.sentences_compiler.util.CompilerError;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -18,16 +22,16 @@ import java.nio.charset.StandardCharsets;
 
 public class SentencesCompiler {
 
-    public static void main(String[] args) throws IOException, CompilerError {
-        Arguments arguments = new Arguments();
-        JavaCommand javaCommand = new JavaCommand();
-        JCommander argParser = JCommander
+    public static void main(final String[] args) throws IOException, CompilerError {
+        final Arguments arguments = new Arguments();
+        final JavaCommand javaCommand = new JavaCommand();
+        final JCommander argParser = JCommander
                 .newBuilder()
                 .addObject(arguments)
                 .addCommand("java", javaCommand)
                 .build();
 
-        for (String arg : args) {
+        for (final String arg : args) {
             if (arg.equals("-h") || arg.equals("--help")) {
                 argParser.usage();
                 return;
@@ -39,69 +43,89 @@ public class SentencesCompiler {
             if (argParser.getParsedCommand() == null) {
                 throw new ParameterException("A command must be supplied (e.g. `java`)");
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             StringBuilder stringBuilder = new StringBuilder();
             argParser.usage(stringBuilder);
             System.err.print(stringBuilder);
             throw e;
         }
 
-        CompilerBase compiler;
+        final CompilerBase compiler;
         switch (argParser.getParsedCommand()) {
             case "java":
-                compiler = new CompilerToJava(javaCommand.variablePrefix, javaCommand.packageName, javaCommand.className);
+                compiler = new CompilerToJava(javaCommand.variablePrefix, javaCommand.packageName,
+                        javaCommand.className, javaCommand.sectionMapName);
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + argParser.getParsedCommand());
+                throw new ParameterException("Unexpected value: " + argParser.getParsedCommand());
         }
 
-        for (String file : arguments.inputFiles) {
-            addInputFromOption(file, compiler);
+
+        for (final String fileName : arguments.inputFiles) {
+            final FileInfo inputFileInfo = new FileInfo(fileName);
+            compiler.addInputStream(inputFileInfo.openInputStream(), inputFileInfo.fileName);
+            inputFileInfo.closeStream();
         }
-        compileToOutputFromOption(arguments.outputFile, compiler);
+
+        final FileInfo outputFileInfo = new FileInfo(arguments.outputFile);
+        final FileInfo sectionIdsFileInfo = new FileInfo(arguments.sectionIdsFile);
+        compiler.compile(outputFileInfo.openOutputStream(false),
+                sectionIdsFileInfo.openOutputStream(true));
+        outputFileInfo.closeStream();
+        sectionIdsFileInfo.closeStream();
     }
 
     private static class FileInfo {
-        String fileName;
-        Charset charset;
+        private final String fileName;
+        private final Charset charset;
+        private Closeable closeableStream = null;
 
-        FileInfo(String value) {
-            String[] values = value.split(":", 2);
+        FileInfo(final String value) {
+            final String[] values = value.split(":", 2);
             if (values.length == 1) {
                 charset = StandardCharsets.UTF_8;
                 fileName = values[0];
             } else {
                 try {
                     charset = Charset.forName(values[0]);
-                } catch (Exception e) {
-                    throw new ParameterException("Unknown charset \"" + values[0] + "\": " + value, e);
+                } catch (final Exception e) {
+                    throw new ParameterException(
+                            "Unknown charset \"" + values[0] + "\": " + value, e);
                 }
                 fileName = values[1];
             }
         }
-    }
 
-    private static void addInputFromOption(String value, CompilerBase compiler) throws IOException, CompilerError {
-        FileInfo fileInfo = new FileInfo(value);
-
-        if (fileInfo.fileName.equals("stdin")) {
-            compiler.addInputStream(new InputStreamReader(System.in, fileInfo.charset), fileInfo.fileName);
-        } else {
-            File file = new File(fileInfo.fileName);
-            compiler.addInputStream(new InputStreamReader(new FileInputStream(file), fileInfo.charset), file.getName());
+        InputStreamReader openInputStream() throws FileNotFoundException {
+            final InputStream inputStream;
+            if (fileName.equals("stdin")) {
+                inputStream = System.in;
+            } else {
+                inputStream = new FileInputStream(new File(fileName));
+                closeableStream = inputStream;
+            }
+            return new InputStreamReader(inputStream, charset);
         }
-    }
 
-    private static void compileToOutputFromOption(String value, CompilerBase compiler) throws IOException, CompilerError {
-        FileInfo fileInfo = new FileInfo(value);
+        OutputStreamWriter openOutputStream(boolean ifEmptyThenNull) throws FileNotFoundException {
+            if (ifEmptyThenNull && fileName.isEmpty()) {
+                return null;
+            }
 
-        if (fileInfo.fileName.equals("stdout")) {
-            compiler.compile(new OutputStreamWriter(System.out, fileInfo.charset));
-        } else {
-            File file = new File(fileInfo.fileName);
-            OutputStream outputStream = new FileOutputStream(file);
-            compiler.compile(new OutputStreamWriter(outputStream, fileInfo.charset));
-            outputStream.close();
+            final OutputStream outputStream;
+            if (fileName.equals("stdout")) {
+                outputStream = System.out;
+            } else {
+                outputStream = new FileOutputStream(new File(fileName));
+                closeableStream = outputStream;
+            }
+            return new OutputStreamWriter(outputStream, charset);
+        }
+
+        void closeStream() throws IOException {
+            if (closeableStream != null) {
+                closeableStream.close();
+            }
         }
     }
 }
