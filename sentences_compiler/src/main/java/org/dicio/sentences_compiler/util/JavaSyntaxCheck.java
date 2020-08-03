@@ -46,6 +46,10 @@ public class JavaSyntaxCheck {
 
     private static String getErrorMessageForJavaVariableName(final String name) {
 
+        if (name.length() == 0) {
+            return "Empty";
+        }
+
         if (Character.isDigit(name.codePointAt(0))) {
             return "The first character cannot be a digit: "
                     + Character.toChars(name.codePointAt(0))[0];
