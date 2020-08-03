@@ -1,5 +1,7 @@
 package org.dicio.sentences_compiler.util;
 
+import com.beust.jcommander.ParameterException;
+
 import org.dicio.sentences_compiler.lexer.Token;
 
 import javax.lang.model.SourceVersion;
@@ -17,14 +19,36 @@ public class JavaSyntaxCheck {
     private JavaSyntaxCheck() {
     }
 
+    /**
+     * @throws ParameterException if parameter {@code name} is not a valid java variable name
+     */
+    public static void checkValidJavaVariableName(final String name, final String parameterName)
+            throws ParameterException {
+        final String errorMessage = getErrorMessageForJavaVariableName(name);
+        if (errorMessage != null) {
+            throw new ParameterException("Value \"" + name + "\" for parameter " + parameterName
+                    + " is not a valid Java variable name: " + errorMessage);
+        }
+    }
+
+    /**
+     * @throws CompilerError if parameter {@code name} is not a valid java variable name
+     */
     public static void checkValidJavaVariableName(final String name,
                                                   final Token errorToken,
                                                   final CompilerError.Type type)
             throws CompilerError {
+        final String errorMessage = getErrorMessageForJavaVariableName(name);
+        if (errorMessage != null) {
+            throw new CompilerError(type, errorToken, errorMessage);
+        }
+    }
+
+    private static String getErrorMessageForJavaVariableName(final String name) {
 
         if (Character.isDigit(name.codePointAt(0))) {
-            throw new CompilerError(type, errorToken,
-                    "The first character cannot be a digit: " + Character.toChars(name.codePointAt(0))[0]);
+            return "The first character cannot be a digit: "
+                    + Character.toChars(name.codePointAt(0))[0];
         }
 
         for (int i = 0; i < name.codePointCount(0, name.length()); ++i) {
@@ -33,13 +57,14 @@ public class JavaSyntaxCheck {
                     (minLow <= val && val <= maxLow) ||
                     (minUp <= val && val <= maxUp) ||
                     (val == underscore))) {
-                throw new CompilerError(type, errorToken,
-                        "Not in the english alphabet, not a digit and not \"_\": " + Character.toChars(val)[0]);
+                return "Not in the english alphabet, not a digit and not \"_\": "
+                        + Character.toChars(val)[0];
             }
         }
 
         if (SourceVersion.isKeyword(name)) {
-            throw new CompilerError(type, errorToken, "Java keyword");
+            return "Java keyword";
         }
+        return null;
     }
 }
