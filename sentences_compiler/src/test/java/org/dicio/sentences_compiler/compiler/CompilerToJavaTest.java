@@ -1,5 +1,7 @@
 package org.dicio.sentences_compiler.compiler;
 
+import com.beust.jcommander.ParameterException;
+
 import org.dicio.sentences_compiler.util.CompilerError;
 
 import org.hamcrest.CoreMatchers;
@@ -57,5 +59,25 @@ public class CompilerToJavaTest {
 
         assertEquals("mood GPS_navigation",
                 new String(sectionIdsStream.toByteArray(), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void checkAcceptsEmptyParameters() {
+        new CompilerToJava("", "a.b.c", "MyClass", "");
+    }
+
+    @Test(expected = ParameterException.class)
+    public void crashInvalidVariablePrefix() {
+        new CompilerToJava("9abc", "a.b.c", "MyClass", "ha");
+    }
+
+    @Test(expected = ParameterException.class)
+    public void crashInvalidClassName() {
+        new CompilerToJava("ha", "a.b.c", "è", "ha");
+    }
+
+    @Test(expected = ParameterException.class)
+    public void crashInvalidSectionMapName() {
+        new CompilerToJava("ha", "a.b.c", "MyClass", "class");
     }
 }

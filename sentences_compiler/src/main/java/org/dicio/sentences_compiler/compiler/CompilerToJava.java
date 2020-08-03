@@ -23,7 +23,9 @@ public class CompilerToJava extends CompilerBase {
         this.className = className;
         this.sectionMapName = sectionMapName;
 
-        JavaSyntaxCheck.checkValidJavaVariableName(variablePrefix, "variablePrefix");
+        if (!variablePrefix.isEmpty()) {
+            JavaSyntaxCheck.checkValidJavaVariableName(variablePrefix, "variablePrefix");
+        }
         JavaSyntaxCheck.checkValidJavaVariableName(className, "className");
         if (!sectionMapName.isEmpty()) {
             JavaSyntaxCheck.checkValidJavaVariableName(sectionMapName, "sectionMapName");
