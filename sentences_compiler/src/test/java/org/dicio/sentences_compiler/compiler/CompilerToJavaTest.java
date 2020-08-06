@@ -56,6 +56,8 @@ public class CompilerToJavaTest {
         assertThat(code, containsString("Specificity.high"));
         assertThat(code, containsString("Specificity.medium"));
         assertThat(code, not(containsString("low")));
+        assertThat(code, not(containsString(",}")));
+        assertThat(code, not(containsString(", }")));
 
         assertThat(code, containsString("new DiacriticsSensitiveWord(\""));
         assertThat(code, containsString("new DiacriticsSensitiveWord(\"êtes\","));

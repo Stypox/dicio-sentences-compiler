@@ -99,9 +99,16 @@ public class Sentence implements CompilableToJava {
         output.write("new Sentence(\"");
         output.write(sentenceId);
         output.write("\",new int[]{");
+
+        boolean first = true;
         for (final int entryPointWordIndex : entryPointWordIndices) {
+            if (first) {
+                first = false;
+            } else {
+                output.write(",");
+            }
+
             output.write(String.valueOf(entryPointWordIndex));
-            output.write(",");
         }
         output.write("}");
 
