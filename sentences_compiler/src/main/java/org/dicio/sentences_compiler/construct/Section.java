@@ -119,7 +119,7 @@ public class Section implements CompilableToJava {
 
     private void javaConstructStandardRecognizerData(final OutputStreamWriter output)
             throws IOException {
-        output.write("(InputRecognizer.Specificity.");
+        output.write("(Specificity.");
         switch (specificity) {
             case low:
                 output.write("low");

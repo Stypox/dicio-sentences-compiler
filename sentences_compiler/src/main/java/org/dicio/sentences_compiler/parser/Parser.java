@@ -1,5 +1,6 @@
 package org.dicio.sentences_compiler.parser;
 
+import org.dicio.sentences_compiler.construct.CapturingGroup;
 import org.dicio.sentences_compiler.construct.Construct;
 import org.dicio.sentences_compiler.construct.OptionalConstruct;
 import org.dicio.sentences_compiler.construct.OrList;
@@ -7,6 +8,7 @@ import org.dicio.sentences_compiler.construct.Section;
 import org.dicio.sentences_compiler.construct.Sentence;
 import org.dicio.sentences_compiler.construct.SentenceConstructList;
 import org.dicio.sentences_compiler.construct.Word;
+import org.dicio.sentences_compiler.construct.WordBase;
 import org.dicio.sentences_compiler.lexer.Token;
 import org.dicio.sentences_compiler.lexer.TokenStream;
 import org.dicio.sentences_compiler.util.CompilerError;
@@ -196,7 +198,7 @@ public class Parser {
     }
 
     private OrList readOrList() throws CompilerError {
-        OrList orList = new OrList();
+        final OrList orList = new OrList();
 
         boolean foundSentenceConstruct = false;
         while (true) {
@@ -238,11 +240,25 @@ public class Parser {
         }
     }
 
-    private Word readWord() {
+    private Word readWord() throws CompilerError {
         if (ts.get(0).isType(Token.Type.letters)) {
-            Word word = new Word(ts.get(0).getValue().toLowerCase(), false);
+            final String wordValue = ts.get(0).getValue().toLowerCase();
             ts.movePositionForwardBy(1);
-            return word;
+            return new Word(wordValue, false);
+
+        } else if (ts.get(0).equals(Token.Type.grammar, "\"")) {
+            ts.movePositionForwardBy(1);
+            if (ts.get(0).isType(Token.Type.lettersPlusOther)) {
+                if (ts.get(1).equals(Token.Type.grammar, "\"")) {
+                    final String wordValue = ts.get(0).getValue().toLowerCase();
+                    ts.movePositionForwardBy(2);
+                    return new Word(wordValue, true);
+                } else {
+                    throw new CompilerError(CompilerError.Type.invalidToken, ts.get(1), "Expected closing quotation marks '\"' after diacritics-sensitive word");
+                }
+            } else {
+                throw new CompilerError(CompilerError.Type.expectedWordValue, ts.get(0), "");
+            }
         } else {
             return null;
         }
@@ -268,7 +284,7 @@ public class Parser {
         }
     }
 
-    private Word readCapturingGroup() throws CompilerError {
+    private CapturingGroup readCapturingGroup() throws CompilerError {
         if (ts.get(0).equals(Token.Type.grammar, ".")) {
             ts.movePositionForwardBy(1);
             if (ts.get(0).isType(Token.Type.lettersPlusOther)) {
@@ -277,9 +293,9 @@ public class Parser {
                     JavaSyntaxCheck.checkValidJavaVariableName(capturingGroupName, ts.get(0),
                             CompilerError.Type.invalidCapturingGroupName);
                     ts.movePositionForwardBy(2);
-                    return new Word(capturingGroupName, true);
+                    return new CapturingGroup(capturingGroupName);
                 } else {
-                    throw new CompilerError(CompilerError.Type.expectedPoint, ts.get(1), "");
+                    throw new CompilerError(CompilerError.Type.invalidToken, ts.get(1), "Expected point \".\" after capturing group name");
                 }
             } else {
                 throw new CompilerError(CompilerError.Type.expectedCapturingGroupName, ts.get(0), "");

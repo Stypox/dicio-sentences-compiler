@@ -5,7 +5,7 @@ import java.util.Set;
 
 public final class SentenceConstructList extends AggregateConstruct {
     @Override
-    public void buildWordList(final List<Word> words) {
+    public void buildWordList(final List<WordBase> words) {
         for (final Construct construct : constructs) {
             construct.buildWordList(words);
         }

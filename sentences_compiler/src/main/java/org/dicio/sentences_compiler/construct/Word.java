@@ -1,85 +1,75 @@
 package org.dicio.sentences_compiler.construct;
 
-import org.dicio.sentences_compiler.compiler.CompilableToJava;
-
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.Collator;
 import java.util.Collections;
-import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
-public final class Word implements Construct, CompilableToJava {
-    private final String value;
-    private final boolean isCapturingGroup;
-    private int index;
-    private Set<Integer> nextIndices;
-    private int minimumSkippedWordsToEnd = -1; // see dicio-assistance-component library
+public final class Word extends WordBase {
 
-    public Word(final String value, final boolean isCapturingGroup) {
+    private static Collator getCollator() {
+        final Collator collator = Collator.getInstance(Locale.ENGLISH);
+        collator.setStrength(Collator.PRIMARY);
+        // note: this is not FULL_COMPOSITION, some accented characters could not be considered the same
+        collator.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
+        return collator;
+    }
+
+    private static final Collator collator = getCollator();
+
+
+    private final String value;
+    private final boolean diacriticsSensitive;
+
+    /**
+     * @param value the value of the word, made of only letters
+     * @param diacriticsSensitive if true match the word exactly, otherwise ignore differences in
+     *                            diacritics/accents (see e.g. CTRL+F -> Match Diacritics in
+     *                            Firefox)
+     */
+    public Word(final String value, final boolean diacriticsSensitive) {
         this.value = value;
-        this.isCapturingGroup = isCapturingGroup;
+        this.diacriticsSensitive = diacriticsSensitive;
     }
 
     public String getValue() {
         return value;
     }
 
-    public boolean isCapturingGroup() {
-        return isCapturingGroup;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public Set<Integer> getNextIndices() {
-        return nextIndices;
-    }
-
-    public int getMinimumSkippedWordsToEnd() {
-        return minimumSkippedWordsToEnd;
-    }
-
-    public void setMinimumSkippedWordsToEnd(int minimumSkippedWordsToEnd) {
-        this.minimumSkippedWordsToEnd = minimumSkippedWordsToEnd;
+    public boolean isDiacriticsSensitive() {
+        return diacriticsSensitive;
     }
 
 
     @Override
-    public void buildWordList(final List<Word> words) {
-        index = words.size();
-        words.add(this);
-    }
+    public void compileToJava(final OutputStreamWriter output,
+                              final String variableName) throws IOException {
+        if (diacriticsSensitive) {
+            output.write("new DiacriticsSensitiveWord(\"");
+            output.write(value);
+            output.write("\",");
+        } else {
+            output.write("new DiacriticsInsensitiveWord(new byte[]{");
+            final byte[] collationKey = collator.getCollationKey(value).toByteArray();
 
-    @Override
-    public Set<Integer> findNextIndices(final Set<Integer> nextIndices) {
-        this.nextIndices = nextIndices;
-        return Collections.singleton(index);
+            for (int i = 0; i < collationKey.length; i++) {
+                if (i != 0) {
+                    output.write(",");
+                }
+                output.write(String.valueOf(collationKey[i]));
+            }
+
+            output.write("},");
+        }
+
+        super.compileToJava(output, variableName);
+        output.write(")");
     }
 
     @Override
     public Set<String> getCapturingGroupNames() {
-        if (isCapturingGroup()) {
-            return Collections.singleton(value);
-        } else {
-            return Collections.emptySet();
-        }
-    }
-
-
-    @Override
-    public void compileToJava(final OutputStreamWriter output, final String variableName)
-            throws IOException {
-        output.write("new Word(\"");
-        output.write(value);
-        output.write("\",");
-        output.write(isCapturingGroup ? "true" : "false");
-        output.write(",");
-        output.write(String.valueOf(minimumSkippedWordsToEnd));
-        for (final int nextIndex : nextIndices) {
-            output.write(",");
-            output.write(String.valueOf(nextIndex));
-        }
-        output.write(")");
+        return Collections.emptySet();
     }
 }

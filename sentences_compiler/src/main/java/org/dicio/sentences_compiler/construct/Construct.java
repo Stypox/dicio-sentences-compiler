@@ -10,7 +10,7 @@ public interface Construct {
      * (corresponding to its position in the list).
      * @param words the list of words to append new words to
      */
-    void buildWordList(List<Word> words);
+    void buildWordList(List<WordBase> words);
 
     /**
      * If this the last word of the current construct list, saves {@param nextIndices} in the word,

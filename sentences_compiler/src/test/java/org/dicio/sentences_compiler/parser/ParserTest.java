@@ -1,8 +1,10 @@
 package org.dicio.sentences_compiler.parser;
 
+import org.dicio.sentences_compiler.construct.CapturingGroup;
 import org.dicio.sentences_compiler.construct.Section;
 import org.dicio.sentences_compiler.construct.Sentence;
 import org.dicio.sentences_compiler.construct.Word;
+import org.dicio.sentences_compiler.construct.WordBase;
 import org.dicio.sentences_compiler.lexer.Tokenizer;
 import org.dicio.sentences_compiler.util.CompilerError;
 
@@ -17,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -42,26 +45,30 @@ public class ParserTest {
         return entryPointWordIndices;
     }
 
-    private static Word getWord(final String value,
-                                final boolean isCapturingGroup,
-                                final int minimumSkippedWordsToEnd,
-                                final Integer... nextIndices) {
-        final Word word = new Word(value, isCapturingGroup);
-        word.setMinimumSkippedWordsToEnd(minimumSkippedWordsToEnd);
-        word.findNextIndices(new HashSet<>(Arrays.asList(nextIndices)));
-        return word;
+    private static WordBase buildWord(final WordBase wordBase,
+                                      final int minimumSkippedWordsToEnd,
+                                      final Integer... nextIndices) {
+        wordBase.setMinimumSkippedWordsToEnd(minimumSkippedWordsToEnd);
+        wordBase.findNextIndices(new HashSet<>(Arrays.asList(nextIndices)));
+        return wordBase;
     }
 
-    private static Word w(final String value,
-                          final int minimumSkippedWordsToEnd,
-                          final Integer... nextIndices) {
-        return getWord(value, false, minimumSkippedWordsToEnd, nextIndices);
+    private static WordBase w(final String value,
+                              final int minimumSkippedWordsToEnd,
+                              final Integer... nextIndices) {
+        return buildWord(new Word(value, false), minimumSkippedWordsToEnd, nextIndices);
     }
 
-    private static Word capt(final String value,
-                             final int minimumSkippedWordsToEnd,
-                             final Integer... nextIndices) {
-        return getWord(value, true, minimumSkippedWordsToEnd, nextIndices);
+    private static WordBase wd(final String value,
+                               final int minimumSkippedWordsToEnd,
+                               final Integer... nextIndices) {
+        return buildWord(new Word(value, true), minimumSkippedWordsToEnd, nextIndices);
+    }
+
+    private static WordBase capt(final String value,
+                                 final int minimumSkippedWordsToEnd,
+                                 final Integer... nextIndices) {
+        return buildWord(new CapturingGroup(value), minimumSkippedWordsToEnd, nextIndices);
     }
 
 
@@ -98,17 +105,23 @@ public class ParserTest {
                                        final String sentenceId,
                                        final int line,
                                        final Integer[] entryPointWordIndices,
-                                       final Word... words) {
+                                       final WordBase... words) {
 
         assertEquals(sentenceId, sentence.getSentenceId());
         assertEquals(line, sentence.getLine());
         assertUniqueCollectionEquals(entryPointWordIndices, sentence.getEntryPointWordIndices());
 
-        List<Word> actualWords = sentence.getCompiledWords();
+        List<WordBase> actualWords = sentence.getCompiledWords();
         assertEquals(words.length, actualWords.size());
         for (int i = 0; i < words.length; ++i) {
-            assertEquals(words[i].getValue(), actualWords.get(i).getValue());
-            assertEquals(words[i].isCapturingGroup(), actualWords.get(i).isCapturingGroup());
+            if (words[i] instanceof Word) {
+                assertTrue(actualWords.get(i) instanceof Word);
+                assertEquals(((Word) words[i]).getValue(), ((Word) actualWords.get(i)).getValue());
+                assertEquals(((Word) words[i]).isDiacriticsSensitive(), ((Word) actualWords.get(i)).isDiacriticsSensitive());
+            } else {
+                assertTrue(actualWords.get(i) instanceof CapturingGroup);
+                assertEquals(((CapturingGroup) words[i]).getName(), ((CapturingGroup) actualWords.get(i)).getName());
+            }
             assertEquals(i, actualWords.get(i).getIndex());
             assertUniqueCollectionEquals(words[i].getNextIndices(), actualWords.get(i).getNextIndices());
         }
@@ -182,6 +195,11 @@ public class ParserTest {
         assertInvalid("a:low [[]] a;",        CompilerError.Type.invalidToken,                     1,  8,  "[");
         assertInvalid("a",                    CompilerError.Type.invalidToken,                     1,  2,  "");
         assertInvalid("a:\n",                 CompilerError.Type.invalidToken,                     2,  1,  "");
+        assertInvalid("\na:high b.\nc;",      CompilerError.Type.invalidToken,                     3,  2,  ";");
+        assertInvalid("z1:medium\n.g..\nè;",  CompilerError.Type.invalidToken,                     3,  2,  "\".\"");
+        assertInvalid("c:low\nah|\"he ho\";", CompilerError.Type.invalidToken,                     2,  8,  "ho");
+        assertInvalid("c:low\"par\n\n|ap c;", CompilerError.Type.invalidToken,                     3,  1,  "|");
+        assertInvalid("a:low \"b|\";",        CompilerError.Type.invalidToken,                     1,  9,  "'\"'");
         assertInvalid("false:low a;",         CompilerError.Type.invalidSectionId,                 1,  1,  "false");
         assertInvalid("9hi:low a;",           CompilerError.Type.invalidSectionId,                 1,  1,  "9hi");
         assertInvalid("è9:medium a;",         CompilerError.Type.invalidSectionId,                 1,  1,  "è9");
@@ -192,12 +210,12 @@ public class ParserTest {
         assertInvalid("a:low [A];",           CompilerError.Type.expectedSentenceContent,          1, 10,  ";");
         assertInvalid("\na:medium ();",       CompilerError.Type.expectedSentenceConstructList,    2, 11,  ")");
         assertInvalid("a:low\n(());",         CompilerError.Type.expectedSentenceConstructList,    2,  3,  ")");
+        assertInvalid("a:low[x\n]\"\";",      CompilerError.Type.expectedWordValue,                2,  3,  "\"");
+        assertInvalid("a:low\na|b\"",         CompilerError.Type.expectedWordValue,                2,  5,  "'\"'");
         assertInvalid("b:low\n[a] ..;",       CompilerError.Type.expectedCapturingGroupName,       2,  6,  ".");
         assertInvalid("b:low [G] a .|;",      CompilerError.Type.expectedCapturingGroupName,       1, 14,  "|");
         assertInvalid("c:high hi\n.caè.;",    CompilerError.Type.invalidCapturingGroupName,        2,  2,  "caè");
         assertInvalid("c:high hi\n.9AC.;",    CompilerError.Type.invalidCapturingGroupName,        2,  2,  "9AC");
-        assertInvalid("\na:high b.\nc;",      CompilerError.Type.expectedPoint,                    3,  2,  ";");
-        assertInvalid("z1:medium\n.g..\nè;",  CompilerError.Type.expectedPoint,                    3,  2,  ";");
         assertInvalid("a:low b?;",            CompilerError.Type.sentenceCanBeEmpty,               1, -1,  "");
         assertInvalid("Aa:low a;\nAa:low b;", CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
         assertInvalid("\nAa:low a;\n\nB:low b;\nAa:low c;", CompilerError.Type.duplicateSectionId, 5, -1,  "Aa");

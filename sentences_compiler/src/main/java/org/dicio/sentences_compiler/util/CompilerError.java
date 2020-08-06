@@ -12,13 +12,13 @@ public class CompilerError extends Exception {
         expectedSentence("Expected sentence after specificity"),
         expectedSentenceContent("Expected sentence content after sentence id"),
         expectedSentenceConstructList("Expected list of sentence constructs"),
+        expectedWordValue("Expected diacritics-sensitive word value after opening quotation marks '\"'"),
         expectedCapturingGroupName("Expected capturing group name after point \".\""),
         invalidCapturingGroupName("The capturing group name has to be a valid java variable name"),
-        expectedPoint("Expected point \".\" after capturing group name"),
         sentenceCanBeEmpty("Sentence can be unfolded to an empty sentence (possibly with capturing groups)"),
         duplicateSectionId("Duplicate section id");
 
-        String errorString;
+        final String errorString;
         Type(String errorString) {
             this.errorString = errorString;
         }

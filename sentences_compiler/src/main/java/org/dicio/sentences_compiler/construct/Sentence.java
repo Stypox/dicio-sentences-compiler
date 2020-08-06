@@ -13,7 +13,7 @@ import java.util.Set;
 public class Sentence implements CompilableToJava {
     private String sentenceId;
     private SentenceConstructList sentenceConstructs;
-    private List<Word> compiledWords;
+    private List<WordBase> compiledWords;
     private Set<Integer> entryPointWordIndices;
 
     private String inputStreamName;
@@ -48,22 +48,22 @@ public class Sentence implements CompilableToJava {
     }
 
 
-    public Word compileMinimumSkippedWordsToEnd(final int wordIndex) {
+    public WordBase compileMinimumSkippedWordsToEnd(final int wordIndex) {
         if (wordIndex >= compiledWords.size()) {
-            final Word word = new Word("", false);
+            final WordBase word = new Word("", false);
             word.setMinimumSkippedWordsToEnd(0);
             return word;
         }
 
-        final Word word = compiledWords.get(wordIndex);
+        final WordBase word = compiledWords.get(wordIndex);
         for (final int nextIndex : word.getNextIndices()) {
-            final Word next = compileMinimumSkippedWordsToEnd(nextIndex);
+            final WordBase next = compileMinimumSkippedWordsToEnd(nextIndex);
             if (next.getMinimumSkippedWordsToEnd() > word.getMinimumSkippedWordsToEnd()) {
                 word.setMinimumSkippedWordsToEnd(next.getMinimumSkippedWordsToEnd());
             }
         }
 
-        if (word.isCapturingGroup()) {
+        if (word instanceof CapturingGroup) {
             word.setMinimumSkippedWordsToEnd(word.getMinimumSkippedWordsToEnd() + 2);
         } else {
             word.setMinimumSkippedWordsToEnd(word.getMinimumSkippedWordsToEnd() + 1);
@@ -89,7 +89,7 @@ public class Sentence implements CompilableToJava {
         return entryPointWordIndices;
     }
 
-    public List<Word> getCompiledWords() {
+    public List<WordBase> getCompiledWords() {
         return compiledWords;
     }
 
@@ -105,7 +105,7 @@ public class Sentence implements CompilableToJava {
         }
         output.write("}");
 
-        for (final Word word : compiledWords) {
+        for (final WordBase word : compiledWords) {
             output.write(",");
             word.compileToJava(output, variableName);
         }

@@ -6,7 +6,7 @@ import java.util.Set;
 
 public final class OptionalConstruct implements Construct {
     @Override
-    public void buildWordList(final List<Word> words) {
+    public void buildWordList(final List<WordBase> words) {
         // do nothing, this is not a word
     }
 
