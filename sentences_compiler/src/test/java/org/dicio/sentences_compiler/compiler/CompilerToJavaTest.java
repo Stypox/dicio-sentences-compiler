@@ -26,7 +26,7 @@ public class CompilerToJavaTest {
                 "mood: high       # comments are supported :-D\n"
                 + "how (are you doing?)|(is it going);\n"
                 + "[has_place] how is it going over there;\n"
-                + "[french] comment \"êtes\" vous;  # quotes make sure êtes is matched diacritics-sensitively\n"
+                + "[french] comment \"êtes\" voùs;  # quotes make sure êtes is matched diacritics-sensitively\n"
                 + "\n"
                 + "GPS_navigation: medium\n"
                 + "[question]  take|bring me to .place. (by .vehicle.)? please?;\n"
@@ -61,12 +61,8 @@ public class CompilerToJavaTest {
 
         assertThat(code, containsString("new DiacriticsSensitiveWord(\""));
         assertThat(code, containsString("new DiacriticsSensitiveWord(\"êtes\","));
-        assertThat(code, containsString("new DiacriticsInsensitiveWord(new byte[]"));
-        assertThat(code, containsString("new DiacriticsInsensitiveWord(new byte[]{0,91,0,98,0,106,0,0,0,0},"));
-        assertThat(code, not(containsString("new DiacriticsInsensitiveWord(\"")));
-        assertThat(code, not(containsString("new DiacriticsSensitiveWord(new")));
-        assertThat(code, not(containsString("how")));
-        assertThat(code, not(containsString("get")));
+        assertThat(code, containsString("new DiacriticsInsensitiveWord(\""));
+        assertThat(code, containsString("new DiacriticsInsensitiveWord(\"vous\","));
 
         assertThat(code, not(containsString("comments are supported")));
         assertThat(code, not(containsString("quotes")));

@@ -2,22 +2,15 @@ package org.dicio.sentences_compiler.construct;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.text.Collator;
+import java.text.Normalizer;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public final class Word extends WordBase {
 
-    private static Collator getCollator() {
-        final Collator collator = Collator.getInstance(Locale.ENGLISH);
-        collator.setStrength(Collator.PRIMARY);
-        // note: this is not FULL_COMPOSITION, some accented characters could not be considered the same
-        collator.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
-        return collator;
-    }
-
-    private static final Collator collator = getCollator();
+    private static final Pattern diacriticalMarksRemover =
+            Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
 
     private final String value;
@@ -42,6 +35,11 @@ public final class Word extends WordBase {
         return diacriticsSensitive;
     }
 
+    public String nfkdNormalized() {
+        final String normalized = Normalizer.normalize(value, Normalizer.Form.NFKD);
+        return diacriticalMarksRemover.matcher(normalized).replaceAll("");
+    }
+
 
     @Override
     public void compileToJava(final OutputStreamWriter output,
@@ -49,21 +47,12 @@ public final class Word extends WordBase {
         if (diacriticsSensitive) {
             output.write("new DiacriticsSensitiveWord(\"");
             output.write(value);
-            output.write("\",");
         } else {
-            output.write("new DiacriticsInsensitiveWord(new byte[]{");
-            final byte[] collationKey = collator.getCollationKey(value).toByteArray();
-
-            for (int i = 0; i < collationKey.length; i++) {
-                if (i != 0) {
-                    output.write(",");
-                }
-                output.write(String.valueOf(collationKey[i]));
-            }
-
-            output.write("},");
+            output.write("new DiacriticsInsensitiveWord(\"");
+            output.write(nfkdNormalized());
         }
 
+        output.write("\",");
         super.compileToJava(output, variableName);
         output.write(")");
     }

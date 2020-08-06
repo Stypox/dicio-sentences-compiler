@@ -20,7 +20,7 @@ StandardRecognizerData SECTION_NAME = new StandardRecognizerData(
         InputRecognizer.Specificity.SPECIFICITY,
         new Sentence(SENTENCE_ID, LIST_OF_STARTING_WORD_INDICES,
                 new DiacriticsSensitiveWord(VALUE, MINIMUM_SKIPPED_WORDS_TO_END, NEXT_WORD_INDICES...),
-                new DiacriticsInsensitiveWord(new byte[] {VALUES...}, MINIMUM_SKIPPED_WORDS_TO_END, NEXT_WORD_INDICES...),
+                new DiacriticsInsensitiveWord(NORMALIZED_VALUE, MINIMUM_SKIPPED_WORDS_TO_END, NEXT_WORD_INDICES...),
                 new CapturingGroup(NAME, MINIMUM_SKIPPED_WORDS_TO_END, NEXT_WORD_INDICES...),
                 new ...(...), ...),
         new Sentence(...), ...);
@@ -46,7 +46,7 @@ The file below is [`example.dslf`](example.dslf). "dslf" means "Dicio-Sentences-
 mood: high       # comments are supported :-D
 how (are you doing?)|(is it going);
 [has_place] how is it going over there;
-[french] comment "êtes" vous;  # quotes make sure êtes is matched diacritics-sensitively
+[french] comment "êtes" voùs;  # quotes make sure êtes is matched diacritics-sensitively
 
 GPS_navigation: medium
 [question]  take|bring me to .place. (by .vehicle.)? please?;
@@ -77,83 +77,81 @@ import org.dicio.component.standard.word.DiacriticsSensitiveWord;
 import org.dicio.component.standard.word.CapturingGroup;
 
 public class ClassName {
-    public static final StandardRecognizerData section_mood =
-        new StandardRecognizerData(Specificity.high,
-            new Sentence("", new int[]{0},
-                new DiacriticsInsensitiveWord(new byte[]{0, 91, 0, 98, 0, 106, 0, 0, 0, 0}, 4, 1, 4),
-                new DiacriticsInsensitiveWord(new byte[]{0, 83, 0, 101, 0, 88, 0, 0, 0, 0}, 3, 2),
-                new DiacriticsInsensitiveWord(new byte[]{0, 108, 0, 98, 0, 104, 0, 0, 0, 0}, 2, 3, 7),
-                new DiacriticsInsensitiveWord(new byte[]{0, 86, 0, 98, 0, 92, 0, 97, 0, 90, 0, 0, 0, 0}, 1, 7),
-                new DiacriticsInsensitiveWord(new byte[]{0, 92, 0, 102, 0, 0, 0, 0}, 3, 5),
-                new DiacriticsInsensitiveWord(new byte[]{0, 92, 0, 103, 0, 0, 0, 0}, 2, 6),
-                new DiacriticsInsensitiveWord(new byte[]{0, 90, 0, 98, 0, 92, 0, 97, 0, 90, 0, 0, 0, 0}, 1, 7)),
-            new Sentence("has_place", new int[]{0},
-                new DiacriticsInsensitiveWord(new byte[]{0, 91, 0, 98, 0, 106, 0, 0, 0, 0}, 6, 1),
-                new DiacriticsInsensitiveWord(new byte[]{0, 92, 0, 102, 0, 0, 0, 0}, 5, 2),
-                new DiacriticsInsensitiveWord(new byte[]{0, 92, 0, 103, 0, 0, 0, 0}, 4, 3),
-                new DiacriticsInsensitiveWord(new byte[]{0, 90, 0, 98, 0, 92, 0, 97, 0, 90, 0, 0, 0, 0}, 3, 4),
-                new DiacriticsInsensitiveWord(new byte[]{0, 98, 0, 105, 0, 88, 0, 101, 0, 0, 0, 0}, 2, 5),
-                new DiacriticsInsensitiveWord(new byte[]{0, 103, 0, 91, 0, 88, 0, 101, 0, 88, 0, 0, 0, 0}, 1, 6)),
-            new Sentence("french", new int[]{0},
-                new DiacriticsInsensitiveWord(new byte[]{0, 85, 0, 98, 0, 96, 0, 96, 0, 88, 0, 97, 0, 103, 0, 0, 0, 0}, 3, 1),
-                new DiacriticsSensitiveWord("êtes", 2, 2),
-                new DiacriticsInsensitiveWord(new byte[]{0, 105, 0, 98, 0, 104, 0, 102, 0, 0, 0, 0}, 1, 3)));
+	public static final StandardRecognizerData section_mood = new StandardRecognizerData(Specificity.high,
+		new Sentence("", new int[]{0},
+			new DiacriticsInsensitiveWord("how", 4, 1, 4),
+			new DiacriticsInsensitiveWord("are", 3, 2),
+			new DiacriticsInsensitiveWord("you", 2, 3, 7),
+			new DiacriticsInsensitiveWord("doing", 1, 7),
+			new DiacriticsInsensitiveWord("is", 3, 5),
+			new DiacriticsInsensitiveWord("it", 2, 6),
+			new DiacriticsInsensitiveWord("going", 1, 7)),
+		new Sentence("has_place", new int[]{0},
+			new DiacriticsInsensitiveWord("how", 6, 1),
+			new DiacriticsInsensitiveWord("is", 5, 2),
+			new DiacriticsInsensitiveWord("it", 4, 3),
+			new DiacriticsInsensitiveWord("going", 3, 4),
+			new DiacriticsInsensitiveWord("over", 2, 5),
+			new DiacriticsInsensitiveWord("there", 1, 6)),
+		new Sentence("french", new int[]{0},
+			new DiacriticsInsensitiveWord("comment", 3, 1),
+			new DiacriticsSensitiveWord("êtes", 2, 2),
+			new DiacriticsInsensitiveWord("vous", 1, 3)));
 
-    public static final class SectionClass_section_GPS_navigation extends StandardRecognizerData {
-        SectionClass_section_GPS_navigation() {
-            super(Specificity.medium,
-                new Sentence("question", new int[]{0, 1},
-                    new DiacriticsInsensitiveWord(new byte[]{0, 103, 0, 83, 0, 94, 0, 88, 0, 0, 0, 0}, 9, 2),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 84, 0, 101, 0, 92, 0, 97, 0, 90, 0, 0, 0, 0}, 11, 2),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 96, 0, 88, 0, 0, 0, 0}, 10, 3),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 103, 0, 98, 0, 0, 0, 0}, 9, 4),
-                    new CapturingGroup("place", 8, 5, 7, 8),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 84, 0, 108, 0, 0, 0, 0}, 6, 6),
-                    new CapturingGroup("vehicle", 5, 7, 8),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 99, 0, 95, 0, 88, 0, 83, 0, 102, 0, 88, 0, 0, 0, 0}, 4, 8)),
-                new Sentence("question", new int[]{0},
-                    new DiacriticsInsensitiveWord(new byte[]{0, 90, 0, 92, 0, 105, 0, 88, 0, 0, 0, 0}, 7, 1),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 96, 0, 88, 0, 0, 0, 0}, 6, 2),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 86, 0, 92, 0, 101, 0, 88, 0, 85, 0, 103, 0, 92, 0, 98, 0, 97, 0, 102, 0, 0, 0, 0}, 5, 3),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 103, 0, 98, 0, 0, 0, 0}, 4, 4),
-                    new CapturingGroup("place", 3, 5, 6),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 99, 0, 95, 0, 88, 0, 83, 0, 102, 0, 88, 0, 0, 0, 0}, 1, 6)),
-                new Sentence("question", new int[]{0},
-                    new DiacriticsInsensitiveWord(new byte[]{0, 91, 0, 98, 0, 106, 0, 0, 0, 0}, 9, 1, 2),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 86, 0, 98, 0, 0, 0, 0}, 6, 3),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 85, 0, 83, 0, 97, 0, 0, 0, 0}, 8, 3),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 92, 0, 0, 0, 0}, 7, 4),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 90, 0, 88, 0, 103, 0, 0, 0, 0}, 6, 5),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 103, 0, 98, 0, 0, 0, 0}, 5, 6),
-                    new CapturingGroup("place", 4, 7)),
-                new Sentence("statement", new int[]{0},
-                    new DiacriticsInsensitiveWord(new byte[]{0, 92, 0, 0, 0, 0}, 10, 1),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 106, 0, 83, 0, 97, 0, 103, 0, 0, 0, 0}, 9, 2),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 103, 0, 98, 0, 0, 0, 0}, 8, 3),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 90, 0, 98, 0, 0, 0, 0}, 7, 4),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 103, 0, 98, 0, 0, 0, 0}, 6, 5),
-                    new CapturingGroup("place", 5, 6, 8),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 84, 0, 108, 0, 0, 0, 0}, 3, 7),
-                    new CapturingGroup("vehicle", 2, 8)),
-                new Sentence("statement", new int[]{0},
-                    new CapturingGroup("place", 10, 1),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 92, 0, 102, 0, 0, 0, 0}, 8, 2),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 103, 0, 91, 0, 88, 0, 0, 0, 0}, 7, 3),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 99, 0, 95, 0, 83, 0, 85, 0, 88, 0, 0, 0, 0}, 6, 4),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 92, 0, 0, 0, 0}, 5, 5),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 106, 0, 83, 0, 97, 0, 103, 0, 0, 0, 0}, 4, 6),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 103, 0, 98, 0, 0, 0, 0}, 3, 7),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 90, 0, 98, 0, 0, 0, 0}, 2, 8),
-                    new DiacriticsInsensitiveWord(new byte[]{0, 103, 0, 98, 0, 0, 0, 0}, 1, 9)));
-        }
-        public final String place = "place", vehicle = "vehicle";
-    }
-    public static final SectionClass_section_GPS_navigation section_GPS_navigation = new SectionClass_section_GPS_navigation();
+	public static final class SectionClass_section_GPS_navigation extends StandardRecognizerData{
+		SectionClass_section_GPS_navigation(){
+			super(Specificity.medium,
+				new Sentence("question", new int[]{0, 1},
+					new DiacriticsInsensitiveWord("take", 9, 2),
+					new DiacriticsInsensitiveWord("bring", 11, 2),
+					new DiacriticsInsensitiveWord("me", 10, 3),
+					new DiacriticsInsensitiveWord("to", 9, 4),
+					new CapturingGroup("place", 8, 5, 7, 8),
+					new DiacriticsInsensitiveWord("by", 6, 6),
+					new CapturingGroup("vehicle", 5, 7, 8),
+					new DiacriticsInsensitiveWord("please", 4, 8)),
+				new Sentence("question", new int[]{0},
+					new DiacriticsInsensitiveWord("give", 7, 1),
+					new DiacriticsInsensitiveWord("me", 6, 2),
+					new DiacriticsInsensitiveWord("directions", 5, 3),
+					new DiacriticsInsensitiveWord("to", 4, 4),
+					new CapturingGroup("place", 3, 5, 6),
+					new DiacriticsInsensitiveWord("please", 1, 6)),
+				new Sentence("question", new int[]{0},
+					new DiacriticsInsensitiveWord("how", 9, 1, 2),
+					new DiacriticsInsensitiveWord("do", 6, 3),
+					new DiacriticsInsensitiveWord("can", 8, 3),
+					new DiacriticsInsensitiveWord("i", 7, 4),
+					new DiacriticsInsensitiveWord("get", 6, 5),
+					new DiacriticsInsensitiveWord("to", 5, 6),
+					new CapturingGroup("place", 4, 7)),
+				new Sentence("statement", new int[]{0},
+					new DiacriticsInsensitiveWord("i", 10, 1),
+					new DiacriticsInsensitiveWord("want", 9, 2),
+					new DiacriticsInsensitiveWord("to", 8, 3),
+					new DiacriticsInsensitiveWord("go", 7, 4),
+					new DiacriticsInsensitiveWord("to", 6, 5),
+					new CapturingGroup("place", 5, 6, 8),
+					new DiacriticsInsensitiveWord("by", 3, 7),
+					new CapturingGroup("vehicle", 2, 8)),
+				new Sentence("statement", new int[]{0},
+					new CapturingGroup("place", 10, 1),
+					new DiacriticsInsensitiveWord("is", 8, 2),
+					new DiacriticsInsensitiveWord("the", 7, 3),
+					new DiacriticsInsensitiveWord("place", 6, 4),
+					new DiacriticsInsensitiveWord("i", 5, 5),
+					new DiacriticsInsensitiveWord("want", 4, 6),
+					new DiacriticsInsensitiveWord("to", 3, 7),
+					new DiacriticsInsensitiveWord("go", 2, 8),
+					new DiacriticsInsensitiveWord("to", 1, 9)));
+		}
+		public final String place = "place", vehicle = "vehicle";
+	}
+	public static final SectionClass_section_GPS_navigation section_GPS_navigation = new SectionClass_section_GPS_navigation();
 
-    public static final Map<String, StandardRecognizerData>sections = new HashMap<String, StandardRecognizerData>() {{
-        put("mood", section_mood);
-        put("GPS_navigation", section_GPS_navigation);
-    }};
+	public static final Map<String, StandardRecognizerData>sections = new HashMap<String, StandardRecognizerData>() {{
+		put("mood", section_mood);
+		put("GPS_navigation", section_GPS_navigation);
+	}};
 }
-
 ```
