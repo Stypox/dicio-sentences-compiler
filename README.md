@@ -1,6 +1,8 @@
 # Sentences compiler for Dicio assistant
 This tool provides a simple way to generate sentences to be matched for the Dicio assistant. It compiles files formatted with the Dicio-sentences-language to Java code that can be easily imported in projects using the interpreter of the Dicio assistant. It allows to pack together similar sentences while preserving readability.
 
+This repository is part of the Dicio project. Also check out [`dicio-android`](https://github.com/Stypox/dicio-android) and [`dicio-assistance-component`](https://github.com/Stypox/dicio-assistance-component/). Open to contributions :-D
+
 ## Dicio sentences language
 Every file contains many sections, starting with section information and followed by a list of sentences. The section information is formatted like `SECTION_ID:SPECIFICITY`, where SPECIFICITY can be `low`, `medium` and `high`. Every sentence is made of an optional sentence id (formatted like `[SENTENCE_ID]`) and a list of constructs followed by a `;`. Constructs can be:
 - diacritics-insensitive word (e.g. `hello`). A simple word: it can contain uppercase and lowercase unicode letters. Diacritics and accents will be ignored while matching. E.g. `hello` matches `hèllo`, `héllò`, ...
