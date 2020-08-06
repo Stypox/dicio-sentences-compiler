@@ -1,6 +1,7 @@
 mood: high       # comments are supported :-D
 how (are you doing?)|(is it going);
 [has_place] how is it going over there;
+[french] comment "êtes" vous;  # quotes make sure êtes is matched diacritics-sensitively
 
 GPS_navigation: medium
 [question]  take|bring me to .place. (by .vehicle.)? please?;

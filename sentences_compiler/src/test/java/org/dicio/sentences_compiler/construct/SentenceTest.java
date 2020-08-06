@@ -21,7 +21,7 @@ public class SentenceTest {
         final Sentence s = new Sentence();
         s.setSentenceId(sentenceId, "", 0);
         SentenceConstructList sentenceConstructList = new SentenceConstructList();
-        sentenceConstructList.addConstruct(new Word(word, false));
+        sentenceConstructList.addConstruct(new Word(word, true));
         s.setSentenceConstructs(sentenceConstructList);
 
         final OutputStream outputStream = new ByteArrayOutputStream();
