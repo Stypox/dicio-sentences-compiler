@@ -31,13 +31,24 @@ public class JavaSyntaxCheckTest {
     }
 
     @Test
-    public void invalidNameTest() {
+    public void emptyNameTest() {
+        assertInvalid("", "Empty");
+    }
+
+    @Test
+    public void digitAtBeginningTest() {
         assertInvalid("7p", "The first character cannot be a digit: 7");
         assertInvalid("5",  "The first character cannot be a digit: 5");
+    }
 
+    @Test
+    public void specialCharactersTest() {
         assertInvalid("aè", "Not in the english alphabet, not a digit and not \"_\": è");
         assertInvalid(";|", "Not in the english alphabet, not a digit and not \"_\": ;");
+    }
 
+    @Test
+    public void javaKeywordTest() {
         assertInvalid("void",     "Java keyword");
         assertInvalid("class",    "Java keyword");
         assertInvalid("volatile", "Java keyword");
@@ -47,12 +58,26 @@ public class JavaSyntaxCheckTest {
     }
 
     @Test
+    public void importedClassTest() {
+        assertInvalid("Map",                       "Equal to the name of one of the imported classes");
+        assertInvalid("HashMap",                   "Equal to the name of one of the imported classes");
+        assertInvalid("Specificity",               "Equal to the name of one of the imported classes");
+        assertInvalid("Sentence",                  "Equal to the name of one of the imported classes");
+        assertInvalid("StandardRecognizerData",    "Equal to the name of one of the imported classes");
+        assertInvalid("DiacriticsInsensitiveWord", "Equal to the name of one of the imported classes");
+        assertInvalid("DiacriticsSensitiveWord",   "Equal to the name of one of the imported classes");
+        assertInvalid("CapturingGroup",            "Equal to the name of one of the imported classes");
+    }
+
+    @Test
     public void validNameTest() throws CompilerError {
         checkValidVariableName("A");
-        checkValidVariableName("this_is_MySectioniD");
+        checkValidVariableName("j8");
+        checkValidVariableName("java");
+        checkValidVariableName("this_is_7th_MySectioniD");
         checkValidVariableName("afalse");
         checkValidVariableName("Int");
-        checkValidVariableName("privatE");
+        checkValidVariableName("privatE_9");
         checkValidVariableName("interfaceUser");
     }
 }

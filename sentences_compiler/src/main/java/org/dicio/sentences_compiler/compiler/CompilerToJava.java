@@ -70,6 +70,8 @@ public class CompilerToJava extends CompilerBase {
         output.write("package ");
         output.write(packageName);
 
+        // when changing imported packages, make sure to also update the list of restricted
+        // variable names in util.JavaSyntaxCheck.importedClasses
         if (!sectionMapName.isEmpty()) {
             output.write(";\n"
                     + "import java.util.Map;\n"
