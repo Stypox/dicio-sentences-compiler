@@ -3,7 +3,7 @@ package org.dicio.sentences_compiler.main;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-@Parameters(commandNames = {"java"}, commandDescription = "Compiler to Java: compiles every section to a org.dicio.component.input.standard.StandardRecognizerData (from library dicio-assistance-component)")
+@Parameters(commandNames = {"java"}, commandDescription = "Compiler to Java: compiles every section to a org.dicio.skill.input.standard.StandardRecognizerData (from library dicio-skill)")
 public class JavaCommand {
     @Parameter(names = {"--variable-prefix"}, description = "The prefix for the name of every StandardRecognizerData instance, that will be followed by the name of the corresponding section.")
     public String variablePrefix = "";

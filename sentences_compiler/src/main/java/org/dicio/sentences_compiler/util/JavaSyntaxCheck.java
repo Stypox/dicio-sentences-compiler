@@ -20,7 +20,7 @@ public class JavaSyntaxCheck {
 
     /**
      * This contains the classes imported and used inside a Java file compiled by
-     * dicio-sentences-compiler for dicio-assistance-component. Any variable name equal to one of
+     * dicio-sentences-compiler for dicio-skill. Any variable name equal to one of
      * these strings will be rejected. So make sure to edit this alongside
      * {@link org.dicio.sentences_compiler.compiler.CompilerToJava#compile(OutputStreamWriter, OutputStreamWriter)}
      */

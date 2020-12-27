@@ -11,7 +11,7 @@ import java.util.Set;
 public abstract class WordBase implements Construct, CompilableToJava {
     private int index;
     private Set<Integer> nextIndices;
-    private int minimumSkippedWordsToEnd = -1; // see dicio-assistance-component library
+    private int minimumSkippedWordsToEnd = -1; // see dicio-skill library
 
     public int getIndex() {
         return index;

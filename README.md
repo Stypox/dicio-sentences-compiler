@@ -1,7 +1,7 @@
 # Sentences compiler for Dicio assistant
-This tool provides a simple way to generate **sentences to be matched** for the Dicio assistant. It compiles files formatted with the **Dicio-sentences-language to Java code** that can be easily imported in projects using the [interpreter](https://github.com/Stypox/dicio-assistance-component/) of the Dicio assistant. It allows to **pack** together similar sentences while preserving **readability**.
+This tool provides a simple way to generate **sentences to be matched** for the Dicio assistant. It compiles files formatted with the **Dicio-sentences-language to Java code** that can be easily imported in projects using the [interpreter](https://github.com/Stypox/dicio-skill/) of the Dicio assistant. It allows to **pack** together similar sentences while preserving **readability**.
 
-This repository is part of the **Dicio** project. Also check out [`dicio-android`](https://github.com/Stypox/dicio-android) and [`dicio-assistance-component`](https://github.com/Stypox/dicio-assistance-component/). *Open to contributions :-D*
+This repository is part of the **Dicio** project. Also check out [`dicio-android`](https://github.com/Stypox/dicio-android) and [`dicio-skill`](https://github.com/Stypox/dicio-skill/). *Open to contributions :-D*
 
 ## Dicio sentences language
 Every file contains many sections, starting with section information and followed by a list of sentences. The section information is formatted like `SECTION_ID:SPECIFICITY`, where SPECIFICITY can be `low`, `medium` and `high`, representing **how specific the set of sentences is**. For example, a section that matches queries about phone calls is very specific, while one that matches every question about famous people has a lower specificity. The specificity is needed to **prevent conflicts** between two sections that both match with a high score: the most specific is preferred.
@@ -13,7 +13,7 @@ Then sentences follow: every sentence is made of an optional **sentence id** (fo
 - **parenthesized construct** (e.g. `(hello)`). This lets you pack constructs toghether and, for example, "or" them all. Just as math parenthesis do. E.g. `how (are you doing?)|(is it going)` matches `how are you`, `how are you doing` and `how is it going`.
 - **capturing group** (`.NAME.`). This tells the interpreter to match a variable-length list of any word to that part of the sentence. NAME is the name of the capturing group. E.g. `how are you .person.` matches `how are you Tom` with `Tom` in the "person" capturing group.
 
-Note that punctation marks should **not** be inserted. Words are only made of letters, and other special characters are part of the the language's grammar, so characters `[]"|?().` will be interpreted with their special meaning explained above and other punctation marks will generate errors. *But this does not mean that Dicio is not able to handle sentences with punctation marks!* Before being processed, the **input from the user is split into lowercase letter-only words**, so "It's" becomes "it" and "s" (the relevant code is at [`dicio-assistance-component`](https://github.com/Stypox/dicio-assistance-component/)). Therefore, when writing a dicio-sentences-language sentence which could contain **e.g. apostrophes, just replace them with a space** to obtain the same result. The case of letters (and their diacritics, for diacritics-insensitive words) is ignored, too.
+Note that punctation marks should **not** be inserted. Words are only made of letters, and other special characters are part of the the language's grammar, so characters `[]"|?().` will be interpreted with their special meaning explained above and other punctation marks will generate errors. *But this does not mean that Dicio is not able to handle sentences with punctation marks!* Before being processed, the **input from the user is split into lowercase letter-only words**, so "It's" becomes "it" and "s" (the relevant code is at [`dicio-skill`](https://github.com/Stypox/dicio-skill/)). Therefore, when writing a dicio-sentences-language sentence which could contain **e.g. apostrophes, just replace them with a space** to obtain the same result. The case of letters (and their diacritics, for diacritics-insensitive words) is ignored, too.
 
 ### Sentence example and explanation
 
@@ -34,10 +34,10 @@ So all of the following inputs from the user would match the above sentence perf
 - `whÀts the weather` (also no "place" specified)
 
 ## Compilation process
-When issuing a compilation, `dicio-sentences-compiler` will first parse the provided file and build a syntax tree. Then every sentence is analyzed and converted into a format which allows running a `O(number of words)` **depth-first search** on it with as little runtime overhead as possible. Every word in the sentence is assigned a **unique index**, a list of indices of **all words that could come next**, and the minimum number of **words to skip** to get to the end of the sentence. The index is used *(you guessed it!)* just for indexing. The list of next word indices is needed to instantly determine the possible next words during a depth-first search. The number of words to get to the end allows lowering the score accordingly while doing the search, without having to recalculate it at runtime. When a **section is put together**, besides the list of compiled and analyzed sentences, it has the [**specificity value**](https://github.com/Stypox/dicio-assistance-component/#input-recognizer) and (if applicable) the **list of all capturing group names**, to allow compiling them to language variables, for convenience's sake and to prevent typos, much like with Android's `R` class.
+When issuing a compilation, `dicio-sentences-compiler` will first parse the provided file and build a syntax tree. Then every sentence is analyzed and converted into a format which allows running a `O(number of words)` **depth-first search** on it with as little runtime overhead as possible. Every word in the sentence is assigned a **unique index**, a list of indices of **all words that could come next**, and the minimum number of **words to skip** to get to the end of the sentence. The index is used *(you guessed it!)* just for indexing. The list of next word indices is needed to instantly determine the possible next words during a depth-first search. The number of words to get to the end allows lowering the score accordingly while doing the search, without having to recalculate it at runtime. When a **section is put together**, besides the list of compiled and analyzed sentences, it has the [**specificity value**](https://github.com/Stypox/dicio-skill/#input-recognizer) and (if applicable) the **list of all capturing group names**, to allow compiling them to language variables, for convenience's sake and to prevent typos, much like with Android's `R` class.
 
 ### Java
-The compilation to Java relies on the [`dicio-assistance-component`](https://github.com/Stypox/dicio-assistance-component) library, so sections will be compiled in this format:
+The compilation to Java relies on the [`dicio-skill`](https://github.com/Stypox/dicio-skill) library, so sections will be compiled in this format:
 ```java
 StandardRecognizerData SECTION_NAME = new StandardRecognizerData(
         InputRecognizer.Specificity.SPECIFICITY,
@@ -92,12 +92,12 @@ package com.pkg.name;
 
 import java.util.Map;
 import java.util.HashMap;
-import org.dicio.component.InputRecognizer.Specificity;
-import org.dicio.component.standard.Sentence;
-import org.dicio.component.standard.StandardRecognizerData;
-import org.dicio.component.standard.word.DiacriticsInsensitiveWord;
-import org.dicio.component.standard.word.DiacriticsSensitiveWord;
-import org.dicio.component.standard.word.CapturingGroup;
+import org.dicio.skill.InputRecognizer.Specificity;
+import org.dicio.skill.standard.Sentence;
+import org.dicio.skill.standard.StandardRecognizerData;
+import org.dicio.skill.standard.word.DiacriticsInsensitiveWord;
+import org.dicio.skill.standard.word.DiacriticsSensitiveWord;
+import org.dicio.skill.standard.word.CapturingGroup;
 
 public class ClassName {
 	public static final StandardRecognizerData section_mood = new StandardRecognizerData(Specificity.high,

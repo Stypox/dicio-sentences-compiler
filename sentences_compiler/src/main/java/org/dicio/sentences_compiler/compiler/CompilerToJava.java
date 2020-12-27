@@ -79,12 +79,12 @@ public class CompilerToJava extends CompilerBase {
         }
         output.write(
                 ";\n"
-                + "import org.dicio.component.InputRecognizer.Specificity;\n"
-                + "import org.dicio.component.standard.Sentence;\n"
-                + "import org.dicio.component.standard.StandardRecognizerData;\n"
-                + "import org.dicio.component.standard.word.DiacriticsInsensitiveWord;\n"
-                + "import org.dicio.component.standard.word.DiacriticsSensitiveWord;\n"
-                + "import org.dicio.component.standard.word.CapturingGroup;\n"
+                + "import org.dicio.skill.InputRecognizer.Specificity;\n"
+                + "import org.dicio.skill.standard.Sentence;\n"
+                + "import org.dicio.skill.standard.StandardRecognizerData;\n"
+                + "import org.dicio.skill.standard.word.DiacriticsInsensitiveWord;\n"
+                + "import org.dicio.skill.standard.word.DiacriticsSensitiveWord;\n"
+                + "import org.dicio.skill.standard.word.CapturingGroup;\n"
                 + "public class ");
         output.write(className);
 
