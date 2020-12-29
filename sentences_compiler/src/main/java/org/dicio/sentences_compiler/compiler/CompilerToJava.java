@@ -79,7 +79,7 @@ public class CompilerToJava extends CompilerBase {
         }
         output.write(
                 ";\n"
-                + "import org.dicio.skill.InputRecognizer.Specificity;\n"
+                + "import org.dicio.skill.chain.InputRecognizer.Specificity;\n"
                 + "import org.dicio.skill.standard.Sentence;\n"
                 + "import org.dicio.skill.standard.StandardRecognizerData;\n"
                 + "import org.dicio.skill.standard.word.DiacriticsInsensitiveWord;\n"
