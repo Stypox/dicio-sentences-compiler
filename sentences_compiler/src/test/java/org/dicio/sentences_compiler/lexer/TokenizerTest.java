@@ -84,8 +84,8 @@ public class TokenizerTest {
 
     @Test
     public void testInvalidInput() throws IOException {
-        assertInvalid("+",                       CompilerError.Type.invalidCharacter, 1, 1, "+");
-        assertInvalid("<",                       CompilerError.Type.invalidCharacter, 1, 1, "<");
+        assertInvalid("\n\n\n+\n+",              CompilerError.Type.invalidCharacter, 4, 1, "+");
+        assertInvalid("\n[[[]<",                 CompilerError.Type.invalidCharacter, 2, 5, "<");
         assertInvalid("   \n  *\n\n+",           CompilerError.Type.invalidCharacter, 2, 3, "*");
         assertInvalid("[[][\n\t]](\n(%)):;)):(", CompilerError.Type.invalidCharacter, 3, 2, "%");
     }

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Tokenizer {
-    private TokenStream ts;
+    private final TokenStream ts;
     private InputStreamReader input;
     private int line, column;
 
@@ -90,7 +90,7 @@ public class Tokenizer {
             } else if (isSpace(ch)) {
                 ch = getCh();
             } else {
-                throw new CompilerError(CompilerError.Type.invalidCharacter, ch, inputStreamName, column, line, "");
+                throw new CompilerError(CompilerError.Type.invalidCharacter, ch, inputStreamName, line, column, "");
             }
         }
 
