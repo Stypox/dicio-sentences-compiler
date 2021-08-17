@@ -1,7 +1,7 @@
 # Sentences compiler for Dicio assistant
 This tool provides a simple way to generate **sentences to be matched** for the Dicio assistant. It compiles files formatted with the **Dicio-sentences-language to Java code** that can be easily imported in projects using the [interpreter](https://github.com/Stypox/dicio-skill/) of the Dicio assistant. It allows to **pack** together similar sentences while preserving **readability**.
 
-This repository is part of the **Dicio** project. Also check out [`dicio-android`](https://github.com/Stypox/dicio-android) and [`dicio-skill`](https://github.com/Stypox/dicio-skill/). *Open to contributions :-D*
+This repository is part of the **Dicio** project. Also check out [`dicio-android`](https://github.com/Stypox/dicio-android), [`dicio-skill`](https://github.com/Stypox/dicio-skill/) and [`dicio-numbers`](https://github.com/Stypox/dicio-numbers). *Open to contributions :-D*
 
 ## Dicio sentences language
 Every file contains many sections, starting with section information and followed by a list of sentences. The section information is formatted like `SECTION_ID:SPECIFICITY`, where SPECIFICITY can be `low`, `medium` and `high`, representing **how specific the set of sentences is**. For example, a section that matches queries about phone calls is very specific, while one that matches every question about famous people has a lower specificity. The specificity is needed to **prevent conflicts** between two sections that both match with a high score: the most specific is preferred.
