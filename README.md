@@ -22,7 +22,7 @@ weather: high
 (what s|is)|whats "the" weather like? (in .where.)?;
 ```
 The example above declares a section named "weather" with a high specificity (high, since... *what else could weather mean, if not atmospheric conditions?*). Then a sentence follows:
-- `(what s|is)|whats` matches `what + s`, `what + is` and `whats` (and thus also the raw `what's`, since the apostrophe would be considered a word separator)
+- `(what s|is)|whats` matches `what + s`, `what + is` and `whats` (and thus also the raw `what's`, since the apostrophe would be considered a word separator; **you cannot** insert `'` or `-` or any other punctuation in `.dslf` files though!)
 - `"the"` is a diacritics-sensitive word, so only the exact `the` would match: `thè` wouldn't. *Note that this word was made diacritics-sensitive just for **demonstration purposes**, since usually in the English language there are no issues with diacritics.*
 - `weather`, just like all of the other words in the sentence expect for `"the"`, is diacritics-insensitive, so it matches: `weather`, `wèathér`, `weàthèr`, ...
 - `like?` is an optional word that matches both `like` and nothing.
