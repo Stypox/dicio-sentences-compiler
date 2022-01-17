@@ -8,25 +8,28 @@ Every file contains many sections, starting with section information and followe
 Then sentences follow: every sentence is made of an optional **sentence id** (formatted like `[SENTENCE_ID]` and used for sentence **identification purposes**) and a **list of constructs** followed by a `;`. Constructs can be:
 - **diacritics-insensitive word** (e.g. `hello`). A simple word: it can contain uppercase and lowercase unicode letters. Diacritics and accents will be ignored while matching. E.g. `hello` matches `hèllo`, `héllò`, ...
 - **diacritics-sensitive word** (e.g. `"hello"`). Just like the diacritics-insensitive word, but in this case diacritics count. E.g. `"hello"` matches only the exact `hello`.
+- **word with variations** (e.g. `<e|g?>mail` (diacritics-insensitive) or `"<e|g?>mail"` (diacritics-sensitive)). A word with possible variations. This construct is not so useful in the English language, but comes in handy in languages where words can have multiple declensions. A variations group, i.e. the piece included in the angle brackets `<>`, is a set of variations separated by `|`, and optionally followed by a `?` indicating the empty variation. A word can have multiple variations groups, e.g. `<a|b>c<d?><e|f?>` matches all of `adce`, `acdf`, `acd`, `ace`, `acf`, `ac`, `bdce`, `bcdf`, `bcd`, `bce`, `bcf`, `bc`. Pay attention to spaces: `<a|b> c<d?><e|f?>` would have been 2 separate words! E.g. `<e|g?>mail` matches `email`, `gmail` and `mail`.
 - **or-red constructs** (e.g. `hello|hi`). Any of the or-red construct could match. E.g. `hello|hi|hey assistant` matches `hello assistant`, `hi assistant` and `hey assistant`.
 - **optional construct** (e.g. `hello?`). This construct can be skipped during parsing. E.g. `bye bye?` matches both `bye` and `bye bye`
 - **parenthesized construct** (e.g. `(hello)`). This lets you pack constructs toghether and, for example, "or" them all. Just as math parenthesis do. E.g. `how (are you doing?)|(is it going)` matches `how are you`, `how are you doing` and `how is it going`.
 - **capturing group** (`.NAME.`). This tells the interpreter to match a variable-length list of any word to that part of the sentence. NAME is the name of the capturing group. E.g. `how are you .person.` matches `how are you Tom` with `Tom` in the "person" capturing group.
 
-Note that punctation marks should **not** be inserted. Words are only made of letters, and other special characters are part of the the language's grammar, so characters `[]"|?().` will be interpreted with their special meaning explained above and other punctation marks will generate errors. *But this does not mean that Dicio is not able to handle sentences with punctation marks!* Before being processed, the **input from the user is split into lowercase letter-only words**, so "It's" becomes "it" and "s" (the relevant code is at [`dicio-skill`](https://github.com/Stypox/dicio-skill/)). Therefore, when writing a dicio-sentences-language sentence which could contain **e.g. apostrophes, just replace them with a space** to obtain the same result. The case of letters (and their diacritics, for diacritics-insensitive words) is ignored, too.
+### Punctuation marks and special characters
+
+Note that punctation marks should **not** be inserted. Words are only made of letters, and other special characters are part of the the language's grammar, so characters `[]"|?().<>` will be interpreted with their special meaning explained above and other punctation marks will generate errors. *But this does not mean that Dicio is not able to handle sentences with punctation marks!* Before being processed, the **input from the user is split into lowercase letter-only words**, so "It's" becomes "it" and "s" (the relevant code is at [`dicio-skill`](https://github.com/Stypox/dicio-skill/)). Therefore, when writing a dicio-sentences-language sentence which could contain **e.g. apostrophes, just replace them with a space** to obtain the same result. The case of letters (and their diacritics, for diacritics-insensitive words) is ignored, too.
 
 ### Sentence example and explanation
 
 ```
 weather: high
-(what s|is)|whats "the" weather like? (in .where.)?;
+(what s|is)|whats "the" weather like? (<i|o>n .where.)?;
 ```
 The example above declares a section named "weather" with a high specificity (high, since... *what else could weather mean, if not atmospheric conditions?*). Then a sentence follows:
-- `(what s|is)|whats` matches `what + s`, `what + is` and `whats` (and thus also the raw `what's`, since the apostrophe would be considered a word separator; **you cannot** insert `'` or `-` or any other punctuation in `.dslf` files though!)
+- `(what s|is)|whats` matches `what + s`, `what + is` and `whats` (and thus also the raw `what's`, since the apostrophe would be considered a word separator; **you cannot** insert `'` or `-` or any other punctuation in `.dslf` files though, see the note [above](#punctuation-marks-and-special-characters)!)
 - `"the"` is a diacritics-sensitive word, so only the exact `the` would match: `thè` wouldn't. *Note that this word was made diacritics-sensitive just for **demonstration purposes**, since usually in the English language there are no issues with diacritics.*
 - `weather`, just like all of the other words in the sentence expect for `"the"`, is diacritics-insensitive, so it matches: `weather`, `wèathér`, `weàthèr`, ...
 - `like?` is an optional word that matches both `like` and nothing.
-- `(in .where.)?` is optional, and contains a capturing group. Thus, it matches `in italy` and `in milan` with respectively `italy` and `milan` in the "where" capturing group, or it matches nothing with no word in the capturing group.
+- `(<i|o>n .where.)?` is optional, and contains a word with variations and a capturing group. `<i|o>n` matches both `in` and `on`. Therefore, overall, it matches `in milan` and `on the moon` with respectively `milan` and `the moon` in the "where" capturing group, or it matches nothing with no word in the capturing group.
 
 So all of the following inputs from the user would match the above sentence perfectly:
 - `What's the wéather in London?` (`London` is captured as the "place")
@@ -44,6 +47,8 @@ StandardRecognizerData SECTION_NAME = new StandardRecognizerData(
         new Sentence(SENTENCE_ID, LIST_OF_STARTING_WORD_INDICES,
                 new DiacriticsSensitiveWord(VALUE, MINIMUM_SKIPPED_WORDS_TO_END, NEXT_WORD_INDICES...),
                 new DiacriticsInsensitiveWord(NORMALIZED_VALUE, MINIMUM_SKIPPED_WORDS_TO_END, NEXT_WORD_INDICES...),
+                new DiacriticsSensitiveRegexWord(REGEX, MINIMUM_SKIPPED_WORDS_TO_END, NEXT_WORD_INDICES...),
+                new DiacriticsInsensitiveRegexWord(REGEX, MINIMUM_SKIPPED_WORDS_TO_END, NEXT_WORD_INDICES...),
                 new CapturingGroup(NAME, MINIMUM_SKIPPED_WORDS_TO_END, NEXT_WORD_INDICES...),
                 new ...(...), ...),
         new Sentence(...), ...);
@@ -67,9 +72,10 @@ This project can be also used as a library. In that case, add `'com.github.Stypo
 The file below is [`example.dslf`](example.dslf). "dslf" means "Dicio-Sentences-Language File".
 ```
 mood: high       # comments are supported :-D
-how (are you doing?)|(is it going);
-[has_place] how is it going over there;
-[french] comment "êtes" voùs;  # quotes make sure êtes is matched diacritics-sensitively
+how (are you doing?)|(is it go<ing|ne>);
+[has_place] how is it going over <t?>here;
+[french] comment "êtes" voùs;  # quotes make sure êtes is matched diacritics-sensitively,
+                               # while voùs will be matched the same way as vous
 
 GPS_navigation: medium
 [question]  take|bring me to .place. (by .vehicle.)? please?;
@@ -92,7 +98,7 @@ package com.pkg.name;
 
 import java.util.Map;
 import java.util.HashMap;
-import org.dicio.skill.InputRecognizer.Specificity;
+import org.dicio.skill.chain.InputRecognizer.Specificity;
 import org.dicio.skill.standard.Sentence;
 import org.dicio.skill.standard.StandardRecognizerData;
 import org.dicio.skill.standard.word.DiacriticsInsensitiveWord;
@@ -108,14 +114,14 @@ public class ClassName {
 			new DiacriticsInsensitiveWord("doing", 1, 7),
 			new DiacriticsInsensitiveWord("is", 3, 5),
 			new DiacriticsInsensitiveWord("it", 2, 6),
-			new DiacriticsInsensitiveWord("going", 1, 7)),
+			new DiacriticsInsensitiveRegexWord("go(?:ing|ne)", 1, 7)),
 		new Sentence("has_place", new int[]{0},
 			new DiacriticsInsensitiveWord("how", 6, 1),
 			new DiacriticsInsensitiveWord("is", 5, 2),
 			new DiacriticsInsensitiveWord("it", 4, 3),
 			new DiacriticsInsensitiveWord("going", 3, 4),
 			new DiacriticsInsensitiveWord("over", 2, 5),
-			new DiacriticsInsensitiveWord("there", 1, 6)),
+			new DiacriticsInsensitiveRegexWord("(?:t|)here", 1, 6)),
 		new Sentence("french", new int[]{0},
 			new DiacriticsInsensitiveWord("comment", 3, 1),
 			new DiacriticsSensitiveWord("êtes", 2, 2),
@@ -172,7 +178,7 @@ public class ClassName {
 	}
 	public static final SectionClass_section_GPS_navigation section_GPS_navigation = new SectionClass_section_GPS_navigation();
 
-	public static final Map<String, StandardRecognizerData>sections = new HashMap<String, StandardRecognizerData>() {{
+	public static final Map<String, StandardRecognizerData> sections = new HashMap<String, StandardRecognizerData>() {{
 		put("mood", section_mood);
 		put("GPS_navigation", section_GPS_navigation);
 	}};
