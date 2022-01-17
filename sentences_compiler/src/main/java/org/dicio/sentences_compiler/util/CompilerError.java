@@ -13,6 +13,7 @@ public class CompilerError extends Exception {
         expectedSentenceContent("Expected sentence content after sentence id"),
         expectedSentenceConstructList("Expected list of sentence constructs"),
         expectedWordValue("Expected diacritics-sensitive word value after opening quotation marks '\"'"),
+        invalidVariationsGroup("Invalid variations group"),
         expectedCapturingGroupName("Expected capturing group name after point \".\""),
         invalidCapturingGroupName("The capturing group name has to be a valid java variable name"),
         sentenceCanBeEmpty("Sentence can be unfolded to an empty sentence (possibly with capturing groups)"),

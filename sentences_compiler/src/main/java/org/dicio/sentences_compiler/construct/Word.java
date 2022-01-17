@@ -1,5 +1,7 @@
 package org.dicio.sentences_compiler.construct;
 
+import org.dicio.sentences_compiler.util.StringNormalizer;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.Normalizer;
@@ -8,10 +10,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public final class Word extends WordBase {
-
-    private static final Pattern diacriticalMarksRemover =
-            Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-
 
     private final String value;
     private final boolean diacriticsSensitive;
@@ -35,11 +33,6 @@ public final class Word extends WordBase {
         return diacriticsSensitive;
     }
 
-    public String nfkdNormalized() {
-        final String normalized = Normalizer.normalize(value, Normalizer.Form.NFKD);
-        return diacriticalMarksRemover.matcher(normalized).replaceAll("");
-    }
-
 
     @Override
     public void compileToJava(final OutputStreamWriter output,
@@ -49,7 +42,7 @@ public final class Word extends WordBase {
             output.write(value);
         } else {
             output.write("new DiacriticsInsensitiveWord(\"");
-            output.write(nfkdNormalized());
+            output.write(StringNormalizer.nfkdNormalize(value));
         }
 
         output.write("\",");
