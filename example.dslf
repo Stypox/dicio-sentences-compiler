@@ -1,7 +1,8 @@
 mood: high       # comments are supported :-D
-how (are you doing?)|(is it going);
-[has_place] how is it going over there;
-[french] comment "êtes" voùs;  # quotes make sure êtes is matched diacritics-sensitively
+how (are you doing?)|(is it go<ing|ne>);
+[has_place] how is it going over <t?>here;
+[french] comment "êtes" voùs;  # quotes make sure êtes is matched diacritics-sensitively,
+                               # while voùs will be matched the same way as vous
 
 GPS_navigation: medium
 [question]  take|bring me to .place. (by .vehicle.)? please?;

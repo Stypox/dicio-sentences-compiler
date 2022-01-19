@@ -1,13 +1,18 @@
 package org.dicio.sentences_compiler.parser;
 
+import static org.dicio.sentences_compiler.util.CompilerError.Type.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.dicio.sentences_compiler.construct.CapturingGroup;
 import org.dicio.sentences_compiler.construct.Section;
 import org.dicio.sentences_compiler.construct.Sentence;
 import org.dicio.sentences_compiler.construct.Word;
 import org.dicio.sentences_compiler.construct.WordBase;
+import org.dicio.sentences_compiler.construct.WordWithVariations;
 import org.dicio.sentences_compiler.lexer.Tokenizer;
 import org.dicio.sentences_compiler.util.CompilerError;
-
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -19,13 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class ParserTest {
     private static ArrayList<Section> getSections(String s, String inputStreamName) throws IOException, CompilerError {
@@ -45,6 +45,15 @@ public class ParserTest {
         return entryPointWordIndices;
     }
 
+    private static List<String> part(final String... variations) {
+        return Arrays.asList(variations);
+    }
+
+    @SafeVarargs
+    private static List<List<String>> parts(final List<String>... parts) {
+        return Arrays.asList(parts);
+    }
+
     private static WordBase buildWord(final WordBase wordBase,
                                       final int minimumSkippedWordsToEnd,
                                       final Integer... nextIndices) {
@@ -59,10 +68,24 @@ public class ParserTest {
         return buildWord(new Word(value, false), minimumSkippedWordsToEnd, nextIndices);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static WordBase wd(final String value,
                                final int minimumSkippedWordsToEnd,
                                final Integer... nextIndices) {
         return buildWord(new Word(value, true), minimumSkippedWordsToEnd, nextIndices);
+    }
+
+    private static WordBase wv(final List<List<String>> parts,
+                               final int minimumSkippedWordsToEnd,
+                               final Integer... nextIndices) {
+        return buildWord(new WordWithVariations(parts, false), minimumSkippedWordsToEnd, nextIndices);
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static WordBase wvd(final List<List<String>> parts,
+                                final int minimumSkippedWordsToEnd,
+                                final Integer... nextIndices) {
+        return buildWord(new WordWithVariations(parts, true), minimumSkippedWordsToEnd, nextIndices);
     }
 
     private static WordBase capt(final String value,
@@ -73,7 +96,7 @@ public class ParserTest {
 
 
     private static <T> void assertUniqueCollectionEquals(final Collection<T> expected, final Collection<T> actual) {
-        assertEquals(expected.size(), actual.size());
+        assertEquals("Expected: " + expected + "\nActual: " + actual + "\n", expected.size(), actual.size());
         assertTrue("Expected: " + expected + "\nActual: " + actual,
                 actual.containsAll(expected));
     }
@@ -118,6 +141,15 @@ public class ParserTest {
                 assertTrue(actualWords.get(i) instanceof Word);
                 assertEquals(((Word) words[i]).getValue(), ((Word) actualWords.get(i)).getValue());
                 assertEquals(((Word) words[i]).isDiacriticsSensitive(), ((Word) actualWords.get(i)).isDiacriticsSensitive());
+            } else if (words[i] instanceof WordWithVariations) {
+                final WordWithVariations word = (WordWithVariations) words[i];
+                final WordWithVariations actualWord = (WordWithVariations) actualWords.get(i);
+                assertTrue(actualWords.get(i) instanceof WordWithVariations);
+                assertEquals(word.getParts().size(), actualWord.getParts().size());
+                for (int j = 0; j < word.getParts().size(); ++j) {
+                    assertUniqueCollectionEquals(word.getParts().get(j), actualWord.getParts().get(j));
+                }
+                assertEquals(((WordWithVariations) words[i]).isDiacriticsSensitive(), ((WordWithVariations) actualWords.get(i)).isDiacriticsSensitive());
             } else {
                 assertTrue(actualWords.get(i) instanceof CapturingGroup);
                 assertEquals(((CapturingGroup) words[i]).getName(), ((CapturingGroup) actualWords.get(i)).getName());
@@ -148,7 +180,8 @@ public class ParserTest {
                 "Ff:\n" +
                 "low\n" +
                 "x?.d_.y;\n" +
-                "z.C7.?;\n");
+                "\"zàÈ\" .C7.?;\n" +
+                "<a|B>c<C|d?><è?>? <F?>g \"j<k?>o<h|Ì>\"?;\n");
         assertEquals(3, sections.size());
 
         assertEquals("A", sections.get(0).getSectionId());
@@ -174,51 +207,62 @@ public class ParserTest {
         assertEquals("Ff", sections.get(2).getSectionId());
         assertEquals(Section.Specificity.low, sections.get(2).getSpecificity());
         assertEquals(8, sections.get(2).getLine());
-        assertEquals(2, sections.get(2).getSentences().size());
+        assertEquals(3, sections.get(2).getSentences().size());
         assertSentence(sections.get(2).getSentences().get(0), "", 10, entry(0, 1),
                 w("x", 3, 1), capt("d_", 2, 2), w("y", 1, 3));
         assertSentence(sections.get(2).getSentences().get(1), "", 11, entry(0),
-                w("z", 1, 1, 2), capt("C7", 1, 2));
+                wd("zàè", 1, 1, 2), capt("C7", 1, 2));
+        assertSentence(sections.get(2).getSentences().get(2), "", 12, entry(0, 1),
+                wv(parts(part("a","b"), part("c"), part("c","d",""), part("è","")), 2, 1),
+                wv(parts(part("f",""), part("g")), 1, 2, 3),
+                wvd(parts(part("j"), part("k",""), part("o"), part("h","ì")), 1, 3));
     }
 
     @Test
     public void testInvalidInput() throws IOException {
-        assertInvalid("a:low [*] b|c;",       CompilerError.Type.invalidCharacter,                 1,  8,  "*");
-        assertInvalid("a:low b .c.;;",        CompilerError.Type.expectedSectionOrEndOfFile,       1, 13,  ";");
-        assertInvalid("a bB",                 CompilerError.Type.invalidToken,                     1,  3,  "bB");
-        assertInvalid("a:low .b_C. d| |e;",   CompilerError.Type.invalidToken,                     1, 16,  "|");
-        assertInvalid("a:low b|;",            CompilerError.Type.invalidToken,                     1,  9,  ";");
-        assertInvalid("a:low b|? (c);",       CompilerError.Type.invalidToken,                     1,  9,  "?");
-        assertInvalid("a:low b? (c?)??;",     CompilerError.Type.invalidToken,                     1, 15,  "?");
-        assertInvalid("a:low\n[] b|c;",       CompilerError.Type.invalidToken,                     2,  2,  "]");
-        assertInvalid("a:low [|] b|c;",       CompilerError.Type.invalidToken,                     1,  8,  "|");
-        assertInvalid("a:low [[]] a;",        CompilerError.Type.invalidToken,                     1,  8,  "[");
-        assertInvalid("a",                    CompilerError.Type.invalidToken,                     1,  2,  "");
-        assertInvalid("a:\n",                 CompilerError.Type.invalidToken,                     2,  1,  "");
-        assertInvalid("\na:high b.\nc;",      CompilerError.Type.invalidToken,                     3,  2,  ";");
-        assertInvalid("z1:medium\n.g..\nè;",  CompilerError.Type.invalidToken,                     3,  2,  "\".\"");
-        assertInvalid("c:low\nah|\"he ho\";", CompilerError.Type.invalidToken,                     2,  8,  "ho");
-        assertInvalid("c:low\"par\n\n|ap c;", CompilerError.Type.invalidToken,                     3,  1,  "|");
-        assertInvalid("a:low \"b|\";",        CompilerError.Type.invalidToken,                     1,  9,  "'\"'");
-        assertInvalid("false:low a;",         CompilerError.Type.invalidSectionId,                 1,  1,  "false");
-        assertInvalid("9hi:low a;",           CompilerError.Type.invalidSectionId,                 1,  1,  "9hi");
-        assertInvalid("è9:medium a;",         CompilerError.Type.invalidSectionId,                 1,  1,  "è9");
-        assertInvalid("a:media a;",           CompilerError.Type.invalidSpecificity,               1,  1,  "media");
-        assertInvalid("a:\nhig;",             CompilerError.Type.invalidSpecificity,               2,  1,  "hig");
-        assertInvalid("a:low\n|b;",           CompilerError.Type.expectedSentence,                 2,  1,  "|");
-        assertInvalid("a_a:low;",             CompilerError.Type.expectedSentence,                 1,  8,  ";");
-        assertInvalid("a:low [A];",           CompilerError.Type.expectedSentenceContent,          1, 10,  ";");
-        assertInvalid("\na:medium ();",       CompilerError.Type.expectedSentenceConstructList,    2, 11,  ")");
-        assertInvalid("a:low\n(());",         CompilerError.Type.expectedSentenceConstructList,    2,  3,  ")");
-        assertInvalid("a:low[x\n]\"\";",      CompilerError.Type.expectedWordValue,                2,  3,  "\"");
-        assertInvalid("a:low\na|b\"",         CompilerError.Type.expectedWordValue,                2,  5,  "'\"'");
-        assertInvalid("b:low\n[a] ..;",       CompilerError.Type.expectedCapturingGroupName,       2,  6,  ".");
-        assertInvalid("b:low [G] a .|;",      CompilerError.Type.expectedCapturingGroupName,       1, 14,  "|");
-        assertInvalid("c:high hi\n.caè.;",    CompilerError.Type.invalidCapturingGroupName,        2,  2,  "caè");
-        assertInvalid("c:high hi\n.9AC.;",    CompilerError.Type.invalidCapturingGroupName,        2,  2,  "9AC");
-        assertInvalid("a:low b?;",            CompilerError.Type.sentenceCanBeEmpty,               1, -1,  "");
-        assertInvalid("Aa:low a;\nAa:low b;", CompilerError.Type.duplicateSectionId,               2, -1,  "Aa");
-        assertInvalid("\nAa:low a;\n\nB:low b;\nAa:low c;", CompilerError.Type.duplicateSectionId, 5, -1,  "Aa");
+        assertInvalid("a:low [*] b|c;",       invalidCharacter,                 1,  8, "*");
+        assertInvalid("a:low b .c.;;",        expectedSectionOrEndOfFile,       1, 13, ";");
+        assertInvalid("a bB",                 invalidToken,                     1,  3, "bB");
+        assertInvalid("a:low .b_C. d| |e;",   invalidToken,                     1, 16, "|");
+        assertInvalid("a:low b|;",            invalidToken,                     1,  9, ";");
+        assertInvalid("a:low b|? (c);",       invalidToken,                     1,  9, "?");
+        assertInvalid("a:low b? (c?)??;",     invalidToken,                     1, 15, "?");
+        assertInvalid("a:low\n[] b|c;",       invalidToken,                     2,  2, "]");
+        assertInvalid("a:low [|] b|c;",       invalidToken,                     1,  8, "|");
+        assertInvalid("a:low [[]] a;",        invalidToken,                     1,  8, "[");
+        assertInvalid("a",                    invalidToken,                     1,  2, "");
+        assertInvalid("a:\n",                 invalidToken,                     2,  1, "");
+        assertInvalid("\na:high b.\nc;",      invalidToken,                     3,  2, ";");
+        assertInvalid("z1:medium\n.g..\nè;",  invalidToken,                     3,  2, "\".\"");
+        assertInvalid("c:low\nah|\"he ho\";", invalidToken,                     2,  8, "ho");
+        assertInvalid("c:low\"par\n\n|ap c;", invalidToken,                     3,  1, "|");
+        assertInvalid("a:low \"b|\";",        invalidToken,                     1,  9, "'\"'");
+        assertInvalid("k:high\na r8;",        invalidToken,                     2,  3, "r8");
+        assertInvalid("false:low a;",         invalidSectionId,                 1,  1, "false");
+        assertInvalid("9hi:low a;",           invalidSectionId,                 1,  1, "9hi");
+        assertInvalid("è9:medium a;",         invalidSectionId,                 1,  1, "è9");
+        assertInvalid("a:media a;",           invalidSpecificity,               1,  1, "media");
+        assertInvalid("a:\nhig;",             invalidSpecificity,               2,  1, "hig");
+        assertInvalid("a:low\n|b;",           expectedSentence,                 2,  1, "|");
+        assertInvalid("a_a:low;",             expectedSentence,                 1,  8, ";");
+        assertInvalid("a:low h3ll0;",         expectedSentence,                 1,  7, "h3ll0");
+        assertInvalid("a:low [A];",           expectedSentenceContent,          1, 10, ";");
+        assertInvalid("\na:medium ();",       expectedSentenceConstructList,    2, 11, ")");
+        assertInvalid("a:low\n(());",         expectedSentenceConstructList,    2,  3, ")");
+        assertInvalid("a:low[x\n]\"\";",      expectedWordValue,                2,  3, "\"");
+        assertInvalid("a:low\na|b\"",         expectedWordValue,                2,  5, "'\"'");
+        assertInvalid("Z:high <a?|b>\n",      invalidVariationsGroup,           1, 11, "|");
+        assertInvalid("Z:high\n<a(b)|c>\n",   invalidVariationsGroup,           2,  3, "(");
+        assertInvalid("Z:high\n<>",           invalidVariationsGroup,           2,  2, ">");
+        assertInvalid("Z:high\n<ab|>\n",      invalidVariationsGroup,           2,  5, ">");
+        assertInvalid("Z:high <abcd>",        invalidVariationsGroup,           1, 13, ">");
+        assertInvalid("b:low\n[a] ..;",       expectedCapturingGroupName,       2,  6, ".");
+        assertInvalid("b:low [G] a .|;",      expectedCapturingGroupName,       1, 14, "|");
+        assertInvalid("c:high hi\n.caè.;",    invalidCapturingGroupName,        2,  2, "caè");
+        assertInvalid("c:high hi\n.9AC.;",    invalidCapturingGroupName,        2,  2, "9AC");
+        assertInvalid("a:low b?;",            sentenceCanBeEmpty,               1, -1, "");
+        assertInvalid("Aa:low a;\nAa:low b;", duplicateSectionId,               2, -1, "Aa");
+        assertInvalid("\nAa:low a;\n\nB:low b;\nAa:low c;", duplicateSectionId, 5, -1, "Aa");
     }
 
 

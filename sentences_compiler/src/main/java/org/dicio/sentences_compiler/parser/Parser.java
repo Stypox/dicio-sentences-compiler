@@ -9,15 +9,18 @@ import org.dicio.sentences_compiler.construct.Sentence;
 import org.dicio.sentences_compiler.construct.SentenceConstructList;
 import org.dicio.sentences_compiler.construct.Word;
 import org.dicio.sentences_compiler.construct.WordBase;
+import org.dicio.sentences_compiler.construct.WordWithVariations;
 import org.dicio.sentences_compiler.lexer.Token;
 import org.dicio.sentences_compiler.lexer.TokenStream;
 import org.dicio.sentences_compiler.util.CompilerError;
 import org.dicio.sentences_compiler.util.JavaSyntaxCheck;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Parser {
-    private TokenStream ts;
+    private final TokenStream ts;
 
     public Parser(TokenStream tokenStream) {
         this.ts = tokenStream;
@@ -240,27 +243,113 @@ public class Parser {
         }
     }
 
-    private Word readWord() throws CompilerError {
-        if (ts.get(0).isType(Token.Type.letters)) {
-            final String wordValue = ts.get(0).getValue().toLowerCase();
+    private WordBase readWord() throws CompilerError {
+        if (ts.get(0).equals(Token.Type.grammar, "\"")) {
             ts.movePositionForwardBy(1);
-            return new Word(wordValue, false);
+            final WordBase word = readWordValue(true);
 
-        } else if (ts.get(0).equals(Token.Type.grammar, "\"")) {
-            ts.movePositionForwardBy(1);
-            if (ts.get(0).isType(Token.Type.lettersPlusOther)) {
-                if (ts.get(1).equals(Token.Type.grammar, "\"")) {
-                    final String wordValue = ts.get(0).getValue().toLowerCase();
-                    ts.movePositionForwardBy(2);
-                    return new Word(wordValue, true);
-                } else {
-                    throw new CompilerError(CompilerError.Type.invalidToken, ts.get(1), "Expected closing quotation marks '\"' after diacritics-sensitive word");
-                }
-            } else {
+            if (word == null) {
                 throw new CompilerError(CompilerError.Type.expectedWordValue, ts.get(0), "");
+            } else if (!ts.get(0).equals(Token.Type.grammar, "\"")) {
+                throw new CompilerError(CompilerError.Type.invalidToken, ts.get(0),
+                        "Expected closing quotation marks '\"' after diacritics-sensitive word");
+            } else {
+                ts.movePositionForwardBy(1); // skip closing quotation mark "
+                return word;
             }
         } else {
+            return readWordValue(false);
+        }
+    }
+
+    private WordBase readWordValue(final boolean diacriticsSensitive) throws CompilerError {
+        final List<List<String>> parts = new ArrayList<>();
+        while (true) {
+            if (ts.get(0).isType(Token.Type.letters)
+                    && (parts.isEmpty() || parts.get(parts.size() - 1).size() > 1)) {
+                // only use the letters token at the beginning or after a <> variations group
+                parts.add(Collections.singletonList(ts.get(0).getValue().toLowerCase()));
+                ts.movePositionForwardBy(1);
+
+            } else if (ts.get(0).isType(Token.Type.grammar)
+                    && (ts.get(0).isValue("<") || (ts.get(0).isValue(" <") && parts.isEmpty()))) {
+                // "<" means `<` directly after some letters, " <" means `<` after a non-letter
+                // character, and if `<` wasn't directly after the previous letters in this word, it
+                // means it does not belong to this word, hence the `&& parts.isEmpty()`
+                ts.movePositionForwardBy(1);
+                final List<String> part = new ArrayList<>();
+                final boolean lastPart;
+
+                while (true) {
+                    if (ts.get(0).isType(Token.Type.letters)) {
+                        part.add(ts.get(0).getValue().toLowerCase());
+                        ts.movePositionForwardBy(2);
+
+                        if (ts.get(-1).equals(Token.Type.grammar, "?")) {
+                            part.add("");
+                            ts.movePositionForwardBy(1);
+                        }
+
+                        if (ts.get(-1).equals(Token.Type.grammar, ">")) {
+                            lastPart = false;
+                            break;
+                        } else if (ts.get(-1).equals(Token.Type.grammar, "> ")) {
+                            lastPart = true;
+                            break;
+                        } else if (ts.get(-1).equals(Token.Type.grammar, "|")) {
+                            if (part.get(part.size() - 1).isEmpty()) {
+                                // if the last part is empty, it means we just encountered a ?
+                                throw new CompilerError(CompilerError.Type.invalidVariationsGroup,
+                                        ts.get(-1), "Expected closing angle bracket '>' after '?'"
+                                        + " token");
+                            }
+                        } else {
+                            throw new CompilerError(CompilerError.Type.invalidVariationsGroup,
+                                    ts.get(-1), "Expected closing angle bracket '>', question mark"
+                                    + " '?' or variations separator '|' after letters");
+                        }
+
+                    } else {
+                        throw new CompilerError(CompilerError.Type.invalidVariationsGroup, ts.get(0),
+                                "Expected letters after '<' or '|' tokens");
+                    }
+                }
+
+                if (part.size() <= 1) {
+                    throw new CompilerError(CompilerError.Type.invalidVariationsGroup, ts.get(-1),
+                            "A variations group should provide more than one alternative");
+                }
+
+                parts.add(part);
+                if (lastPart) {
+                    break;
+                }
+
+            } else {
+                break;
+            }
+        }
+
+        if (parts.size() == 0) {
             return null;
+        } else if (parts.size() == 1 && parts.get(0).size() == 1) {
+            return new Word(parts.get(0).get(0), diacriticsSensitive);
+        } else {
+            boolean canBeEmpty = true;
+            for (final List<String> part : parts) {
+                if (!part.get(part.size() - 1).isEmpty()) {
+                    canBeEmpty = false;
+                    break;
+                }
+            }
+
+            if (canBeEmpty) {
+                throw new CompilerError(CompilerError.Type.invalidVariationsGroup, ts.get(-1),
+                        (parts.size() == 1 ? "This variations group" : "These variations groups")
+                        + " would match an empty word, which is not allowed");
+            }
+
+            return new WordWithVariations(parts, diacriticsSensitive);
         }
     }
 
