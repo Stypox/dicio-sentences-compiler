@@ -26,7 +26,8 @@ public class JavaSyntaxCheck {
      */
     private static final String[] importedClasses = {
             "Map", "HashMap", "Specificity", "Sentence", "StandardRecognizerData",
-            "DiacriticsInsensitiveWord", "DiacriticsSensitiveWord", "CapturingGroup"
+            "DiacriticsInsensitiveWord", "DiacriticsSensitiveWord",
+            "DiacriticsInsensitiveRegexWord", "DiacriticsSensitiveRegexWord", "CapturingGroup"
     };
 
 

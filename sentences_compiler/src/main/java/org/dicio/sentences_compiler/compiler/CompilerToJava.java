@@ -84,6 +84,8 @@ public class CompilerToJava extends CompilerBase {
                 + "import org.dicio.skill.standard.StandardRecognizerData;\n"
                 + "import org.dicio.skill.standard.word.DiacriticsInsensitiveWord;\n"
                 + "import org.dicio.skill.standard.word.DiacriticsSensitiveWord;\n"
+                + "import org.dicio.skill.standard.word.DiacriticsInsensitiveRegexWord;\n"
+                + "import org.dicio.skill.standard.word.DiacriticsSensitiveRegexWord;\n"
                 + "import org.dicio.skill.standard.word.CapturingGroup;\n"
                 + "public class ");
         output.write(className);
