@@ -8,7 +8,6 @@ import org.dicio.sentences_compiler.compiler.CompilerToJava;
 import org.dicio.sentences_compiler.util.CompilerError;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -53,7 +52,7 @@ public class SentencesCompiler {
             }
         } catch (final Throwable e) {
             StringBuilder stringBuilder = new StringBuilder();
-            argParser.usage(stringBuilder);
+            argParser.getUsageFormatter().usage(stringBuilder);
             System.err.print(stringBuilder);
             throw e;
         }
@@ -133,7 +132,7 @@ public class SentencesCompiler {
             if (fileName.equals("stdin")) {
                 inputStream = System.in;
             } else {
-                inputStream = new FileInputStream(new File(fileName));
+                inputStream = new FileInputStream(fileName);
                 closeableStream = inputStream;
             }
             return new InputStreamReader(inputStream, charset);
@@ -148,7 +147,7 @@ public class SentencesCompiler {
             if (fileName.equals("stdout")) {
                 outputStream = System.out;
             } else {
-                outputStream = new FileOutputStream(new File(fileName));
+                outputStream = new FileOutputStream(fileName);
                 closeableStream = outputStream;
             }
             return new OutputStreamWriter(outputStream, charset);
