@@ -10,4 +10,8 @@ jar {
                 'Main-Class': 'org.dicio.sentences_compiler.main.SentencesCompiler'
         )
     }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
