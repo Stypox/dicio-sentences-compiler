@@ -19,7 +19,7 @@ public class SentenceTest {
         final String sentenceId = "ID", word = "hello";
 
         final Sentence s = new Sentence();
-        s.setSentenceId(sentenceId, "", 0);
+        s.setSentenceId(sentenceId, false, "", 0);
         SentenceConstructList sentenceConstructList = new SentenceConstructList();
         sentenceConstructList.addConstruct(new Word(word, true));
         s.setSentenceConstructs(sentenceConstructList);

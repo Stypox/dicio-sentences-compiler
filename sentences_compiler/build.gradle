@@ -1,5 +1,6 @@
 dependencies {
     implementation 'com.beust:jcommander:1.82'
+    implementation 'org.json:json:20240205'
     testImplementation 'junit:junit:4.13.2'
 }
 

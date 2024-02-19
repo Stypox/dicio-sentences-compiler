@@ -125,12 +125,21 @@ public class Parser {
     private Sentence readSentence() throws CompilerError {
         Sentence sentence = new Sentence();
 
-        String sentenceId = readSentenceId();
-        boolean foundId = (sentenceId != null);
+        final String capturingGroupAltsSentenceId = readCapturingGroupAlternativesSentenceId();
+        boolean foundId = capturingGroupAltsSentenceId != null;
         if (foundId) {
-            sentence.setSentenceId(sentenceId, ts.get(-2).getInputStreamName(), ts.get(-2).getLine());
+            sentence.setSentenceId(capturingGroupAltsSentenceId, true,
+                    ts.get(-2).getInputStreamName(), ts.get(-2).getLine());
         } else {
-            sentence.setSentenceId("", ts.get(0).getInputStreamName(), ts.get(0).getLine());
+            final String sentenceId = readSentenceId();
+            foundId = sentenceId != null;
+            if (foundId) {
+                sentence.setSentenceId(sentenceId, false,
+                        ts.get(-2).getInputStreamName(), ts.get(-2).getLine());
+            } else {
+                sentence.setSentenceId("", false,
+                        ts.get(0).getInputStreamName(), ts.get(0).getLine());
+            }
         }
 
         SentenceConstructList sentenceContent = readSentenceContent();
@@ -151,22 +160,42 @@ public class Parser {
         }
     }
 
-    private String readSentenceId() throws CompilerError {
-        if (ts.get(0).equals(Token.Type.grammar, "[")) {
-            if (ts.get(1).isType(Token.Type.lettersPlusOther)) {
-                if (ts.get(2).equals(Token.Type.grammar, "]")) {
-                    String sentenceId = ts.get(1).getValue();
-                    ts.movePositionForwardBy(3);
-                    return sentenceId;
-                } else {
-                    throw new CompilerError(CompilerError.Type.invalidToken, ts.get(2), "Expected \"]\" after sentence id");
-                }
-            } else {
-                throw new CompilerError(CompilerError.Type.invalidToken, ts.get(1), "Expected sentence id after token \"[\"");
-            }
-        } else {
+    private String readCapturingGroupAlternativesSentenceId() throws CompilerError {
+        if (!ts.get(0).equals(Token.Type.grammar, "[") ||
+                !ts.get(1).equals(Token.Type.grammar, ".")) {
             return null;
         }
+        if (!ts.get(2).isType(Token.Type.lettersPlusOther)) {
+            throw new CompilerError(CompilerError.Type.invalidToken, ts.get(1),
+                    "Expected capturing group alternatives sentence id after token \"[.\"");
+        }
+        if (!ts.get(3).equals(Token.Type.grammar, ".") ||
+                !ts.get(4).equals(Token.Type.grammar, "]")) {
+            throw new CompilerError(CompilerError.Type.invalidToken, ts.get(2),
+                    "Expected \".]\" after capturing group alternatives sentence id");
+        }
+
+        String sentenceId = ts.get(2).getValue();
+        ts.movePositionForwardBy(5);
+        return sentenceId;
+    }
+
+    private String readSentenceId() throws CompilerError {
+        if (!ts.get(0).equals(Token.Type.grammar, "[")) {
+            return null;
+        }
+        if (!ts.get(1).isType(Token.Type.lettersPlusOther)) {
+            throw new CompilerError(CompilerError.Type.invalidToken, ts.get(1),
+                    "Expected sentence id after token \"[\"");
+        }
+        if (!ts.get(2).equals(Token.Type.grammar, "]")) {
+            throw new CompilerError(CompilerError.Type.invalidToken, ts.get(2),
+                    "Expected \"]\" after sentence id");
+        }
+
+        String sentenceId = ts.get(1).getValue();
+        ts.movePositionForwardBy(3);
+        return sentenceId;
     }
 
     private SentenceConstructList readSentenceContent() throws CompilerError {

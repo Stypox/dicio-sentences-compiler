@@ -129,8 +129,18 @@ public class ParserTest {
                                        final int line,
                                        final Integer[] entryPointWordIndices,
                                        final WordBase... words) {
+        assertSentence(sentence, sentenceId, false, line, entryPointWordIndices, words);
+    }
+
+    private static void assertSentence(final Sentence sentence,
+                                       final String sentenceId,
+                                       final boolean isCapturingGroupAlternatives,
+                                       final int line,
+                                       final Integer[] entryPointWordIndices,
+                                       final WordBase... words) {
 
         assertEquals(sentenceId, sentence.getSentenceId());
+        assertEquals(isCapturingGroupAlternatives, sentence.isCapturingGroupAlternatives());
         assertEquals(line, sentence.getLine());
         assertUniqueCollectionEquals(entryPointWordIndices, sentence.getEntryPointWordIndices());
 
@@ -181,7 +191,8 @@ public class ParserTest {
                 "low\n" +
                 "x?.d_.y;\n" +
                 "\"zàÈ\" .C7.?;\n" +
-                "<a|B>c<C|d?><è?>? <F?>g \"j<k?>o<h|Ì>\"?;\n");
+                "<a|B>c<C|d?><è?>? <F?>g \"j<k?>o<h|Ì>\"?;\n" +
+                "[.C7.] a|b;\n");
         assertEquals(3, sections.size());
 
         assertEquals("A", sections.get(0).getSectionId());
@@ -207,7 +218,7 @@ public class ParserTest {
         assertEquals("Ff", sections.get(2).getSectionId());
         assertEquals(Section.Specificity.low, sections.get(2).getSpecificity());
         assertEquals(8, sections.get(2).getLine());
-        assertEquals(3, sections.get(2).getSentences().size());
+        assertEquals(4, sections.get(2).getSentences().size());
         assertSentence(sections.get(2).getSentences().get(0), "", 10, entry(0, 1),
                 w("x", 3, 1), capt("d_", 2, 2), w("y", 1, 3));
         assertSentence(sections.get(2).getSentences().get(1), "", 11, entry(0),
@@ -216,6 +227,8 @@ public class ParserTest {
                 wv(parts(part("a","b"), part("c"), part("c","d",""), part("è","")), 2, 1),
                 wv(parts(part("f",""), part("g")), 1, 2, 3),
                 wvd(parts(part("j"), part("k",""), part("o"), part("h","ì")), 1, 3));
+        assertSentence(sections.get(2).getSentences().get(3), "C7", true, 13, entry(0, 1),
+                w("a", 1, 2), w("b", 1, 2));
     }
 
     @Test

@@ -1,6 +1,12 @@
 package org.dicio.sentences_compiler.construct;
 
+import org.dicio.sentences_compiler.compiler.Alternative;
+import org.dicio.sentences_compiler.compiler.RepeatedList;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class SentenceConstructList extends AggregateConstruct {
@@ -17,5 +23,31 @@ public final class SentenceConstructList extends AggregateConstruct {
             nextIndices = constructs.get(i).findNextIndices(nextIndices);
         }
         return nextIndices;
+    }
+
+    @Override
+    public List<Alternative> buildAlternatives(
+            final Map<String, RepeatedList> capturingGroupSubstitutions) {
+        List<Alternative> res = null;
+        for (final Construct construct : constructs) {
+            final List<Alternative> nextAlt =
+                    construct.buildAlternatives(capturingGroupSubstitutions);
+            if (res == null || res.isEmpty()) {
+                res = nextAlt;
+            } else {
+                final List<Alternative> prevAlt = res;
+                res = new ArrayList<>();
+                for (final Alternative prev : prevAlt) {
+                    for (final Alternative next : nextAlt) {
+                        res.add(prev.plus(next));
+                    }
+                }
+            }
+        }
+
+        if (res == null) {
+            res = Collections.emptyList();
+        }
+        return res;
     }
 }

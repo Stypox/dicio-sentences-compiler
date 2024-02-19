@@ -1,6 +1,8 @@
 package org.dicio.sentences_compiler.construct;
 
+import org.dicio.sentences_compiler.compiler.Alternative;
 import org.dicio.sentences_compiler.compiler.CompilableToJava;
+import org.dicio.sentences_compiler.compiler.RepeatedList;
 import org.dicio.sentences_compiler.util.CompilerError;
 
 import java.io.IOException;
@@ -8,10 +10,12 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Sentence implements CompilableToJava {
     private String sentenceId;
+    private boolean isCapturingGroupAlternatives;
     private SentenceConstructList sentenceConstructs;
     private List<WordBase> compiledWords;
     private Set<Integer> entryPointWordIndices;
@@ -20,9 +24,11 @@ public class Sentence implements CompilableToJava {
     private int line;
 
     public void setSentenceId(final String sentenceId,
+                              final boolean isCapturingGroupAlternatives,
                               final String inputStreamName,
                               final int line) {
         this.sentenceId = sentenceId;
+        this.isCapturingGroupAlternatives = isCapturingGroupAlternatives;
         this.inputStreamName = inputStreamName;
         this.line = line;
     }
@@ -33,6 +39,10 @@ public class Sentence implements CompilableToJava {
 
     public String getSentenceId() {
         return sentenceId;
+    }
+
+    public boolean isCapturingGroupAlternatives() {
+        return isCapturingGroupAlternatives;
     }
 
     public String getInputStreamName() {
@@ -117,5 +127,10 @@ public class Sentence implements CompilableToJava {
             word.compileToJava(output, variableName);
         }
         output.write(")");
+    }
+
+    public List<Alternative> buildAlternatives(
+            final Map<String, RepeatedList> capturesAlternatives) {
+        return sentenceConstructs.buildAlternatives(capturesAlternatives);
     }
 }

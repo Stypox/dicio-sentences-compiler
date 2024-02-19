@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 import org.dicio.sentences_compiler.compiler.CompilerBase;
+import org.dicio.sentences_compiler.compiler.CompilerToDataset;
 import org.dicio.sentences_compiler.compiler.CompilerToJava;
 import org.dicio.sentences_compiler.util.CompilerError;
 
@@ -32,10 +33,12 @@ public class SentencesCompiler {
     public static void main(final String[] args) throws IOException, CompilerError {
         final Arguments arguments = new Arguments();
         final JavaCommand javaCommand = new JavaCommand();
+        final DatasetCommand datasetCommand = new DatasetCommand();
         final JCommander argParser = JCommander
                 .newBuilder()
                 .addObject(arguments)
                 .addCommand("java", javaCommand)
+                .addCommand("dataset", datasetCommand)
                 .build();
 
         for (final String arg : args) {
@@ -64,18 +67,25 @@ public class SentencesCompiler {
                 compiler = new CompilerToJava(javaCommand.variablePrefix, javaCommand.packageName,
                         javaCommand.className, javaCommand.sectionMapName);
                 break;
+            case "dataset":
+                compiler = new CompilerToDataset();
+                break;
             default:
                 throw new ParameterException("Unexpected value: " + argParser.getParsedCommand());
         }
 
         final FileInfo outputFileInfo = new FileInfo(arguments.outputFile);
         final FileInfo sectionIdsFileInfo = new FileInfo(arguments.sectionIdsFile);
-        compile(arguments.inputFiles,
-                outputFileInfo.openOutputStream(false),
-                sectionIdsFileInfo.openOutputStream(true),
-                compiler);
-        outputFileInfo.closeStream();
-        sectionIdsFileInfo.closeStream();
+
+        try {
+            compile(arguments.inputFiles,
+                    outputFileInfo.openOutputStream(false),
+                    sectionIdsFileInfo.openOutputStream(true),
+                    compiler);
+        } finally {
+            outputFileInfo.closeStream();
+            sectionIdsFileInfo.closeStream();
+        }
     }
 
 
