@@ -21,7 +21,7 @@ public class CompilerToDataset extends CompilerBase {
             results.putAll(section.compileToDataset());
         }
 
-        System.out.println("HERE" + results);
+        System.out.println("Saving a dataset with " + results.size() + " items");
         new JSONObject(results)
                 .write(output).close();
     }
