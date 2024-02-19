@@ -17,11 +17,12 @@ public class CompilerToDataset extends CompilerBase {
         super.compile(output, sectionIdsOutput);
 
         final Map<String, JSONObject> results = new HashMap<>();
-        for (final Section section : sections) {
+        for (final Section section : getSections()) {
             results.putAll(section.compileToDataset());
         }
 
+        System.out.println("HERE" + results);
         new JSONObject(results)
-                .write(output);
+                .write(output).close();
     }
 }

@@ -8,7 +8,7 @@ public class RepeatedList {
 
     public RepeatedList(final List<String> alternatives) {
         if (alternatives.isEmpty()) {
-            throw new IndexOutOfBoundsException("alternatives is empty");
+            throw new IndexOutOfBoundsException("Alternatives is empty");
         }
         this.alternatives = alternatives;
     }
