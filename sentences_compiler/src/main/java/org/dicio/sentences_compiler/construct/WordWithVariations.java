@@ -93,7 +93,7 @@ public class WordWithVariations extends WordBase {
                 // to differ by just a word ending
                 parts.stream()
                     .map(part -> part.get(0))
-                    .collect(Collectors.joining(" ")),
+                    .collect(Collectors.joining()),
                 Collections.emptyMap()));
     }
 }

@@ -16,7 +16,11 @@ public class Alternative {
         final Map<String, String> combinedCapturingGroupValues = new HashMap<>();
         combinedCapturingGroupValues.putAll(capturingGroupValues);
         combinedCapturingGroupValues.putAll(other.capturingGroupValues);
-        return new Alternative(sentence + " " + other.sentence,
-                combinedCapturingGroupValues);
+
+        final String combinedSentence = sentence +
+                (sentence.isEmpty() || other.sentence.isEmpty() ? "" : " ") +
+                other.sentence;
+
+        return new Alternative(combinedSentence, combinedCapturingGroupValues);
     }
 }
