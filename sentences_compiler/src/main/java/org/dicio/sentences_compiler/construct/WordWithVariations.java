@@ -86,14 +86,12 @@ public class WordWithVariations extends WordBase {
     }
 
     @Override
-    public List<Alternative> buildAlternatives(
-            Map<String, RepeatedList> capturingGroupSubstitutions) {
-        return Collections.singletonList(new Alternative(
+    public List<String> buildAlternatives() {
+        return Collections.singletonList(
                 // just take the first alternative for each word, we don't want a lot of examples
                 // to differ by just a word ending
                 parts.stream()
                     .map(part -> part.get(0))
-                    .collect(Collectors.joining()),
-                Collections.emptyMap()));
+                    .collect(Collectors.joining()));
     }
 }

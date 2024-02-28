@@ -1,6 +1,5 @@
 package org.dicio.sentences_compiler.construct;
 
-import org.dicio.sentences_compiler.compiler.Alternative;
 import org.dicio.sentences_compiler.compiler.CompilableToJava;
 import org.dicio.sentences_compiler.compiler.RepeatedList;
 import org.dicio.sentences_compiler.util.CompilerError;
@@ -14,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Section implements CompilableToJava {
     public enum Specificity {
@@ -153,23 +151,26 @@ public class Section implements CompilableToJava {
             if (sentence.isCapturingGroupAlternatives()) {
                 capturesAlternatives.put(
                         sentence.getSentenceId(),
-                        new RepeatedList(sentence.buildAlternatives(capturesAlternatives)
-                                .stream()
-                                .map(alt -> alt.sentence)
-                                .collect(Collectors.toList())));
-
+                        new RepeatedList(sentence.buildAlternatives()));
             }
         }
 
         final Map<String, JSONObject> result = new HashMap<>();
         for (final Sentence sentence : sentences) {
             if (!sentence.isCapturingGroupAlternatives()) {
-                for (final Alternative alternative :
-                        sentence.buildAlternatives(capturesAlternatives)) {
+                for (String alt : sentence.buildAlternatives()) {
                     final JSONObject value = new JSONObject();
                     value.put("skill", sectionId);
-                    alternative.capturingGroupValues.forEach(value::putOnce);
-                    result.put(alternative.sentence, value);
+                    for (final Map.Entry<String, RepeatedList> capture
+                            : capturesAlternatives.entrySet()) {
+                        final String capturingGroupId = "." + capture.getKey() + ".";
+                        if (alt.contains(capturingGroupId)) {
+                            final String capturingGroupValue = capture.getValue().get();
+                            alt = alt.replace(capturingGroupId, capturingGroupValue);
+                            value.put(capture.getKey(), capturingGroupValue);
+                        }
+                    }
+                    result.put(alt, value);
                 }
             }
         }

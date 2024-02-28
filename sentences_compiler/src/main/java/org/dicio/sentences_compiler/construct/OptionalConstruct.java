@@ -26,8 +26,7 @@ public final class OptionalConstruct implements Construct {
     }
 
     @Override
-    public List<Alternative> buildAlternatives(
-            final Map<String, RepeatedList> capturingGroupSubstitutions) {
-        return Collections.singletonList(new Alternative("", Collections.emptyMap()));
+    public List<String> buildAlternatives() {
+        return Collections.singletonList("");
     }
 }

@@ -26,20 +26,18 @@ public final class SentenceConstructList extends AggregateConstruct {
     }
 
     @Override
-    public List<Alternative> buildAlternatives(
-            final Map<String, RepeatedList> capturingGroupSubstitutions) {
-        List<Alternative> res = null;
+    public List<String> buildAlternatives() {
+        List<String> res = null;
         for (final Construct construct : constructs) {
-            final List<Alternative> nextAlt =
-                    construct.buildAlternatives(capturingGroupSubstitutions);
+            final List<String> nextAlt = construct.buildAlternatives();
             if (res == null || res.isEmpty()) {
                 res = nextAlt;
             } else {
-                final List<Alternative> prevAlt = res;
+                final List<String> prevAlt = res;
                 res = new ArrayList<>();
-                for (final Alternative prev : prevAlt) {
-                    for (final Alternative next : nextAlt) {
-                        res.add(prev.plus(next));
+                for (final String prev : prevAlt) {
+                    for (final String next : nextAlt) {
+                        res.add(prev + (prev.isEmpty() || next.isEmpty() ? "" : " ") + next);
                     }
                 }
             }

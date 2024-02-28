@@ -129,8 +129,7 @@ public class Sentence implements CompilableToJava {
         output.write(")");
     }
 
-    public List<Alternative> buildAlternatives(
-            final Map<String, RepeatedList> capturesAlternatives) {
-        return sentenceConstructs.buildAlternatives(capturesAlternatives);
+    public List<String> buildAlternatives() {
+        return sentenceConstructs.buildAlternatives();
     }
 }

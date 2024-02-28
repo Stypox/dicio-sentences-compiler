@@ -37,11 +37,10 @@ public final class OrList extends AggregateConstruct {
     }
 
     @Override
-    public List<Alternative> buildAlternatives(
-            Map<String, RepeatedList> capturingGroupSubstitutions) {
-        final List<Alternative> merged = new ArrayList<>();
+    public List<String> buildAlternatives() {
+        final List<String> merged = new ArrayList<>();
         for (final Construct construct : constructs) {
-            merged.addAll(construct.buildAlternatives(capturingGroupSubstitutions));
+            merged.addAll(construct.buildAlternatives());
         }
         return merged;
     }

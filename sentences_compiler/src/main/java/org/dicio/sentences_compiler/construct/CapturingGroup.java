@@ -43,15 +43,7 @@ public final class CapturingGroup extends WordBase {
     }
 
     @Override
-    public List<Alternative> buildAlternatives(
-            final Map<String, RepeatedList> capturingGroupSubstitutions) {
-        if (!capturingGroupSubstitutions.containsKey(name)) {
-            throw new IndexOutOfBoundsException(
-                    "No alternatives were specified for capturing group \"" + name + "\", you can" +
-                    " specify some with a special sentence like \"[." + name + ".] a|b|c;\"");
-        }
-        final String alternative = capturingGroupSubstitutions.get(name).get();
-        return Collections.singletonList(
-                new Alternative(alternative, Collections.singletonMap(name, alternative)));
+    public List<String> buildAlternatives() {
+        return Collections.singletonList("." + name + ".");
     }
 }

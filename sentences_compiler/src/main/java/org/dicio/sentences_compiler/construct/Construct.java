@@ -43,5 +43,9 @@ public interface Construct {
      */
     Set<String> getCapturingGroupNames();
 
-    List<Alternative> buildAlternatives(final Map<String, RepeatedList> capturingGroupSubstitutions);
+    /**
+     * @return all of the possible sentences that can originate from this construct; capturing
+     * groups will appear as `.capturing_group_name.`.
+     */
+    List<String> buildAlternatives();
 }

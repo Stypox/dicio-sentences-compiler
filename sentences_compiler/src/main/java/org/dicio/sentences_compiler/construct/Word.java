@@ -60,8 +60,7 @@ public final class Word extends WordBase {
     }
 
     @Override
-    public List<Alternative> buildAlternatives(
-            Map<String, RepeatedList> capturingGroupSubstitutions) {
-        return Collections.singletonList(new Alternative(value, Collections.emptyMap()));
+    public List<String> buildAlternatives() {
+        return Collections.singletonList(value);
     }
 }
