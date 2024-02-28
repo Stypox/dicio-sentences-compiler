@@ -4,6 +4,7 @@ import org.dicio.sentences_compiler.util.StringNormalizer;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -84,11 +85,16 @@ public class WordWithVariations extends WordBase {
 
     @Override
     public List<String> buildAlternatives() {
-        return Collections.singletonList(
-                // just take the first alternative for each word, we don't want a lot of examples
-                // to differ by just a word ending
-                parts.stream()
-                    .map(part -> part.get(0))
-                    .collect(Collectors.joining()));
+        List<String> res = Collections.singletonList("");
+        for (final List<String> nextAlt : parts) {
+            final List<String> prevAlt = res;
+            res = new ArrayList<>();
+            for (final String prev : prevAlt) {
+                for (final String next : nextAlt) {
+                    res.add(prev + next);
+                }
+            }
+        }
+        return res;
     }
 }
