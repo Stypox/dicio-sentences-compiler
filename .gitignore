@@ -8,3 +8,5 @@
 .externalNativeBuild
 
 ClassName.java
+*.json
+*.dslf
