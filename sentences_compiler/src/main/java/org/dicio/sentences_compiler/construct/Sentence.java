@@ -1,8 +1,6 @@
 package org.dicio.sentences_compiler.construct;
 
-import org.dicio.sentences_compiler.compiler.Alternative;
 import org.dicio.sentences_compiler.compiler.CompilableToJava;
-import org.dicio.sentences_compiler.compiler.RepeatedList;
 import org.dicio.sentences_compiler.util.CompilerError;
 
 import java.io.IOException;
@@ -10,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class Sentence implements CompilableToJava {

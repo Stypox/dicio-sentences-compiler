@@ -1,17 +1,12 @@
 package org.dicio.sentences_compiler.construct;
 
-import org.dicio.sentences_compiler.compiler.Alternative;
-import org.dicio.sentences_compiler.compiler.RepeatedList;
 import org.dicio.sentences_compiler.util.StringNormalizer;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.text.Normalizer;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 public final class Word extends WordBase {
 
