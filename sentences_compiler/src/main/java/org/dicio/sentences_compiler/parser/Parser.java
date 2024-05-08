@@ -103,13 +103,13 @@ public class Parser {
 
             switch (specificityStr) {
                 case "low":
-                    specificity = Section.Specificity.low;
+                    specificity = Section.Specificity.LOW;
                     break;
                 case "medium":
-                    specificity = Section.Specificity.medium;
+                    specificity = Section.Specificity.MEDIUM;
                     break;
                 case "high":
-                    specificity = Section.Specificity.high;
+                    specificity = Section.Specificity.HIGH;
                     break;
                 default:
                     throw new CompilerError(CompilerError.Type.invalidSpecificity, ts.get(0), "Accepted values are \"low\", \"medium\" and \"high\"");

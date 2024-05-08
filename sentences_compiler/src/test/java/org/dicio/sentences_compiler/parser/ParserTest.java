@@ -196,7 +196,7 @@ public class ParserTest {
         assertEquals(3, sections.size());
 
         assertEquals("A", sections.get(0).getSectionId());
-        assertEquals(Section.Specificity.high, sections.get(0).getSpecificity());
+        assertEquals(Section.Specificity.HIGH, sections.get(0).getSpecificity());
         assertEquals(1, sections.get(0).getLine());
         assertEquals(2, sections.get(0).getSentences().size());
         assertSentence(sections.get(0).getSentences().get(0), "", 2, entry(0, 1, 2),
@@ -205,7 +205,7 @@ public class ParserTest {
                 w("c", 2, 3), w("d", 2, 3), w("e", 2, 3), w("ff", 1, 4, 5), w("g", 1, 5));
 
         assertEquals("C_5", sections.get(1).getSectionId());
-        assertEquals(Section.Specificity.medium, sections.get(1).getSpecificity());
+        assertEquals(Section.Specificity.MEDIUM, sections.get(1).getSpecificity());
         assertEquals(4, sections.get(1).getLine());
         assertEquals(3, sections.get(1).getSentences().size());
         assertSentence(sections.get(1).getSentences().get(0), "D", 5, entry(0, 1),
@@ -216,7 +216,7 @@ public class ParserTest {
                 w("u", 4, 1), capt("a_b", 3, 2), w("v", 2, 3, 4), capt("c", 2, 4), w("w", 1, 5));
 
         assertEquals("Ff", sections.get(2).getSectionId());
-        assertEquals(Section.Specificity.low, sections.get(2).getSpecificity());
+        assertEquals(Section.Specificity.LOW, sections.get(2).getSpecificity());
         assertEquals(8, sections.get(2).getLine());
         assertEquals(4, sections.get(2).getSentences().size());
         assertSentence(sections.get(2).getSentences().get(0), "", 10, entry(0, 1),
@@ -303,13 +303,13 @@ public class ParserTest {
         ArrayList<Section> sections = parser.parse();
 
         assertEquals("1", sections.get(0).getInputStreamName());
-        assertEquals(Section.Specificity.medium, sections.get(0).getSpecificity());
+        assertEquals(Section.Specificity.MEDIUM, sections.get(0).getSpecificity());
         assertEquals("a", sections.get(0).getSectionId());
         assertEquals("1", sections.get(0).getSentences().get(0).getInputStreamName());
         assertEquals("s1", sections.get(0).getSentences().get(0).getSentenceId());
 
         assertEquals("2", sections.get(1).getInputStreamName());
-        assertEquals(Section.Specificity.low, sections.get(1).getSpecificity());
+        assertEquals(Section.Specificity.LOW, sections.get(1).getSpecificity());
         assertEquals("c", sections.get(1).getSectionId());
         assertEquals("2", sections.get(1).getSentences().get(0).getInputStreamName());
         assertEquals("s2", sections.get(1).getSentences().get(0).getSentenceId());

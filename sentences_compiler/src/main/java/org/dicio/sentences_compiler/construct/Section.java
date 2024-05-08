@@ -16,9 +16,9 @@ import java.util.Set;
 
 public class Section implements CompilableToJava {
     public enum Specificity {
-        high,
-        medium,
-        low,
+        HIGH,
+        MEDIUM,
+        LOW,
     }
 
     private String sectionId;
@@ -125,14 +125,14 @@ public class Section implements CompilableToJava {
             throws IOException {
         output.write("(Specificity.");
         switch (specificity) {
-            case low:
-                output.write("low");
+            case LOW:
+                output.write("LOW");
                 break;
-            case medium:
-                output.write("medium");
+            case MEDIUM:
+                output.write("MEDIUM");
                 break;
-            case high:
-                output.write("high");
+            case HIGH:
+                output.write("HIGH");
                 break;
         }
 

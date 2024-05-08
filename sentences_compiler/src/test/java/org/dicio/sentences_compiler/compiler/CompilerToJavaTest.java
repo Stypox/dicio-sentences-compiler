@@ -53,8 +53,8 @@ public class CompilerToJavaTest {
         assertThat(code, containsString("StandardRecognizerData section_mood"));
         assertThat(code, containsString("public static final class SectionClass_section_GPS_navigation extends StandardRecognizerData"));
         assertThat(code, containsString("SectionClass_section_GPS_navigation section_GPS_navigation"));
-        assertThat(code, containsString("Specificity.high"));
-        assertThat(code, containsString("Specificity.medium"));
+        assertThat(code, containsString("Specificity.HIGH"));
+        assertThat(code, containsString("Specificity.MEDIUM"));
         assertThat(code, not(containsString("low")));
         assertThat(code, not(containsString(",}")));
         assertThat(code, not(containsString(", }")));
