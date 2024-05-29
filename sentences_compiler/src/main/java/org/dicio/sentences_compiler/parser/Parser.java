@@ -49,6 +49,14 @@ public class Parser {
         return sections;
     }
 
+    public SentenceConstructList parseSentenceConstructList() throws CompilerError {
+        final SentenceConstructList result = readSentenceConstructList();
+        if (result == null) {
+            throw new CompilerError(CompilerError.Type.expectedSentenceConstructList, ts.get(0), "");
+        }
+        return result;
+    }
+
 
     private Section readSection() throws CompilerError {
         Section section = new Section();
