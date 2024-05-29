@@ -54,6 +54,9 @@ public class Parser {
         if (result == null) {
             throw new CompilerError(CompilerError.Type.expectedSentenceConstructList, ts.get(0), "");
         }
+        if (!ts.get(0).isType(Token.Type.endOfFile)) {
+            throw new CompilerError(CompilerError.Type.expectedSentenceConstructOrEndOfFile, ts.get(0), "");
+        }
         return result;
     }
 

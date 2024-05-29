@@ -12,6 +12,7 @@ public class CompilerError extends Exception {
         expectedSentence("Expected sentence after specificity"),
         expectedSentenceContent("Expected sentence content after sentence id"),
         expectedSentenceConstructList("Expected list of sentence constructs"),
+        expectedSentenceConstructOrEndOfFile("Expected sentence construct or end of file"),
         expectedWordValue("Expected diacritics-sensitive word value after opening quotation marks '\"'"),
         invalidVariationsGroup("Invalid variations group"),
         expectedCapturingGroupName("Expected capturing group name after point \".\""),
