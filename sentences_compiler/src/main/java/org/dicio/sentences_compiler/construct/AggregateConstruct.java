@@ -19,6 +19,10 @@ public abstract class AggregateConstruct implements Construct {
         capturingGroupNames.addAll(construct.getCapturingGroupNames());
     }
 
+    public List<Construct> getConstructs() {
+        return constructs;
+    }
+
     @Override
     public final Set<String> getCapturingGroupNames() {
         return capturingGroupNames;
