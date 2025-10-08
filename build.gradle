@@ -25,7 +25,11 @@ subprojects {
         }
     }
 
+    tasks.named("assemble") {
+        dependsOn(sourcesJar)
+    }
+
     artifacts {
-        archives sourcesJar
+        add("default", sourcesJar)
     }
 }
