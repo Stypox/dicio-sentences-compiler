@@ -14,27 +14,31 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class CompilerToJavaTest {
 
     @Test
     public void testReadmeExample() throws IOException, CompilerError {
-        final InputStream inputStream = new ByteArrayInputStream((
-                "mood: high       # comments are supported :-D\n"
-                + "how (are you doing?)|(is it going);\n"
-                + "[has_place] how is it going over there;\n"
-                + "[french] comment \"êtes\" voùs;  # quotes make sure êtes is matched diacritics-sensitively\n"
-                + "\n"
-                + "GPS_navigation: medium\n"
-                + "[question]  take|bring me to .place. (by .vehicle.)? please?;\n"
-                + "[question]  give me directions to .place. please?;\n"
-                + "[question]  how do|can i get to .place.;\n"
-                + "[statement] i want to go to .place. (by .vehicle.)?;\n"
-                + "[statement] .place. is the place i want to go to;\n")
-                .getBytes(StandardCharsets.UTF_8));
+        final InputStream inputStream = new ByteArrayInputStream(
+                """
+                mood: high       # comments are supported :-D
+                how (are you doing?)|(is it going);
+                [has_place] how is it going over there;
+                [french] comment "êtes" voùs;  # quotes make sure êtes is matched diacritics-sensitively
+                
+                GPS_navigation: medium
+                [question]  take|bring me to .place. (by .vehicle.)? please?;
+                [question]  give me directions to .place. please?;
+                [question]  how do|can i get to .place.;
+                [statement] i want to go to .place. (by .vehicle.)?;
+                [statement] .place. is the place i want to go to;
+                """
+                        .getBytes(StandardCharsets.UTF_8)
+        );
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         final ByteArrayOutputStream sectionIdsStream = new ByteArrayOutputStream();
 
@@ -47,7 +51,7 @@ public class CompilerToJavaTest {
         outputStream.close();
         sectionIdsStream.close();
 
-        final String code = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+        final String code = outputStream.toString(StandardCharsets.UTF_8);
         assertThat(code, containsString("package com.hello.world"));
         assertThat(code, containsString("class MyClass"));
         assertThat(code, containsString("StandardRecognizerData section_mood"));
@@ -68,7 +72,7 @@ public class CompilerToJavaTest {
         assertThat(code, not(containsString("quotes")));
 
         assertEquals("mood GPS_navigation",
-                new String(sectionIdsStream.toByteArray(), StandardCharsets.UTF_8));
+                sectionIdsStream.toString(StandardCharsets.UTF_8));
     }
 
     @Test

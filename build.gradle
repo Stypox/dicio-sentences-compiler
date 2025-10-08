@@ -17,6 +17,10 @@ subprojects {
         from sourceSets.main.allSource
     }
 
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs += ["-Xlint:deprecation", "-Xlint:unchecked"]
+    }
+
     tasks.withType(Test).configureEach {
         testLogging {
             events "skipped", "failed"
