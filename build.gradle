@@ -1,7 +1,9 @@
 allprojects {
     apply plugin: 'java-library'
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    java {
+        sourceCompatibility = 17
+        targetCompatibility = 17
+    }
 
     repositories {
         mavenCentral()
@@ -9,12 +11,13 @@ allprojects {
 }
 
 subprojects {
-    task sourcesJar(type: Jar, dependsOn: classes) {
+    tasks.register('sourcesJar', Jar) {
+        dependsOn classes
         archiveClassifier = 'sources'
         from sourceSets.main.allSource
     }
 
-    tasks.withType(Test) {
+    tasks.withType(Test).configureEach {
         testLogging {
             events "skipped", "failed"
             showStandardStreams = true

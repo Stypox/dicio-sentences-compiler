@@ -1,6 +1,6 @@
 dependencies {
-    implementation 'com.beust:jcommander:1.82'
-    implementation 'org.json:json:20240205'
+    implementation 'org.jcommander:jcommander:3.0'
+    implementation 'org.json:json:20250517'
     testImplementation 'junit:junit:4.13.2'
 }
 
